@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SubmitRouteImport } from './routes/submit'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as HallOfFameRouteImport } from './routes/hall-of-fame'
 import { Route as IndexRouteImport } from './routes/index'
@@ -16,6 +17,11 @@ import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
 import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
 import { Route as BuildersUsernameRouteImport } from './routes/builders.$username'
 
+const SubmitRoute = SubmitRouteImport.update({
+  id: '/submit',
+  path: '/submit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LeaderboardRoute = LeaderboardRouteImport.update({
   id: '/leaderboard',
   path: '/leaderboard',
@@ -51,6 +57,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/hall-of-fame': typeof HallOfFameRoute
   '/leaderboard': typeof LeaderboardRoute
+  '/submit': typeof SubmitRoute
   '/builders/$username': typeof BuildersUsernameRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/projects/': typeof ProjectsIndexRoute
@@ -59,6 +66,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/hall-of-fame': typeof HallOfFameRoute
   '/leaderboard': typeof LeaderboardRoute
+  '/submit': typeof SubmitRoute
   '/builders/$username': typeof BuildersUsernameRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/projects': typeof ProjectsIndexRoute
@@ -68,6 +76,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/hall-of-fame': typeof HallOfFameRoute
   '/leaderboard': typeof LeaderboardRoute
+  '/submit': typeof SubmitRoute
   '/builders/$username': typeof BuildersUsernameRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/projects/': typeof ProjectsIndexRoute
@@ -78,6 +87,7 @@ export interface FileRouteTypes {
     | '/'
     | '/hall-of-fame'
     | '/leaderboard'
+    | '/submit'
     | '/builders/$username'
     | '/projects/$slug'
     | '/projects/'
@@ -86,6 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/hall-of-fame'
     | '/leaderboard'
+    | '/submit'
     | '/builders/$username'
     | '/projects/$slug'
     | '/projects'
@@ -94,6 +105,7 @@ export interface FileRouteTypes {
     | '/'
     | '/hall-of-fame'
     | '/leaderboard'
+    | '/submit'
     | '/builders/$username'
     | '/projects/$slug'
     | '/projects/'
@@ -103,6 +115,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   HallOfFameRoute: typeof HallOfFameRoute
   LeaderboardRoute: typeof LeaderboardRoute
+  SubmitRoute: typeof SubmitRoute
   BuildersUsernameRoute: typeof BuildersUsernameRoute
   ProjectsSlugRoute: typeof ProjectsSlugRoute
   ProjectsIndexRoute: typeof ProjectsIndexRoute
@@ -110,6 +123,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/submit': {
+      id: '/submit'
+      path: '/submit'
+      fullPath: '/submit'
+      preLoaderRoute: typeof SubmitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/leaderboard': {
       id: '/leaderboard'
       path: '/leaderboard'
@@ -159,6 +179,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   HallOfFameRoute: HallOfFameRoute,
   LeaderboardRoute: LeaderboardRoute,
+  SubmitRoute: SubmitRoute,
   BuildersUsernameRoute: BuildersUsernameRoute,
   ProjectsSlugRoute: ProjectsSlugRoute,
   ProjectsIndexRoute: ProjectsIndexRoute,
