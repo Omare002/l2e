@@ -14,6 +14,7 @@ import { Route as HallOfFameRouteImport } from './routes/hall-of-fame'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
 import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
+import { Route as BuildersUsernameRouteImport } from './routes/builders.$username'
 
 const LeaderboardRoute = LeaderboardRouteImport.update({
   id: '/leaderboard',
@@ -40,11 +41,17 @@ const ProjectsSlugRoute = ProjectsSlugRouteImport.update({
   path: '/projects/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BuildersUsernameRoute = BuildersUsernameRouteImport.update({
+  id: '/builders/$username',
+  path: '/builders/$username',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/hall-of-fame': typeof HallOfFameRoute
   '/leaderboard': typeof LeaderboardRoute
+  '/builders/$username': typeof BuildersUsernameRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/projects/': typeof ProjectsIndexRoute
 }
@@ -52,6 +59,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/hall-of-fame': typeof HallOfFameRoute
   '/leaderboard': typeof LeaderboardRoute
+  '/builders/$username': typeof BuildersUsernameRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/projects': typeof ProjectsIndexRoute
 }
@@ -60,6 +68,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/hall-of-fame': typeof HallOfFameRoute
   '/leaderboard': typeof LeaderboardRoute
+  '/builders/$username': typeof BuildersUsernameRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/projects/': typeof ProjectsIndexRoute
 }
@@ -69,15 +78,23 @@ export interface FileRouteTypes {
     | '/'
     | '/hall-of-fame'
     | '/leaderboard'
+    | '/builders/$username'
     | '/projects/$slug'
     | '/projects/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/hall-of-fame' | '/leaderboard' | '/projects/$slug' | '/projects'
+  to:
+    | '/'
+    | '/hall-of-fame'
+    | '/leaderboard'
+    | '/builders/$username'
+    | '/projects/$slug'
+    | '/projects'
   id:
     | '__root__'
     | '/'
     | '/hall-of-fame'
     | '/leaderboard'
+    | '/builders/$username'
     | '/projects/$slug'
     | '/projects/'
   fileRoutesById: FileRoutesById
@@ -86,6 +103,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   HallOfFameRoute: typeof HallOfFameRoute
   LeaderboardRoute: typeof LeaderboardRoute
+  BuildersUsernameRoute: typeof BuildersUsernameRoute
   ProjectsSlugRoute: typeof ProjectsSlugRoute
   ProjectsIndexRoute: typeof ProjectsIndexRoute
 }
@@ -127,6 +145,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/builders/$username': {
+      id: '/builders/$username'
+      path: '/builders/$username'
+      fullPath: '/builders/$username'
+      preLoaderRoute: typeof BuildersUsernameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -134,6 +159,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   HallOfFameRoute: HallOfFameRoute,
   LeaderboardRoute: LeaderboardRoute,
+  BuildersUsernameRoute: BuildersUsernameRoute,
   ProjectsSlugRoute: ProjectsSlugRoute,
   ProjectsIndexRoute: ProjectsIndexRoute,
 }
