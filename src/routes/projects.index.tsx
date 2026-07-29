@@ -4,7 +4,7 @@ import { PROJECTS, CATEGORIES, type Category } from "@/data/community";
 import { ProjectCard } from "@/components/project-card";
 import { SectionHeading } from "@/components/section-heading";
 
-export const Route = createFileRoute("/projects")({
+export const Route = createFileRoute("/projects/")({
   head: () => ({
     meta: [
       { title: "Discover Projects — Leaderboard" },
