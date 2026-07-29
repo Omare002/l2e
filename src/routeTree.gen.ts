@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
+import { Route as HallOfFameRouteImport } from './routes/hall-of-fame'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
 import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
@@ -17,6 +18,11 @@ import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
 const LeaderboardRoute = LeaderboardRouteImport.update({
   id: '/leaderboard',
   path: '/leaderboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HallOfFameRoute = HallOfFameRouteImport.update({
+  id: '/hall-of-fame',
+  path: '/hall-of-fame',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -37,12 +43,14 @@ const ProjectsSlugRoute = ProjectsSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/hall-of-fame': typeof HallOfFameRoute
   '/leaderboard': typeof LeaderboardRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/projects/': typeof ProjectsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/hall-of-fame': typeof HallOfFameRoute
   '/leaderboard': typeof LeaderboardRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/projects': typeof ProjectsIndexRoute
@@ -50,20 +58,33 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/hall-of-fame': typeof HallOfFameRoute
   '/leaderboard': typeof LeaderboardRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/projects/': typeof ProjectsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/leaderboard' | '/projects/$slug' | '/projects/'
+  fullPaths:
+    | '/'
+    | '/hall-of-fame'
+    | '/leaderboard'
+    | '/projects/$slug'
+    | '/projects/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/leaderboard' | '/projects/$slug' | '/projects'
-  id: '__root__' | '/' | '/leaderboard' | '/projects/$slug' | '/projects/'
+  to: '/' | '/hall-of-fame' | '/leaderboard' | '/projects/$slug' | '/projects'
+  id:
+    | '__root__'
+    | '/'
+    | '/hall-of-fame'
+    | '/leaderboard'
+    | '/projects/$slug'
+    | '/projects/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  HallOfFameRoute: typeof HallOfFameRoute
   LeaderboardRoute: typeof LeaderboardRoute
   ProjectsSlugRoute: typeof ProjectsSlugRoute
   ProjectsIndexRoute: typeof ProjectsIndexRoute
@@ -76,6 +97,13 @@ declare module '@tanstack/react-router' {
       path: '/leaderboard'
       fullPath: '/leaderboard'
       preLoaderRoute: typeof LeaderboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hall-of-fame': {
+      id: '/hall-of-fame'
+      path: '/hall-of-fame'
+      fullPath: '/hall-of-fame'
+      preLoaderRoute: typeof HallOfFameRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -104,6 +132,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  HallOfFameRoute: HallOfFameRoute,
   LeaderboardRoute: LeaderboardRoute,
   ProjectsSlugRoute: ProjectsSlugRoute,
   ProjectsIndexRoute: ProjectsIndexRoute,
