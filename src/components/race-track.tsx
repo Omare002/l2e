@@ -101,7 +101,7 @@ export function RaceTrack({ compact = false }: { compact?: boolean }) {
                   </motion.div>
                 </div>
 
-                <div className="hidden w-32 shrink-0 text-right font-mono text-[11px] sm:block">
+                <div className="hidden w-32 shrink-0 pr-5 text-right font-mono text-[11px] sm:block">
                   <div className="text-neon">▲ {r.votes}</div>
                   <div className="text-white/35">
                     {Math.max(0, target - r.votes)} to finish
