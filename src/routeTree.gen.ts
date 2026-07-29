@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SubmitRouteImport } from './routes/submit'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
+import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as HallOfFameRouteImport } from './routes/hall-of-fame'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
@@ -26,6 +27,11 @@ const SubmitRoute = SubmitRouteImport.update({
 const LeaderboardRoute = LeaderboardRouteImport.update({
   id: '/leaderboard',
   path: '/leaderboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HowItWorksRoute = HowItWorksRouteImport.update({
+  id: '/how-it-works',
+  path: '/how-it-works',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HallOfFameRoute = HallOfFameRouteImport.update({
@@ -63,6 +69,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/hall-of-fame': typeof HallOfFameRoute
+  '/how-it-works': typeof HowItWorksRoute
   '/leaderboard': typeof LeaderboardRoute
   '/submit': typeof SubmitRoute
   '/builders/$username': typeof BuildersUsernameRoute
@@ -73,6 +80,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/hall-of-fame': typeof HallOfFameRoute
+  '/how-it-works': typeof HowItWorksRoute
   '/leaderboard': typeof LeaderboardRoute
   '/submit': typeof SubmitRoute
   '/builders/$username': typeof BuildersUsernameRoute
@@ -84,6 +92,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/hall-of-fame': typeof HallOfFameRoute
+  '/how-it-works': typeof HowItWorksRoute
   '/leaderboard': typeof LeaderboardRoute
   '/submit': typeof SubmitRoute
   '/builders/$username': typeof BuildersUsernameRoute
@@ -96,6 +105,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/hall-of-fame'
+    | '/how-it-works'
     | '/leaderboard'
     | '/submit'
     | '/builders/$username'
@@ -106,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/hall-of-fame'
+    | '/how-it-works'
     | '/leaderboard'
     | '/submit'
     | '/builders/$username'
@@ -116,6 +127,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/hall-of-fame'
+    | '/how-it-works'
     | '/leaderboard'
     | '/submit'
     | '/builders/$username'
@@ -127,6 +139,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRoute
   HallOfFameRoute: typeof HallOfFameRoute
+  HowItWorksRoute: typeof HowItWorksRoute
   LeaderboardRoute: typeof LeaderboardRoute
   SubmitRoute: typeof SubmitRoute
   BuildersUsernameRoute: typeof BuildersUsernameRoute
@@ -148,6 +161,13 @@ declare module '@tanstack/react-router' {
       path: '/leaderboard'
       fullPath: '/leaderboard'
       preLoaderRoute: typeof LeaderboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/how-it-works': {
+      id: '/how-it-works'
+      path: '/how-it-works'
+      fullPath: '/how-it-works'
+      preLoaderRoute: typeof HowItWorksRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/hall-of-fame': {
@@ -199,6 +219,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRoute,
   HallOfFameRoute: HallOfFameRoute,
+  HowItWorksRoute: HowItWorksRoute,
   LeaderboardRoute: LeaderboardRoute,
   SubmitRoute: SubmitRoute,
   BuildersUsernameRoute: BuildersUsernameRoute,
