@@ -33,7 +33,7 @@ function HallOfFame() {
         {HALL_OF_FAME.map((w) => {
           const b = builderBy(w.winner);
           return (
-            <article key={w.week} className="bg-surface-dark p-5">
+            <article key={w.week} className="surface-card p-6">
               <div className="flex items-center justify-between font-mono text-[11px] tracking-normal text-white/40">
                 <span>Week {w.week}</span>
                 <span className="bg-neon px-2 py-1 text-ink">{w.badge}</span>

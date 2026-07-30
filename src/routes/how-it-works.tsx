@@ -59,7 +59,7 @@ function HowItWorks() {
         <SeasonBanner />
       </div>
 
-      <div className="mt-10 border border-border">
+      <div className="mt-10 rounded-lg border border-border">
         {STEPS.map((s) => (
           <div key={s.n} className="flex gap-5 border-b border-border p-5 last:border-b-0">
             <span className="font-mono text-2xl font-semibold text-neon">{s.n}</span>

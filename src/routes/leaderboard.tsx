@@ -44,7 +44,7 @@ function LeaderboardPage() {
 
       <div className="mt-16">
         <SectionHeading title="Standings" subtitle="Weekly votes, updated live." />
-        <div className="overflow-hidden rounded-lg border border-border">
+        <div className="overflow-hidden rounded-lg rounded-lg border border-border">
           <div className="grid grid-cols-[56px_1fr_90px_110px] gap-4 border-b border-border px-5 py-3.5 text-[12px] text-muted-foreground">
             <span>Rank</span>
             <span>Builder / Project</span>

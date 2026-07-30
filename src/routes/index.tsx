@@ -57,7 +57,7 @@ function Index() {
           </Link>
           <Link
             to="/submit"
-            className="rounded-full border border-border px-5 py-2.5 text-[13px] font-medium transition-all duration-300 hover:border-neon/60 hover:shadow-[0_0_0_3px_var(--neon-dim)]"
+            className="rounded-full rounded-lg border border-border px-5 py-2.5 text-[13px] font-medium transition-all duration-300 hover:border-neon/60 hover:shadow-[0_0_0_3px_var(--neon-dim)]"
           >
             Submit a project
           </Link>
@@ -93,7 +93,7 @@ function Index() {
         <SectionHeading
           title="Latest builds"
           right={
-            <div className="flex gap-1 rounded-full border border-border p-1 text-[12px]">
+            <div className="flex gap-1 rounded-full rounded-lg border border-border p-1 text-[12px]">
               {(["trending", "new"] as const).map((t) => (
                 <button
                   key={t}

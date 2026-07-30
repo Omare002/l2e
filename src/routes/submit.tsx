@@ -22,7 +22,7 @@ export const Route = createFileRoute("/submit")({
 });
 
 const field =
-  "w-full border border-border bg-background px-3 py-2.5 font-mono text-[13px] outline-none focus:border-neon";
+  "w-full rounded-lg border border-border bg-background px-3 py-2.5 font-mono text-[13px] outline-none focus:border-neon";
 const label = "font-mono text-[11px] tracking-normal text-muted-foreground";
 
 function SubmitPage() {

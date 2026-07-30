@@ -16,7 +16,7 @@ export function ActivityFeed() {
   }, []);
 
   return (
-    <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border">
+    <ul className="divide-y divide-border overflow-hidden rounded-lg rounded-lg border border-border">
       <AnimatePresence initial={false}>
         {items.map((line, i) => (
           <motion.li

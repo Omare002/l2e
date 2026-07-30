@@ -23,7 +23,7 @@ export function SeasonBanner() {
   const pad = (n: number) => String(n).padStart(2, "0");
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-5 rounded-lg border border-border px-6 py-5">
+    <div className="flex flex-wrap items-center justify-between gap-5 rounded-lg rounded-lg border border-border px-6 py-5">
       <div>
         <div className="text-[13px] font-medium">Current season</div>
         <div className="mt-1 text-[12px] text-muted-foreground">

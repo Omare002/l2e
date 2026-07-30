@@ -73,7 +73,7 @@ function ProjectPage() {
       </div>
 
       <div
-        className="mt-8 h-64 w-full border border-border"
+        className="mt-8 h-64 w-full rounded-lg border border-border"
         style={{
           background: `repeating-linear-gradient(135deg, ${project.thumbTone}33 0 10px, #17171708 10px 20px)`,
         }}
@@ -111,7 +111,7 @@ function ProjectPage() {
               onChange={(e) => setDraft(e.target.value)}
               rows={3}
               placeholder="What would make this project better?"
-              className="w-full border border-border bg-background p-3 font-mono text-[13px] outline-none focus:border-neon"
+              className="w-full rounded-lg border border-border bg-background p-3 font-mono text-[13px] outline-none focus:border-neon"
             />
             <button className="mt-2 bg-ink px-4 py-2 font-mono text-[12px] font-bold text-background">
               Post feedback
@@ -135,7 +135,7 @@ function ProjectPage() {
         </div>
 
         <aside className="space-y-6">
-          <div className="border border-border p-4">
+          <div className="rounded-lg border border-border p-4">
             <div className="font-mono text-[11px] tracking-normal text-muted-foreground">
               Builder
             </div>
@@ -159,7 +159,7 @@ function ProjectPage() {
             </Link>
           </div>
 
-          <div className="border border-border p-4">
+          <div className="rounded-lg border border-border p-4">
             <div className="font-mono text-[11px] tracking-normal text-muted-foreground">
               Tech Stack
             </div>
@@ -181,7 +181,7 @@ function ProjectPage() {
             </a>
             <a
               href={project.repoUrl}
-              className="flex items-center justify-center gap-2 border border-border px-4 py-3 font-mono text-[12px] font-bold"
+              className="flex items-center justify-center gap-2 rounded-lg border border-border px-4 py-3 font-mono text-[12px] font-bold"
             >
               <Github className="size-3.5" /> GitHub
             </a>

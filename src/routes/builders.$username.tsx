@@ -87,14 +87,14 @@ function BuilderProfile() {
         <button
           onClick={() => setFollowing((f) => !f)}
           className={`px-5 py-3 font-mono text-[12px] font-bold ${
-            following ? "border border-border" : "bg-neon text-ink"
+            following ? "rounded-lg border border-border" : "bg-neon text-ink"
           }`}
         >
           {following ? "Following" : "Follow builder"}
         </button>
       </div>
 
-      <div className="mt-8 grid grid-cols-2 border border-border sm:grid-cols-4">
+      <div className="mt-8 grid grid-cols-2 rounded-lg border border-border sm:grid-cols-4">
         {[
           ["Weekly Rank", `#${rank}`],
           ["Total Votes", b.totalVotes.toLocaleString()],
@@ -121,7 +121,7 @@ function BuilderProfile() {
         <h2 className="font-mono text-sm font-bold tracking-normal">
           Contribution Calendar
         </h2>
-        <div className="mt-4 border border-border p-4">
+        <div className="mt-4 rounded-lg border border-border p-4">
           <ContributionCalendar seed={b.username.length + 3} />
         </div>
       </section>
@@ -137,7 +137,7 @@ function BuilderProfile() {
 
       <section className="mt-12">
         <h2 className="font-mono text-sm font-bold tracking-normal">Recent Activity</h2>
-        <ul className="mt-4 divide-y divide-border border border-border">
+        <ul className="mt-4 divide-y divide-border rounded-lg border border-border">
           {[
             `${b.name} shipped an update to ${projects[0]?.name ?? "a project"}`,
             `${b.name} left feedback on DevMatch`,
