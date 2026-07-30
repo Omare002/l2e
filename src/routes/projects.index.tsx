@@ -49,8 +49,8 @@ function ProjectsPage() {
   });
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-14">
-      <h1 className="font-mono text-4xl font-extrabold uppercase sm:text-5xl">
+    <div className="mx-auto max-w-6xl px-6 py-16">
+      <h1 className="font-mono text-4xl font-semibold sm:text-5xl">
         Discover <span className="text-neon">Projects</span>
       </h1>
       <p className="mt-4 max-w-2xl font-mono text-[13px] text-muted-foreground">
@@ -72,7 +72,7 @@ function ProjectsPage() {
         ))}
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-2 font-mono text-[11px] uppercase tracking-wide">
+      <div className="mt-4 flex flex-wrap gap-2 font-mono text-[11px] tracking-normal">
         {(["All", ...CATEGORIES] as const).map((c) => (
           <button
             key={c}

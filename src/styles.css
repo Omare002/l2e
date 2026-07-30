@@ -66,10 +66,16 @@
   --color-surface-darker: var(--surface-darker);
   --font-mono: "JetBrains Mono", "IBM Plex Mono", "Space Mono", ui-monospace, monospace;
   --font-sans: "IBM Plex Mono", "JetBrains Mono", ui-monospace, monospace;
+  --shadow-xs: 0 1px 2px -1px oklch(0 0 0 / 6%);
+  --shadow-sm: 0 1px 2px -1px oklch(0 0 0 / 5%), 0 2px 6px -2px oklch(0 0 0 / 5%);
+  --shadow-md:
+    0 1px 2px -1px oklch(0 0 0 / 5%), 0 4px 10px -3px oklch(0 0 0 / 6%),
+    0 12px 28px -12px oklch(0 0 0 / 10%);
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 :root {
-  --radius: 0rem;
+  --radius: 0.625rem;
   /* #F7F7F5 */
   --background: oklch(0.973 0.002 106.42);
   /* #111111 */
@@ -96,8 +102,8 @@
   --surface-darker: oklch(0.16 0 0);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.88 0.002 106.42);
-  --input: oklch(0.88 0.002 106.42);
+  --border: oklch(0.915 0.002 106.42);
+  --input: oklch(0.915 0.002 106.42);
   --ring: oklch(0.876 0.284 137.5);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
@@ -166,37 +172,59 @@
   h3,
   h4 {
     font-family: var(--font-mono);
-    letter-spacing: -0.03em;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: var(--neon-dim);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--neon);
+    outline-offset: 2px;
   }
 }
 
-@utility checker-line {
-  background-image:
-    linear-gradient(45deg, #fff 25%, transparent 25%),
-    linear-gradient(-45deg, #fff 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #fff 75%),
-    linear-gradient(-45deg, transparent 75%, #fff 75%);
-  background-size: 12px 12px;
-  background-position:
-    0 0,
-    0 6px,
-    6px -6px,
-    -6px 0px;
-  background-color: #111;
+/* A whisper of a finish line: fine dashes, no checkerboard. */
+@utility finish-line {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--foreground) 26%, transparent) 0 4px,
+    transparent 4px 9px
+  );
 }
 
-@utility neon-glow {
-  box-shadow: 0 0 0 1px var(--neon), 0 0 24px -4px var(--neon);
+@utility surface-card {
+  background-color: var(--surface-dark);
+  border: 1px solid oklch(1 0 0 / 8%);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  transition:
+    border-color 260ms var(--ease-out-soft),
+    box-shadow 260ms var(--ease-out-soft),
+    transform 260ms var(--ease-out-soft);
 }
 
-@keyframes smoke-puff {
-  0% {
-    opacity: 0.55;
-    transform: translateX(0) scale(0.5);
+@utility neon-ring {
+  box-shadow:
+    var(--shadow-md),
+    0 0 0 1px color-mix(in oklab, var(--neon) 55%, transparent),
+    0 8px 34px -14px color-mix(in oklab, var(--neon) 60%, transparent);
+}
+
+@keyframes caret-blink {
+  0%,
+  45% {
+    opacity: 1;
   }
+  55%,
   100% {
     opacity: 0;
-    transform: translateX(-26px) scale(2.2);
   }
 }
 

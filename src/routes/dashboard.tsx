@@ -30,10 +30,10 @@ function Dashboard() {
   const votes = mine.reduce((n, p) => n + p.votes, 0);
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-14">
+    <div className="mx-auto max-w-6xl px-6 py-16">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="font-mono text-4xl font-extrabold uppercase sm:text-5xl">Dashboard</h1>
+          <h1 className="font-mono text-4xl font-semibold sm:text-5xl">Dashboard</h1>
           <p className="mt-3 font-mono text-[13px] text-muted-foreground">
             Signed in as {me.name} · @{me.username}
           </p>
@@ -43,7 +43,7 @@ function Dashboard() {
         </Link>
       </div>
 
-      <div className="mt-10 grid grid-cols-2 border border-border sm:grid-cols-4">
+      <div className="mt-10 grid grid-cols-2 rounded-lg border border-border sm:grid-cols-4">
         {[
           ["Race Position", `#${rank}`],
           ["Weekly Votes", votes.toLocaleString()],
@@ -52,7 +52,7 @@ function Dashboard() {
         ].map(([l, v]) => (
           <div key={l} className="border-r border-border px-5 py-5 last:border-r-0">
             <div className="font-mono text-2xl font-bold">{v}</div>
-            <div className="mt-1 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
+            <div className="mt-1 font-mono text-[11px] tracking-normal text-muted-foreground">
               {l}
             </div>
           </div>
@@ -61,7 +61,7 @@ function Dashboard() {
 
       <section className="mt-12">
         <SectionHeading title="My Projects" subtitle="Edit details, track votes, read feedback." />
-        <div className="border border-border">
+        <div className="rounded-lg border border-border">
           {mine.map((p) => (
             <div
               key={p.slug}
@@ -74,10 +74,10 @@ function Dashboard() {
               >
                 {p.name}
               </Link>
-              <span className="bg-muted px-2 py-1 text-[10px] uppercase">{p.status}</span>
+              <span className="bg-muted px-2 py-1 text-[10px]">{p.status}</span>
               <span className="ml-auto text-muted-foreground">▲ {p.votes} votes</span>
               <span className="text-muted-foreground">{p.comments.length} comments</span>
-              <button className="border border-border px-3 py-1.5">Edit</button>
+              <button className="rounded-lg border border-border px-3 py-1.5">Edit</button>
             </div>
           ))}
         </div>
@@ -85,7 +85,7 @@ function Dashboard() {
 
       <section className="mt-12">
         <SectionHeading title="Recent Feedback" />
-        <ul className="divide-y divide-border border border-border">
+        <ul className="divide-y divide-border rounded-lg border border-border">
           {mine.flatMap((p) =>
             p.comments.map((c) => (
               <li key={c.id} className="px-4 py-4 font-mono text-[12px]">
@@ -105,27 +105,27 @@ function Dashboard() {
 
       <section className="mt-12">
         <SectionHeading title="Profile" subtitle="Keep it current — builders check it." />
-        <div className="grid gap-4 border border-border p-5 sm:grid-cols-2">
-          <label className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
+        <div className="grid gap-4 rounded-lg border border-border p-5 sm:grid-cols-2">
+          <label className="font-mono text-[11px] tracking-normal text-muted-foreground">
             Display name
             <input
               defaultValue={me.name}
-              className="mt-2 w-full border border-border bg-background px-3 py-2.5 text-[13px] normal-case tracking-normal text-foreground outline-none focus:border-neon"
+              className="mt-2 w-full rounded-lg border border-border bg-background px-3 py-2.5 text-[13px] normal-case tracking-normal text-foreground outline-none focus:border-neon"
             />
           </label>
-          <label className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
+          <label className="font-mono text-[11px] tracking-normal text-muted-foreground">
             Portfolio
             <input
               defaultValue={me.portfolio}
-              className="mt-2 w-full border border-border bg-background px-3 py-2.5 text-[13px] normal-case tracking-normal text-foreground outline-none focus:border-neon"
+              className="mt-2 w-full rounded-lg border border-border bg-background px-3 py-2.5 text-[13px] normal-case tracking-normal text-foreground outline-none focus:border-neon"
             />
           </label>
-          <label className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground sm:col-span-2">
+          <label className="font-mono text-[11px] tracking-normal text-muted-foreground sm:col-span-2">
             Bio
             <textarea
               defaultValue={me.bio}
               rows={3}
-              className="mt-2 w-full border border-border bg-background px-3 py-2.5 text-[13px] normal-case tracking-normal text-foreground outline-none focus:border-neon"
+              className="mt-2 w-full rounded-lg border border-border bg-background px-3 py-2.5 text-[13px] normal-case tracking-normal text-foreground outline-none focus:border-neon"
             />
           </label>
           <div>

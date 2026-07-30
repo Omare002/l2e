@@ -3,18 +3,13 @@ import { CountUp } from "./count-up";
 
 export function StatsStrip() {
   return (
-    <div className="grid grid-cols-2 border border-border sm:grid-cols-3 lg:grid-cols-5">
+    <div className="grid grid-cols-2 gap-px overflow-hidden rounded-lg rounded-lg border border-border bg-border sm:grid-cols-3 lg:grid-cols-5">
       {COMMUNITY_STATS.map((s) => (
-        <div
-          key={s.label}
-          className="border-b border-r border-border px-5 py-6 last:border-r-0 sm:border-b-0"
-        >
-          <div className="font-mono text-2xl font-bold tracking-tight sm:text-3xl">
+        <div key={s.label} className="bg-background px-6 py-7">
+          <div className="text-2xl font-semibold tracking-tight tabular-nums sm:text-[28px]">
             <CountUp value={s.value} />
           </div>
-          <div className="mt-1 font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
-            {s.label}
-          </div>
+          <div className="mt-2 text-[12px] text-muted-foreground">{s.label}</div>
         </div>
       ))}
     </div>

@@ -46,8 +46,8 @@ const STEPS = [
 
 function HowItWorks() {
   return (
-    <div className="mx-auto max-w-4xl px-5 py-14">
-      <h1 className="font-mono text-4xl font-extrabold uppercase sm:text-5xl">
+    <div className="mx-auto max-w-4xl px-6 py-16">
+      <h1 className="font-mono text-4xl font-semibold sm:text-5xl">
         How it <span className="text-neon">works</span>
       </h1>
       <p className="mt-4 font-mono text-[13px] text-muted-foreground">
@@ -59,19 +59,19 @@ function HowItWorks() {
         <SeasonBanner />
       </div>
 
-      <div className="mt-10 border border-border">
+      <div className="mt-10 rounded-lg border border-border">
         {STEPS.map((s) => (
           <div key={s.n} className="flex gap-5 border-b border-border p-5 last:border-b-0">
-            <span className="font-mono text-2xl font-extrabold text-neon">{s.n}</span>
+            <span className="font-mono text-2xl font-semibold text-neon">{s.n}</span>
             <div>
-              <h2 className="font-mono text-sm font-bold uppercase tracking-widest">{s.title}</h2>
+              <h2 className="font-mono text-sm font-bold tracking-normal">{s.title}</h2>
               <p className="mt-2 font-mono text-[13px] text-muted-foreground">{s.body}</p>
             </div>
           </div>
         ))}
       </div>
 
-      <h2 className="mt-14 font-mono text-sm font-bold uppercase tracking-widest">
+      <h2 className="mt-14 font-mono text-sm font-bold tracking-normal">
         Badges you can earn
       </h2>
       <div className="mt-4">

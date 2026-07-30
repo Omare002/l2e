@@ -22,8 +22,8 @@ export const Route = createFileRoute("/submit")({
 });
 
 const field =
-  "w-full border border-border bg-background px-3 py-2.5 font-mono text-[13px] outline-none focus:border-neon";
-const label = "font-mono text-[11px] uppercase tracking-widest text-muted-foreground";
+  "w-full rounded-lg border border-border bg-background px-3 py-2.5 font-mono text-[13px] outline-none focus:border-neon";
+const label = "font-mono text-[11px] tracking-normal text-muted-foreground";
 
 function SubmitPage() {
   const [done, setDone] = useState(false);
@@ -33,7 +33,7 @@ function SubmitPage() {
     return (
       <div className="mx-auto max-w-2xl px-5 py-24 text-center">
         <div className="text-4xl">🚀</div>
-        <h1 className="mt-6 font-mono text-3xl font-extrabold uppercase">
+        <h1 className="mt-6 font-mono text-3xl font-semibold">
           {name || "Your project"} is in the race
         </h1>
         <p className="mt-4 font-mono text-[13px] text-muted-foreground">
@@ -51,8 +51,8 @@ function SubmitPage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-5 py-14">
-      <h1 className="font-mono text-4xl font-extrabold uppercase sm:text-5xl">
+    <div className="mx-auto max-w-3xl px-6 py-16">
+      <h1 className="font-mono text-4xl font-semibold sm:text-5xl">
         Submit a <span className="text-neon">Project</span>
       </h1>
       <p className="mt-4 font-mono text-[13px] text-muted-foreground">

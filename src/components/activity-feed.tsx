@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import { ACTIVITY_SEEDS } from "@/data/community";
 
 export function ActivityFeed() {
@@ -10,22 +11,33 @@ export function ActivityFeed() {
       i += 1;
       const next = ACTIVITY_SEEDS[i % ACTIVITY_SEEDS.length];
       setItems((prev) => [next, ...prev].slice(0, 8));
-    }, 3800);
+    }, 6000);
     return () => clearInterval(id);
   }, []);
 
   return (
-    <ul className="divide-y divide-border border border-border">
-      {items.map((line, i) => (
-        <li
-          key={`${line}-${i}`}
-          className="flex items-center gap-3 px-4 py-3 font-mono text-[12px]"
-        >
-          <span className={`size-1.5 ${i === 0 ? "bg-neon" : "bg-muted-foreground/50"}`} />
-          <span className="text-foreground/80">{line}</span>
-          <span className="ml-auto text-muted-foreground">{i === 0 ? "now" : `${i * 4}m`}</span>
-        </li>
-      ))}
+    <ul className="divide-y divide-border overflow-hidden rounded-lg rounded-lg border border-border">
+      <AnimatePresence initial={false}>
+        {items.map((line, i) => (
+          <motion.li
+            key={`${line}-${i}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+            className="flex items-center gap-3.5 px-5 py-3.5 text-[13px]"
+          >
+            <span
+              className={`size-1.5 shrink-0 rounded-full ${
+                i === 0 ? "bg-neon" : "bg-muted-foreground/30"
+              }`}
+            />
+            <span className="text-foreground/80">{line}</span>
+            <span className="ml-auto font-mono text-[11px] text-muted-foreground">
+              {i === 0 ? "now" : `${i * 4}m`}
+            </span>
+          </motion.li>
+        ))}
+      </AnimatePresence>
     </ul>
   );
 }

@@ -44,17 +44,17 @@ function ProjectPage() {
       .findIndex((p) => p.slug === slug) + 1;
 
   return (
-    <div className="mx-auto max-w-5xl px-5 py-14">
+    <div className="mx-auto max-w-5xl px-6 py-16">
       <Link to="/projects" className="font-mono text-[12px] text-muted-foreground hover:text-foreground">
         ← Back to projects
       </Link>
 
       <div className="mt-6 flex flex-wrap items-start justify-between gap-6">
         <div>
-          <span className="bg-neon-dim px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-widest">
+          <span className="bg-neon-dim px-2 py-1 font-mono text-[10px] font-bold tracking-normal">
             Rank #{rank} · {project.category} · {project.status}
           </span>
-          <h1 className="mt-4 font-mono text-4xl font-extrabold uppercase sm:text-5xl">
+          <h1 className="mt-4 font-mono text-4xl font-semibold sm:text-5xl">
             {project.name}
           </h1>
           <p className="mt-3 max-w-2xl font-mono text-[13px] text-muted-foreground">
@@ -73,7 +73,7 @@ function ProjectPage() {
       </div>
 
       <div
-        className="mt-8 h-64 w-full border border-border"
+        className="mt-8 h-64 w-full rounded-lg border border-border"
         style={{
           background: `repeating-linear-gradient(135deg, ${project.thumbTone}33 0 10px, #17171708 10px 20px)`,
         }}
@@ -82,12 +82,12 @@ function ProjectPage() {
 
       <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_280px]">
         <div>
-          <h2 className="font-mono text-sm font-bold uppercase tracking-widest">About</h2>
+          <h2 className="font-mono text-sm font-bold tracking-normal">About</h2>
           <p className="mt-3 font-mono text-[13px] leading-relaxed text-foreground/80">
             {project.description}
           </p>
 
-          <h2 className="mt-10 font-mono text-sm font-bold uppercase tracking-widest">
+          <h2 className="mt-10 font-mono text-sm font-bold tracking-normal">
             Feedback ({comments.length})
           </h2>
           <p className="mt-2 font-mono text-[12px] text-muted-foreground">
@@ -111,7 +111,7 @@ function ProjectPage() {
               onChange={(e) => setDraft(e.target.value)}
               rows={3}
               placeholder="What would make this project better?"
-              className="w-full border border-border bg-background p-3 font-mono text-[13px] outline-none focus:border-neon"
+              className="w-full rounded-lg border border-border bg-background p-3 font-mono text-[13px] outline-none focus:border-neon"
             />
             <button className="mt-2 bg-ink px-4 py-2 font-mono text-[12px] font-bold text-background">
               Post feedback
@@ -124,7 +124,7 @@ function ProjectPage() {
                 <div className="flex items-center gap-2 font-mono text-[11px] text-muted-foreground">
                   <span className="font-bold text-foreground">@{cm.author}</span>
                   <span>· {cm.at}</span>
-                  <span className="ml-auto bg-muted px-2 py-0.5 uppercase tracking-wider">
+                  <span className="ml-auto bg-muted px-2 py-0.5 tracking-normalr">
                     {cm.kind}
                   </span>
                 </div>
@@ -135,8 +135,8 @@ function ProjectPage() {
         </div>
 
         <aside className="space-y-6">
-          <div className="border border-border p-4">
-            <div className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
+          <div className="rounded-lg border border-border p-4">
+            <div className="font-mono text-[11px] tracking-normal text-muted-foreground">
               Builder
             </div>
             <Link
@@ -159,13 +159,13 @@ function ProjectPage() {
             </Link>
           </div>
 
-          <div className="border border-border p-4">
-            <div className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
+          <div className="rounded-lg border border-border p-4">
+            <div className="font-mono text-[11px] tracking-normal text-muted-foreground">
               Tech Stack
             </div>
             <div className="mt-3 flex flex-wrap gap-2">
               {project.tech.map((t) => (
-                <span key={t} className="bg-muted px-2 py-1 font-mono text-[10px] uppercase">
+                <span key={t} className="bg-muted px-2 py-1 font-mono text-[10px]">
                   {t}
                 </span>
               ))}
@@ -181,7 +181,7 @@ function ProjectPage() {
             </a>
             <a
               href={project.repoUrl}
-              className="flex items-center justify-center gap-2 border border-border px-4 py-3 font-mono text-[12px] font-bold"
+              className="flex items-center justify-center gap-2 rounded-lg border border-border px-4 py-3 font-mono text-[12px] font-bold"
             >
               <Github className="size-3.5" /> GitHub
             </a>
