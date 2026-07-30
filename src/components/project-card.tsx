@@ -2,9 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { MessageSquare, ExternalLink, Github, Triangle } from "lucide-react";
 import type { Project } from "@/data/community";
 import { builderBy } from "@/data/community";
+import { useVotes } from "@/hooks/use-votes";
 
 export function ProjectCard({ project, rank }: { project: Project; rank?: number }) {
   const builder = builderBy(project.builder);
+  const { toggle, voteCount, hasVoted } = useVotes();
+  const votes = voteCount(project.slug);
+  const voted = hasVoted(project.slug);
   return (
     <article className="group flex flex-col bg-surface-dark p-5 transition-all duration-200 hover:-translate-y-1 hover:neon-glow">
       <div className="flex items-start justify-between gap-3">
@@ -77,9 +81,19 @@ export function ProjectCard({ project, rank }: { project: Project; rank?: number
             <MessageSquare className="size-3" /> {project.comments.length}
           </span>
         </div>
-        <span className="flex items-center gap-1 border border-white/15 px-3 py-1.5 font-mono text-[11px] font-bold text-white transition-colors group-hover:border-neon group-hover:text-neon">
-          <Triangle className="size-3 fill-current" /> {project.votes}
-        </span>
+        <button
+          type="button"
+          aria-pressed={voted}
+          aria-label={`Upvote ${project.name}`}
+          onClick={() => toggle(project.slug)}
+          className={`flex items-center gap-1 border px-3 py-1.5 font-mono text-[11px] font-bold transition-colors ${
+            voted
+              ? "border-neon bg-neon text-ink"
+              : "border-white/15 text-white hover:border-neon hover:text-neon"
+          }`}
+        >
+          <Triangle className="size-3 fill-current" /> {votes}
+        </button>
       </div>
     </article>
   );
