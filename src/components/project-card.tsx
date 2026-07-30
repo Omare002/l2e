@@ -81,9 +81,19 @@ export function ProjectCard({ project, rank }: { project: Project; rank?: number
             <MessageSquare className="size-3" /> {project.comments.length}
           </span>
         </div>
-        <span className="flex items-center gap-1 border border-white/15 px-3 py-1.5 font-mono text-[11px] font-bold text-white transition-colors group-hover:border-neon group-hover:text-neon">
-          <Triangle className="size-3 fill-current" /> {project.votes}
-        </span>
+        <button
+          type="button"
+          aria-pressed={voted}
+          aria-label={`Upvote ${project.name}`}
+          onClick={() => toggle(project.slug)}
+          className={`flex items-center gap-1 border px-3 py-1.5 font-mono text-[11px] font-bold transition-colors ${
+            voted
+              ? "border-neon bg-neon text-ink"
+              : "border-white/15 text-white hover:border-neon hover:text-neon"
+          }`}
+        >
+          <Triangle className="size-3 fill-current" /> {votes}
+        </button>
       </div>
     </article>
   );
