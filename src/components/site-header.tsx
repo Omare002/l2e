@@ -10,22 +10,23 @@ const NAV = [
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-6 px-5">
-        <Link to="/" className="flex items-center gap-2">
-          <span className="size-2 bg-neon" />
-          <span className="font-mono text-sm font-bold tracking-[0.18em] uppercase">
-            Leaderboard
-          </span>
+    <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-md">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-8 px-6">
+        <Link to="/" className="group flex items-center gap-2.5">
+          <span className="size-1.5 rounded-full bg-neon" />
+          <span className="text-sm font-semibold tracking-tight">Leaderboard</span>
         </Link>
 
-        <nav className="hidden items-center gap-6 md:flex">
+        <nav className="hidden items-center gap-7 md:flex">
           {NAV.map((item) => (
             <Link
               key={item.to}
               to={item.to}
-              className="font-mono text-[13px] text-muted-foreground transition-colors hover:text-foreground"
-              activeProps={{ className: "text-foreground" }}
+              className="relative py-1 text-[13px] text-muted-foreground transition-colors duration-200 hover:text-foreground"
+              activeProps={{
+                className:
+                  "text-foreground after:absolute after:inset-x-0 after:-bottom-[9px] after:h-px after:bg-neon",
+              }}
             >
               {item.label}
             </Link>
@@ -34,7 +35,7 @@ export function SiteHeader() {
 
         <Link
           to="/submit"
-          className="bg-neon px-4 py-2 font-mono text-[13px] font-bold text-ink transition-transform hover:-translate-y-0.5"
+          className="rounded-full border border-border px-4 py-2 text-[13px] font-medium transition-all duration-300 hover:border-neon/60 hover:text-foreground hover:shadow-[0_0_0_3px_var(--neon-dim)]"
         >
           Submit Project
         </Link>
