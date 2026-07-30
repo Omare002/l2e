@@ -1,110 +1,85 @@
-import { useEffect, useRef } from "react";
 import { Link } from "@tanstack/react-router";
 import { motion } from "motion/react";
-import confetti from "canvas-confetti";
+import { RaceCar } from "@/components/race-car";
 import { useRace } from "@/hooks/use-race";
+
+const EASE = [0.22, 1, 0.36, 1] as const;
 
 export function RaceTrack({ compact = false }: { compact?: boolean }) {
   const { racers, target } = useRace();
-  const leader = racers[0]?.builder.username;
-  const prevLeader = useRef<string | undefined>(undefined);
-
-  useEffect(() => {
-    if (!leader) return;
-    if (prevLeader.current && prevLeader.current !== leader) {
-      confetti({
-        particleCount: 90,
-        spread: 70,
-        startVelocity: 34,
-        origin: { y: 0.4 },
-        colors: ["#7CFC00", "#ffffff", "#A5A5A5"],
-      });
-    }
-    prevLeader.current = leader;
-  }, [leader]);
-
   const rows = compact ? racers.slice(0, 6) : racers;
 
   return (
-    <div className="bg-surface-dark p-4 sm:p-6">
+    <div className="surface-card px-5 py-6 sm:px-8 sm:py-8">
       <div className="relative">
         {/* finish line */}
-        <div className="pointer-events-none absolute right-0 top-0 bottom-0 hidden w-3 checker-line opacity-80 sm:block" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-px finish-line opacity-70 sm:block" />
 
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-1">
           {rows.map((r, i) => {
-            const pct = Math.min(97, (r.votes / target) * 100);
+            const pct = Math.min(96, (r.votes / target) * 100);
             const isLeader = i === 0;
             return (
               <motion.div
                 key={r.builder.username}
                 layout
-                transition={{ type: "spring", stiffness: 220, damping: 28 }}
-                className="flex items-center gap-3 border-b border-white/5 py-2 last:border-b-0"
+                transition={{ duration: 0.55, ease: EASE }}
+                className="group flex items-center gap-4 rounded-md px-2 py-3 transition-colors duration-300 hover:bg-white/[0.03]"
               >
-                <div className="flex w-[42%] shrink-0 items-center gap-3 sm:w-[30%]">
+                <div className="flex w-[46%] shrink-0 items-center gap-3 sm:w-[26%]">
                   <span
-                    className={`w-4 text-right font-mono text-xs ${
-                      isLeader ? "text-neon" : "text-white/40"
+                    className={`w-4 text-right font-mono text-[11px] tabular-nums ${
+                      isLeader ? "text-neon" : "text-white/35"
                     }`}
                   >
                     {i + 1}
-                  </span>
-                  <span
-                    className="flex size-7 shrink-0 items-center justify-center font-mono text-[10px] font-bold text-ink"
-                    style={{ background: r.builder.color }}
-                  >
-                    {r.builder.initials}
                   </span>
                   <Link
                     to="/builders/$username"
                     params={{ username: r.builder.username }}
                     className="min-w-0"
                   >
-                    <div className="truncate font-mono text-[13px] font-bold text-white">
+                    <div className="truncate text-[13px] font-medium text-white transition-colors duration-200 group-hover:text-neon">
                       {r.builder.name}
                     </div>
-                    <div className="truncate font-mono text-[11px] text-white/40">
+                    <div className="mt-0.5 truncate font-mono text-[11px] text-white/40">
                       {r.project?.name ?? `@${r.builder.username}`}
                     </div>
                   </Link>
                 </div>
 
                 {/* lane */}
-                <div className="relative h-8 flex-1 border-b border-dashed border-white/10">
-                  <div className="absolute left-0 top-0 bottom-0 w-2 checker-line opacity-70" />
+                <div className="relative h-7 flex-1">
+                  <div className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-white/[0.07]" />
                   <motion.div
                     className="absolute top-1/2 -translate-y-1/2"
                     animate={{ left: `${pct}%` }}
-                    transition={{ type: "spring", stiffness: 60, damping: 18 }}
+                    transition={{ duration: 1.1, ease: EASE }}
                   >
-                    <div className="relative">
-                      {r.accelerating && (
-                        <>
-                          <span
-                            className="absolute right-full top-1/2 size-2 -translate-y-1/2 rounded-full bg-white/50"
-                            style={{ animation: "smoke-puff 700ms ease-out forwards" }}
-                          />
-                          <span className="absolute right-full top-1/2 h-px w-6 -translate-y-1/2 bg-neon/60" />
-                        </>
-                      )}
-                      <span
-                        className="block px-2 py-0.5 font-mono text-[10px] font-bold text-ink"
+                    <div className="relative -translate-x-1/2">
+                      <motion.span
+                        className="pointer-events-none absolute right-[85%] top-1/2 h-px w-10 -translate-y-1/2 rounded-full"
                         style={{
-                          background: r.builder.color,
-                          boxShadow: isLeader ? "0 0 18px -2px #7CFC00" : undefined,
+                          background:
+                            "linear-gradient(to left, color-mix(in oklab, var(--neon) 65%, transparent), transparent)",
                         }}
-                      >
-                        {i + 1}
-                      </span>
+                        animate={{ opacity: r.accelerating ? 1 : 0 }}
+                        transition={{ duration: 0.8, ease: EASE }}
+                      />
+                      <RaceCar
+                        color={isLeader ? "var(--neon)" : r.builder.color}
+                        className="h-4 w-10 opacity-90"
+                      />
                     </div>
                   </motion.div>
                 </div>
 
-                <div className="hidden w-32 shrink-0 pr-5 text-right font-mono text-[11px] sm:block">
-                  <div className="text-neon">▲ {r.votes}</div>
-                  <div className="text-white/35">
-                    {Math.max(0, target - r.votes)} to finish
+                <div className="hidden w-28 shrink-0 pr-4 text-right sm:block">
+                  <div className="font-mono text-[12px] tabular-nums text-white/85">
+                    {r.votes.toLocaleString()}
+                  </div>
+                  <div className="mt-0.5 font-mono text-[11px] text-white/30">
+                    {Math.max(0, target - r.votes)} to go
                   </div>
                 </div>
               </motion.div>
