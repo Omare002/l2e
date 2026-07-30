@@ -200,8 +200,8 @@
 }
 
 @utility surface-card {
-  background-color: var(--card);
-  border: 1px solid color-mix(in oklab, var(--foreground) 8%, transparent);
+  background-color: var(--surface-dark);
+  border: 1px solid oklch(1 0 0 / 8%);
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
   transition:
