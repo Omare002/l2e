@@ -2,9 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { MessageSquare, ExternalLink, Github, Triangle } from "lucide-react";
 import type { Project } from "@/data/community";
 import { builderBy } from "@/data/community";
+import { useVotes } from "@/hooks/use-votes";
 
 export function ProjectCard({ project, rank }: { project: Project; rank?: number }) {
   const builder = builderBy(project.builder);
+  const { toggle, voteCount, hasVoted } = useVotes();
+  const votes = voteCount(project.slug);
+  const voted = hasVoted(project.slug);
   return (
     <article className="group flex flex-col bg-surface-dark p-5 transition-all duration-200 hover:-translate-y-1 hover:neon-glow">
       <div className="flex items-start justify-between gap-3">
