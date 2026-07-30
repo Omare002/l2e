@@ -2,6 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
 import { ExternalLink, Github, Triangle } from "lucide-react";
 import { PROJECTS, builderBy } from "@/data/community";
+import { useVotes } from "@/hooks/use-votes";
 
 export const Route = createFileRoute("/projects/$slug")({
   loader: ({ params }) => {
@@ -32,11 +33,15 @@ function ProjectPage() {
   const { slug } = Route.useLoaderData();
   const project = PROJECTS.find((p) => p.slug === slug)!;
   const builder = builderBy(project.builder)!;
-  const [votes, setVotes] = useState(project.votes);
-  const [voted, setVoted] = useState(false);
+  const { toggle, voteCount, hasVoted, votes: allVotes } = useVotes();
+  const votes = voteCount(slug);
+  const voted = hasVoted(slug);
   const [comments, setComments] = useState(project.comments);
   const [draft, setDraft] = useState("");
-  const rank = [...PROJECTS].sort((a, b) => b.votes - a.votes).findIndex((p) => p.slug === slug) + 1;
+  const rank =
+    [...PROJECTS]
+      .sort((a, b) => (allVotes[b.slug] ?? b.votes) - (allVotes[a.slug] ?? a.votes))
+      .findIndex((p) => p.slug === slug) + 1;
 
   return (
     <div className="mx-auto max-w-5xl px-5 py-14">
@@ -57,10 +62,8 @@ function ProjectPage() {
           </p>
         </div>
         <button
-          onClick={() => {
-            setVotes((v) => (voted ? v - 1 : v + 1));
-            setVoted((v) => !v);
-          }}
+          aria-pressed={voted}
+          onClick={() => toggle(slug)}
           className={`flex items-center gap-2 px-5 py-3 font-mono text-sm font-bold ${
             voted ? "bg-neon text-ink" : "bg-ink text-background"
           }`}
