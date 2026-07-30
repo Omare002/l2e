@@ -21,8 +21,8 @@ export const Route = createFileRoute("/hall-of-fame")({
 
 function HallOfFame() {
   return (
-    <div className="mx-auto max-w-6xl px-5 py-14">
-      <h1 className="font-mono text-4xl font-extrabold uppercase sm:text-5xl">
+    <div className="mx-auto max-w-6xl px-6 py-16">
+      <h1 className="font-mono text-4xl font-semibold sm:text-5xl">
         Hall of <span className="text-neon">Fame</span>
       </h1>
       <p className="mt-4 max-w-2xl font-mono text-[13px] text-muted-foreground">
@@ -34,7 +34,7 @@ function HallOfFame() {
           const b = builderBy(w.winner);
           return (
             <article key={w.week} className="bg-surface-dark p-5">
-              <div className="flex items-center justify-between font-mono text-[11px] uppercase tracking-widest text-white/40">
+              <div className="flex items-center justify-between font-mono text-[11px] tracking-normal text-white/40">
                 <span>Week {w.week}</span>
                 <span className="bg-neon px-2 py-1 text-ink">{w.badge}</span>
               </div>

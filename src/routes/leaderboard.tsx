@@ -27,16 +27,14 @@ function LeaderboardPage() {
   const { racers, target } = useRace();
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-14">
-      <h1 className="font-mono text-4xl font-extrabold uppercase sm:text-5xl">
-        The <span className="text-neon">Race</span>
-      </h1>
-      <p className="mt-4 max-w-2xl font-mono text-[13px] text-muted-foreground">
+    <div className="mx-auto max-w-6xl px-6 py-16">
+      <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">The race</h1>
+      <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-muted-foreground">
         Positions are driven by this week's votes only. Every season resets on Monday, so a
         quiet week never buries a good builder for good.
       </p>
 
-      <div className="mt-8">
+      <div className="mt-10">
         <SeasonBanner />
       </div>
 
@@ -44,26 +42,30 @@ function LeaderboardPage() {
         <RaceTrack />
       </div>
 
-      <div className="mt-14">
-        <SectionHeading title="Standings" subtitle="Weekly votes, live." />
-        <div className="border border-border">
-          <div className="grid grid-cols-[48px_1fr_90px_120px] gap-3 border-b border-border px-4 py-3 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
+      <div className="mt-16">
+        <SectionHeading title="Standings" subtitle="Weekly votes, updated live." />
+        <div className="overflow-hidden rounded-lg border border-border">
+          <div className="grid grid-cols-[56px_1fr_90px_110px] gap-4 border-b border-border px-5 py-3.5 text-[12px] text-muted-foreground">
             <span>Rank</span>
             <span>Builder / Project</span>
             <span className="text-right">Votes</span>
-            <span className="text-right">To Finish</span>
+            <span className="text-right">To finish</span>
           </div>
           {racers.map((r, i) => (
             <div
               key={r.builder.username}
-              className="grid grid-cols-[48px_1fr_90px_120px] items-center gap-3 border-b border-border px-4 py-3 font-mono text-[12px] last:border-b-0"
+              className="grid grid-cols-[56px_1fr_90px_110px] items-center gap-4 border-b border-border px-5 py-4 text-[13px] transition-colors duration-200 last:border-b-0 hover:bg-muted/50"
             >
-              <span className={i === 0 ? "font-bold text-neon" : "text-muted-foreground"}>
+              <span
+                className={`font-mono tabular-nums ${
+                  i === 0 ? "text-foreground" : "text-muted-foreground"
+                }`}
+              >
                 {String(i + 1).padStart(2, "0")}
               </span>
               <span className="flex min-w-0 items-center gap-3">
                 <span
-                  className="flex size-6 shrink-0 items-center justify-center text-[10px] font-bold text-ink"
+                  className="flex size-6 shrink-0 items-center justify-center rounded-full font-mono text-[10px] font-semibold text-ink"
                   style={{ background: r.builder.color }}
                 >
                   {r.builder.initials}
@@ -71,14 +73,14 @@ function LeaderboardPage() {
                 <Link
                   to="/builders/$username"
                   params={{ username: r.builder.username }}
-                  className="truncate hover:text-neon"
+                  className="truncate transition-colors duration-200 hover:text-neon"
                 >
-                  <span className="font-bold">{r.builder.name}</span>
+                  <span className="font-medium">{r.builder.name}</span>
                   <span className="text-muted-foreground"> · {r.project?.name}</span>
                 </Link>
               </span>
-              <span className="text-right font-bold">{r.votes}</span>
-              <span className="text-right text-muted-foreground">
+              <span className="text-right font-mono tabular-nums">{r.votes.toLocaleString()}</span>
+              <span className="text-right font-mono tabular-nums text-muted-foreground">
                 {Math.max(0, target - r.votes)}
               </span>
             </div>

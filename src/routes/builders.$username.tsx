@@ -57,7 +57,7 @@ function BuilderProfile() {
   ) + 1;
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-14">
+    <div className="mx-auto max-w-6xl px-6 py-16">
       <div className="flex flex-wrap items-start gap-6 border-b border-border pb-10">
         <span
           className="flex size-20 items-center justify-center font-mono text-xl font-bold text-ink"
@@ -66,14 +66,14 @@ function BuilderProfile() {
           {b.initials}
         </span>
         <div className="min-w-0 flex-1">
-          <h1 className="font-mono text-3xl font-extrabold uppercase sm:text-4xl">{b.name}</h1>
+          <h1 className="font-mono text-3xl font-semibold sm:text-4xl">{b.name}</h1>
           <div className="mt-1 font-mono text-[12px] text-muted-foreground">
             @{b.username} · joined {new Date(b.joined).toDateString()}
           </div>
           <p className="mt-4 max-w-2xl font-mono text-[13px] text-foreground/80">{b.bio}</p>
           <div className="mt-4 flex flex-wrap gap-2">
             {b.skills.map((s) => (
-              <span key={s} className="bg-muted px-2 py-1 font-mono text-[10px] uppercase">
+              <span key={s} className="bg-muted px-2 py-1 font-mono text-[10px]">
                 {s}
               </span>
             ))}
@@ -103,7 +103,7 @@ function BuilderProfile() {
         ].map(([label, value]) => (
           <div key={label} className="border-r border-border px-5 py-5 last:border-r-0">
             <div className="font-mono text-2xl font-bold">{value}</div>
-            <div className="mt-1 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
+            <div className="mt-1 font-mono text-[11px] tracking-normal text-muted-foreground">
               {label}
             </div>
           </div>
@@ -111,14 +111,14 @@ function BuilderProfile() {
       </div>
 
       <section className="mt-12">
-        <h2 className="font-mono text-sm font-bold uppercase tracking-widest">Achievements</h2>
+        <h2 className="font-mono text-sm font-bold tracking-normal">Achievements</h2>
         <div className="mt-4">
           <AchievementTiles keys={b.achievements} />
         </div>
       </section>
 
       <section className="mt-12">
-        <h2 className="font-mono text-sm font-bold uppercase tracking-widest">
+        <h2 className="font-mono text-sm font-bold tracking-normal">
           Contribution Calendar
         </h2>
         <div className="mt-4 border border-border p-4">
@@ -127,7 +127,7 @@ function BuilderProfile() {
       </section>
 
       <section className="mt-12">
-        <h2 className="font-mono text-sm font-bold uppercase tracking-widest">Projects</h2>
+        <h2 className="font-mono text-sm font-bold tracking-normal">Projects</h2>
         <div className="mt-4 grid gap-5 md:grid-cols-2">
           {projects.map((p) => (
             <ProjectCard key={p.slug} project={p} />
@@ -136,7 +136,7 @@ function BuilderProfile() {
       </section>
 
       <section className="mt-12">
-        <h2 className="font-mono text-sm font-bold uppercase tracking-widest">Recent Activity</h2>
+        <h2 className="font-mono text-sm font-bold tracking-normal">Recent Activity</h2>
         <ul className="mt-4 divide-y divide-border border border-border">
           {[
             `${b.name} shipped an update to ${projects[0]?.name ?? "a project"}`,
