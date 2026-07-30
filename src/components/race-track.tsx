@@ -13,7 +13,7 @@ export function RaceTrack({ compact = false }: { compact?: boolean }) {
     <div className="surface-card px-5 py-6 sm:px-8 sm:py-8">
       <div className="relative">
         {/* finish line */}
-        <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-px finish-line opacity-70 sm:block" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-px finish-line opacity-70 sm:right-28 sm:block" />
 
         <div className="flex flex-col gap-1">
           {rows.map((r, i) => {
