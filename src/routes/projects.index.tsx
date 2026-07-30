@@ -3,6 +3,7 @@ import { useState } from "react";
 import { PROJECTS, CATEGORIES, type Category } from "@/data/community";
 import { ProjectCard } from "@/components/project-card";
 import { SectionHeading } from "@/components/section-heading";
+import { useLiveProjects } from "@/hooks/use-votes";
 
 export const Route = createFileRoute("/projects/")({
   head: () => ({
@@ -30,7 +31,8 @@ function ProjectsPage() {
   const [sort, setSort] = useState<Sort>("Trending");
   const [cat, setCat] = useState<Category | "All">("All");
 
-  const filtered = PROJECTS.filter((p) => cat === "All" || p.category === cat);
+  const live = useLiveProjects(PROJECTS);
+  const filtered = live.filter((p) => cat === "All" || p.category === cat);
   const sorted = [...filtered].sort((a, b) => {
     switch (sort) {
       case "Newest":

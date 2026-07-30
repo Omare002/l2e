@@ -6,6 +6,7 @@ import { RaceTrack } from "@/components/race-track";
 import { ProjectCard } from "@/components/project-card";
 import { SectionHeading } from "@/components/section-heading";
 import { ActivityFeed } from "@/components/activity-feed";
+import { useLiveProjects } from "@/hooks/use-votes";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -29,7 +30,8 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const [tab, setTab] = useState<"trending" | "new">("trending");
-  const list = [...PROJECTS].sort((a, b) =>
+  const live = useLiveProjects(PROJECTS);
+  const list = [...live].sort((a, b) =>
     tab === "trending"
       ? b.votes - a.votes
       : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
