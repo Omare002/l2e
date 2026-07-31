@@ -35,7 +35,7 @@ export function SiteHeader() {
 
         <Link
           to="/submit"
-          className="rounded-full rounded-lg border border-border px-4 py-2 text-[13px] font-medium transition-all duration-300 hover:border-neon/60 hover:text-foreground hover:shadow-[0_0_0_3px_var(--neon-dim)]"
+          className="rounded-full border border-border px-4 py-2 text-[13px] font-medium transition-colors duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-neon hover:bg-muted/60 hover:text-foreground"
         >
           Submit Project
         </Link>

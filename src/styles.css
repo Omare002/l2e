@@ -205,16 +205,25 @@
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
   transition:
-    border-color 260ms var(--ease-out-soft),
-    box-shadow 260ms var(--ease-out-soft),
-    transform 260ms var(--ease-out-soft);
+    border-color 200ms var(--ease-out-soft),
+    background-color 200ms var(--ease-out-soft),
+    box-shadow 200ms var(--ease-out-soft),
+    transform 200ms var(--ease-out-soft);
 }
 
-@utility neon-ring {
-  box-shadow:
-    var(--shadow-md),
-    0 0 0 1px color-mix(in oklab, var(--neon) 55%, transparent),
-    0 8px 34px -14px color-mix(in oklab, var(--neon) 60%, transparent);
+/* Restrained hover: 2px lift, slightly deeper shadow, neutral -> neon border. */
+@utility lift-hover {
+  transition:
+    border-color 200ms var(--ease-out-soft),
+    background-color 200ms var(--ease-out-soft),
+    box-shadow 200ms var(--ease-out-soft),
+    transform 200ms var(--ease-out-soft);
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in oklab, var(--neon) 45%, transparent);
+    box-shadow: var(--shadow-md);
+  }
 }
 
 @keyframes caret-blink {

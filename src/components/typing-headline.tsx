@@ -1,29 +1,30 @@
 import { useEffect, useState } from "react";
 
-const WORDS = ["Build.", "Share.", "Compete."];
-const TYPE_MS = 78;
-const DELETE_MS = 38;
-const HOLD_MS = 1500;
-const GAP_MS = 320;
+const SENTENCE = "Build. Share. Compete.";
+const TYPE_MS = 82;
+const DELETE_MS = 34;
+const HOLD_MS = 2200;
+const GAP_MS = 600;
 
 /**
- * Calm, looping typewriter. Fixed-width container prevents layout jitter and
- * the caret keeps a steady, unhurried blink.
+ * One continuous sentence typewriter. The full sentence is rendered invisibly
+ * underneath so the box never resizes — no layout shift, no reflow.
  */
 export function TypingHeadline() {
-  const [index, setIndex] = useState(0);
   const [len, setLen] = useState(0);
-  const [phase, setPhase] = useState<"typing" | "holding" | "deleting">("typing");
-
-  const word = WORDS[index];
+  const [phase, setPhase] = useState<"typing" | "holding" | "deleting" | "resting">("typing");
 
   useEffect(() => {
     if (phase === "holding") {
       const id = setTimeout(() => setPhase("deleting"), HOLD_MS);
       return () => clearTimeout(id);
     }
+    if (phase === "resting") {
+      const id = setTimeout(() => setPhase("typing"), GAP_MS);
+      return () => clearTimeout(id);
+    }
     if (phase === "typing") {
-      if (len === word.length) {
+      if (len === SENTENCE.length) {
         setPhase("holding");
         return;
       }
@@ -31,30 +32,25 @@ export function TypingHeadline() {
       return () => clearTimeout(id);
     }
     if (len === 0) {
-      const id = setTimeout(() => {
-        setIndex((i) => (i + 1) % WORDS.length);
-        setPhase("typing");
-      }, GAP_MS);
-      return () => clearTimeout(id);
+      setPhase("resting");
+      return;
     }
     const id = setTimeout(() => setLen((l) => l - 1), DELETE_MS);
     return () => clearTimeout(id);
-  }, [phase, len, word]);
-
-  const longest = WORDS.reduce((a, b) => (a.length >= b.length ? a : b));
+  }, [phase, len]);
 
   return (
-    <span className="relative inline-grid">
-      <span aria-hidden className="invisible col-start-1 row-start-1 pr-[0.6ch]">
-        {longest}
+    <span className="relative inline-grid text-left">
+      <span aria-hidden className="invisible col-start-1 row-start-1 whitespace-pre px-[0.35ch]">
+        {SENTENCE}
       </span>
-      <span className="col-start-1 row-start-1 justify-self-start whitespace-pre">
-        <span className="sr-only">{WORDS.join(" ")}</span>
-        <span aria-hidden>{word.slice(0, len)}</span>
+      <span className="col-start-1 row-start-1 justify-self-start whitespace-pre pl-[0.35ch]">
+        <span className="sr-only">{SENTENCE}</span>
+        <span aria-hidden>{SENTENCE.slice(0, len)}</span>
         <span
           aria-hidden
-          className="ml-[0.08em] inline-block h-[0.82em] w-[0.06em] translate-y-[0.06em] bg-neon align-baseline"
-          style={{ animation: "caret-blink 1.1s steps(1, end) infinite" }}
+          className="ml-[0.06em] inline-block h-[0.78em] w-[0.055em] translate-y-[0.06em] bg-neon align-baseline"
+          style={{ animation: "caret-blink 1.15s steps(1, end) infinite" }}
         />
       </span>
     </span>
