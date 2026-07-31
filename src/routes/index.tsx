@@ -40,24 +40,27 @@ function Index() {
 
   return (
     <div className="mx-auto max-w-6xl px-6">
-      <section className="pt-20 pb-12 sm:pt-28">
-        <h1 className="max-w-4xl text-5xl font-semibold leading-[1.05] tracking-tight sm:text-6xl">
+      <section className="flex flex-col items-center pt-24 pb-16 text-center sm:pt-32 sm:pb-20">
+        <span className="font-mono text-[11px] tracking-[0.18em] text-muted-foreground">
+          THE LEARNTOEARN SHOWCASE
+        </span>
+        <h1 className="mt-6 text-5xl font-semibold leading-[1.08] tracking-tight sm:text-6xl">
           <TypingHeadline />
         </h1>
-        <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-muted-foreground">
+        <p className="mt-7 max-w-xl text-balance text-[15px] leading-relaxed text-muted-foreground">
           A quiet, well-made home for what the LearnToEarn community is building. Showcase
           your work, gather real feedback, and follow the weekly race as it unfolds.
         </p>
-        <div className="mt-9 flex flex-wrap gap-3">
+        <div className="mt-10 flex flex-wrap justify-center gap-3">
           <Link
             to="/projects"
-            className="rounded-full bg-foreground px-5 py-2.5 text-[13px] font-medium text-background transition-all duration-300 hover:shadow-[0_0_0_3px_var(--neon-dim)]"
+            className="rounded-full bg-foreground px-5 py-2.5 text-[13px] font-medium text-background transition-colors duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-foreground/90"
           >
             Explore projects
           </Link>
           <Link
             to="/submit"
-            className="rounded-full rounded-lg border border-border px-5 py-2.5 text-[13px] font-medium transition-all duration-300 hover:border-neon/60 hover:shadow-[0_0_0_3px_var(--neon-dim)]"
+            className="rounded-full border border-border px-5 py-2.5 text-[13px] font-medium transition-colors duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-neon hover:bg-muted/60"
           >
             Submit a project
           </Link>
@@ -98,7 +101,7 @@ function Index() {
                 <button
                   key={t}
                   onClick={() => setTab(t)}
-                  className={`rounded-full px-3.5 py-1.5 capitalize transition-all duration-300 ${
+                  className={`rounded-full px-3.5 py-1.5 capitalize transition-colors duration-200 ${
                     tab === t
                       ? "bg-neon-dim text-foreground"
                       : "text-muted-foreground hover:text-foreground"
