@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { BUILDERS, PROJECTS, projectsBy } from "@/data/community";
+import { BUILDERS, PROJECTS } from "@/data/community";
 import { AchievementTiles } from "@/components/achievement-tiles";
 import { useLiveProjects } from "@/hooks/use-votes";
 
