@@ -41,10 +41,10 @@ export function TypingHeadline() {
 
   return (
     <span className="relative inline-grid text-left">
-      <span aria-hidden className="invisible col-start-1 row-start-1 whitespace-pre pr-[0.7ch]">
+      <span aria-hidden className="invisible col-start-1 row-start-1 whitespace-pre px-[0.35ch]">
         {SENTENCE}
       </span>
-      <span className="col-start-1 row-start-1 justify-self-start whitespace-pre">
+      <span className="col-start-1 row-start-1 justify-self-start whitespace-pre pl-[0.35ch]">
         <span className="sr-only">{SENTENCE}</span>
         <span aria-hidden>{SENTENCE.slice(0, len)}</span>
         <span
