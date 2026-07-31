@@ -11,7 +11,7 @@ export function ProjectCard({ project, rank }: { project: Project; rank?: number
   const voted = hasVoted(project.slug);
 
   return (
-    <article className="surface-card group flex flex-col p-6 hover:-translate-y-0.5 hover:neon-ring">
+    <article className="surface-card lift-hover group flex flex-col p-6">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
           <span
@@ -91,10 +91,10 @@ export function ProjectCard({ project, rank }: { project: Project; rank?: number
           aria-pressed={voted}
           aria-label={`Upvote ${project.name}`}
           onClick={() => toggle(project.slug)}
-          className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 font-mono text-[11px] tabular-nums transition-all duration-300 ${
+          className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 font-mono text-[11px] tabular-nums transition-colors duration-200 ${
             voted
-              ? "border-neon/60 bg-neon/15 text-neon"
-              : "border-white/10 text-white/70 hover:border-neon/60 hover:text-neon"
+              ? "border-neon/50 bg-neon/10 text-neon"
+              : "border-white/10 text-white/70 hover:border-neon/50 hover:text-neon"
           }`}
         >
           <ChevronUp className="size-3.5" /> {votes}
