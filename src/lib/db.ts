@@ -54,7 +54,7 @@ export const qk = {
 export const PROJECT_PAGE_SIZE = 12;
 
 function applySort(
-  query: ReturnType<typeof supabase.from<"project_stats", never>>["select"] extends never ? never : any,
+  query: any,
   sort: ProjectSort,
 ) {
   switch (sort) {
