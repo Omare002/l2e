@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import logo from "@/assets/logo.png.asset.json";
 
 const NAV = [
   { to: "/projects", label: "Projects" },
@@ -12,9 +13,14 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-8 px-6">
-        <Link to="/" className="group flex items-center gap-2.5">
-          <span className="size-1.5 rounded-full bg-neon" />
-          <span className="text-sm font-semibold tracking-tight">Leaderboard</span>
+        <Link to="/" className="group flex items-center" aria-label="Leaderboard home">
+          <img
+            src={logo.url}
+            alt="Leaderboard"
+            width={210}
+            height={67}
+            className="h-6 w-auto transition-opacity duration-200 group-hover:opacity-80"
+          />
         </Link>
 
         <nav className="hidden items-center gap-7 md:flex">
