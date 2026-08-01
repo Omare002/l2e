@@ -14,13 +14,290 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      activity_events: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          id: string
+          project_id: string | null
+          type: string
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          project_id?: string | null
+          type: string
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          project_id?: string | null
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_events_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_events_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          accent_color: string
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          display_name: string
+          github_url: string | null
+          id: string
+          is_demo: boolean
+          portfolio_url: string | null
+          updated_at: string
+          username: string
+        }
+        Insert: {
+          accent_color?: string
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name: string
+          github_url?: string | null
+          id: string
+          is_demo?: boolean
+          portfolio_url?: string | null
+          updated_at?: string
+          username: string
+        }
+        Update: {
+          accent_color?: string
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string
+          github_url?: string | null
+          id?: string
+          is_demo?: boolean
+          portfolio_url?: string | null
+          updated_at?: string
+          username?: string
+        }
+        Relationships: []
+      }
+      projects: {
+        Row: {
+          category: string
+          created_at: string
+          demo_url: string | null
+          description: string
+          github_url: string | null
+          id: string
+          owner_id: string
+          published: boolean
+          slug: string
+          status: string
+          tagline: string
+          tech: string[]
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          demo_url?: string | null
+          description: string
+          github_url?: string | null
+          id?: string
+          owner_id: string
+          published?: boolean
+          slug: string
+          status?: string
+          tagline: string
+          tech?: string[]
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          demo_url?: string | null
+          description?: string
+          github_url?: string | null
+          id?: string
+          owner_id?: string
+          published?: boolean
+          slug?: string
+          status?: string
+          tagline?: string
+          tech?: string[]
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      votes: {
+        Row: {
+          created_at: string
+          id: string
+          project_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          project_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          project_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "votes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "votes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "votes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "votes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
-      [_ in never]: never
+      leaderboard: {
+        Row: {
+          accent_color: string | null
+          avatar_url: string | null
+          created_at: string | null
+          display_name: string | null
+          id: string | null
+          is_demo: boolean | null
+          project_count: number | null
+          rank: number | null
+          score: number | null
+          top_project_slug: string | null
+          top_project_title: string | null
+          username: string | null
+        }
+        Relationships: []
+      }
+      project_stats: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          demo_url: string | null
+          description: string | null
+          github_url: string | null
+          id: string | null
+          owner_accent_color: string | null
+          owner_avatar_url: string | null
+          owner_display_name: string | null
+          owner_id: string | null
+          owner_is_demo: boolean | null
+          owner_username: string | null
+          published: boolean | null
+          slug: string | null
+          status: string | null
+          tagline: string | null
+          tech: string[] | null
+          thumbnail_url: string | null
+          title: string | null
+          updated_at: string | null
+          vote_count: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
-      [_ in never]: never
+      rank_history: {
+        Args: { _days?: number; _profile_id: string }
+        Returns: {
+          day: string
+          rank: number
+          score: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
