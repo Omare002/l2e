@@ -451,3 +451,36 @@ export function projectsBy(username: string) {
 export function projectFor(username: string) {
   return PROJECTS.find((p) => p.builder === username);
 }
+// ---- live-data helpers (backend phase) ----
+
+
+export const STATUSES = [
+  { value: "shipped", label: "Shipped" },
+  { value: "in_progress", label: "In Progress" },
+  { value: "prototype", label: "Prototype" },
+] as const;
+
+export type ProjectStatus = (typeof STATUSES)[number]["value"];
+
+export function statusLabel(value: string) {
+  return STATUSES.find((s) => s.value === value)?.label ?? value;
+}
+
+/** Achievements are derived from live database numbers — never stored or faked. */
+export function earnedAchievements(input: {
+  projectCount: number;
+  score: number;
+  rank: number | null;
+  commentsWritten?: number;
+}) {
+  const keys: string[] = [];
+  if (input.projectCount >= 1) keys.push("first-launch");
+  if (input.projectCount >= 3) keys.push("shipper");
+  if (input.projectCount >= 5) keys.push("consistent");
+  if (input.rank === 1 && input.score > 0) keys.push("champion");
+  if (input.rank !== null && input.rank <= 3 && input.score > 0) keys.push("podium");
+  if (input.score >= 25) keys.push("favorite");
+  if (input.score >= 100) keys.push("on-fire");
+  if ((input.commentsWritten ?? 0) >= 10) keys.push("helpful");
+  return keys;
+}
