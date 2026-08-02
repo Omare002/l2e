@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { currentSeason } from "@/data/community";
+import { currentSeason } from "@/lib/season";
 
 function remaining(endsAt: string) {
   const diff = Math.max(0, new Date(endsAt).getTime() - Date.now());
