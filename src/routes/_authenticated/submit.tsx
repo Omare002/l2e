@@ -12,9 +12,8 @@ import { useStoredImage } from "@/lib/media";
 import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/_authenticated/submit")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    id: typeof search.id === "string" ? search.id : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): { id?: string } =>
+    typeof search.id === "string" ? { id: search.id } : {},
   head: () => ({
     meta: [
       { title: "Submit a project — Leaderboard" },
