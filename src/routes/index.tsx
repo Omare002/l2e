@@ -1,13 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { PROJECTS } from "@/data/community";
+import { useQuery } from "@tanstack/react-query";
 import { StatsStrip } from "@/components/stats-strip";
 import { RaceTrack } from "@/components/race-track";
 import { ProjectCard } from "@/components/project-card";
 import { SectionHeading } from "@/components/section-heading";
 import { ActivityFeed } from "@/components/activity-feed";
-import { useLiveProjects } from "@/hooks/use-votes";
 import { TypingHeadline } from "@/components/typing-headline";
+import { projectsQuery } from "@/lib/db";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -24,50 +24,48 @@ export const Route = createFileRoute("/")({
         content:
           "Build, share, climb. The weekly project showcase and live race track for the LearnToEarn Fellowship.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Index,
 });
 
 function Index() {
-  const [tab, setTab] = useState<"trending" | "new">("trending");
-  const live = useLiveProjects(PROJECTS);
-  const list = [...live].sort((a, b) =>
-    tab === "trending"
-      ? b.votes - a.votes
-      : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-  );
+  const [tab, setTab] = useState<"Trending" | "Newest">("Trending");
+  const { data, isLoading } = useQuery(projectsQuery(tab, "All", 4));
+  const list = data ?? [];
 
   return (
-    <div className="mx-auto max-w-6xl px-6">
-      <section className="flex flex-col items-center pt-24 pb-16 text-center sm:pt-32 sm:pb-20">
+    <div className="mx-auto max-w-6xl px-4 sm:px-6">
+      <section className="flex flex-col items-center pt-20 pb-14 text-center sm:pt-32 sm:pb-20">
         <span className="font-mono text-[11px] tracking-[0.18em] text-muted-foreground">
           THE LEARNTOEARN SHOWCASE
         </span>
-        <h1 className="mt-6 text-5xl font-semibold leading-[1.08] tracking-tight sm:text-6xl">
+        <h1 className="mt-6 text-[2.15rem] font-semibold leading-[1.1] tracking-tight sm:text-6xl">
           <TypingHeadline />
         </h1>
-        <p className="mt-7 max-w-xl text-balance text-[15px] leading-relaxed text-muted-foreground">
-          A quiet, well-made home for what the LearnToEarn community is building. Showcase
-          your work, gather real feedback, and follow the weekly race as it unfolds.
+        <p className="mt-6 max-w-xl text-balance text-[14px] leading-relaxed text-muted-foreground sm:mt-7 sm:text-[15px]">
+          A quiet, well-made home for what the LearnToEarn community is building. Showcase your
+          work, gather real feedback, and follow the weekly race as it unfolds.
         </p>
-        <div className="mt-10 flex flex-wrap justify-center gap-3">
+        <div className="mt-9 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:justify-center">
           <Link
             to="/projects"
-            className="rounded-full bg-foreground px-5 py-2.5 text-[13px] font-medium text-background transition-colors duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-foreground/90"
+            className="flex min-h-12 items-center justify-center rounded-full bg-foreground px-5 text-[14px] font-medium text-background transition-colors duration-200 hover:bg-foreground/90"
           >
             Explore projects
           </Link>
           <Link
             to="/submit"
-            className="rounded-full border border-border px-5 py-2.5 text-[13px] font-medium transition-colors duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-neon hover:bg-muted/60"
+            className="flex min-h-12 items-center justify-center rounded-full border border-border px-5 text-[14px] font-medium transition-colors duration-200 hover:border-neon hover:bg-muted/60"
           >
             Submit a project
           </Link>
         </div>
       </section>
 
-      <section className="pb-20">
+      <section className="pb-16 sm:pb-20">
         <SectionHeading
           title="This week's race"
           subtitle="Every upvote nudges a builder forward. The track settles as the week goes on."
@@ -77,7 +75,7 @@ function Index() {
             </span>
           }
         />
-        <RaceTrack />
+        <RaceTrack compact />
         <div className="mt-4 text-right">
           <Link
             to="/leaderboard"
@@ -88,20 +86,20 @@ function Index() {
         </div>
       </section>
 
-      <section className="pb-20">
+      <section className="pb-16 sm:pb-20">
         <StatsStrip />
       </section>
 
-      <section className="pb-20">
+      <section className="pb-16 sm:pb-20">
         <SectionHeading
           title="Latest builds"
           right={
-            <div className="flex gap-1 rounded-full rounded-lg border border-border p-1 text-[12px]">
-              {(["trending", "new"] as const).map((t) => (
+            <div className="flex gap-1 rounded-full border border-border p-1 text-[12px]">
+              {(["Trending", "Newest"] as const).map((t) => (
                 <button
                   key={t}
                   onClick={() => setTab(t)}
-                  className={`rounded-full px-3.5 py-1.5 capitalize transition-colors duration-200 ${
+                  className={`min-h-9 rounded-full px-3.5 transition-colors duration-200 ${
                     tab === t
                       ? "bg-neon-dim text-foreground"
                       : "text-muted-foreground hover:text-foreground"
@@ -113,11 +111,23 @@ function Index() {
             </div>
           }
         />
-        <div className="grid gap-6 md:grid-cols-2">
-          {list.slice(0, 4).map((p, i) => (
-            <ProjectCard key={p.slug} project={p} rank={tab === "trending" ? i + 1 : undefined} />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="grid gap-6 md:grid-cols-2">
+            {Array.from({ length: 2 }).map((_, i) => (
+              <div key={i} className="h-64 animate-pulse rounded-lg bg-muted" />
+            ))}
+          </div>
+        ) : list.length === 0 ? (
+          <div className="rounded-lg border border-border px-5 py-10 text-center text-[13px] text-muted-foreground">
+            No projects published yet.
+          </div>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2">
+            {list.map((p, i) => (
+              <ProjectCard key={p.id} project={p} rank={tab === "Trending" ? i + 1 : undefined} />
+            ))}
+          </div>
+        )}
       </section>
 
       <section className="pb-6">
