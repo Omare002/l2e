@@ -1,162 +1,149 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useState } from "react";
-import { BUILDERS, builderBy, projectsBy } from "@/data/community";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { ProjectCard } from "@/components/project-card";
 import { AchievementTiles } from "@/components/achievement-tiles";
+import { earnedAchievements } from "@/data/community";
+import { leaderboardQuery, profileQuery, projectsQuery, userActivityQuery } from "@/lib/db";
+import { useStoredImage } from "@/lib/media";
+import { ACTIVITY_LABELS, initialsOf, relativeTime } from "@/lib/display";
 
 export const Route = createFileRoute("/builders/$username")({
-  loader: ({ params }) => {
-    const b = BUILDERS.find((x) => x.username === params.username);
-    if (!b) throw notFound();
-    return { username: b.username };
-  },
-  head: ({ loaderData }) => {
-    const b = loaderData ? builderBy(loaderData.username) : undefined;
-    if (!b) {
-      return {
-        meta: [{ title: "Builder not found — Leaderboard" }, { name: "robots", content: "noindex" }],
-      };
-    }
-    return {
-      meta: [
-        { title: `${b.name} (@${b.username}) — Leaderboard` },
-        { name: "description", content: b.bio },
-        { property: "og:title", content: `${b.name} (@${b.username}) — Leaderboard` },
-        { property: "og:description", content: b.bio },
-      ],
-    };
-  },
+  head: ({ params }) => ({
+    meta: [
+      { title: `@${params.username} — Leaderboard` },
+      { name: "description", content: `Projects, upvotes and race position for @${params.username}.` },
+      { property: "og:title", content: `@${params.username} — Leaderboard` },
+      {
+        property: "og:description",
+        content: `Projects, upvotes and race position for @${params.username}.`,
+      },
+      { property: "og:type", content: "profile" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: BuilderProfile,
 });
 
-function ContributionCalendar({ seed }: { seed: number }) {
-  const cells = Array.from({ length: 7 * 26 }, (_, i) => (i * seed * 7919) % 11);
-  return (
-    <div className="grid grid-flow-col grid-rows-7 gap-1 overflow-x-auto">
-      {cells.map((v, i) => (
-        <span
-          key={i}
-          className="size-2.5"
-          style={{
-            background:
-              v > 7 ? "#7CFC00" : v > 5 ? "#7CFC0099" : v > 3 ? "#7CFC0044" : "var(--muted)",
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
 function BuilderProfile() {
-  const { username } = Route.useLoaderData();
-  const b = builderBy(username)!;
-  const projects = projectsBy(username);
-  const [following, setFollowing] = useState(false);
-  const rank = [...BUILDERS].sort((x, y) => y.totalVotes - x.totalVotes).findIndex(
-    (x) => x.username === username,
-  ) + 1;
+  const { username } = Route.useParams();
+  const { data: profile, isLoading } = useQuery(profileQuery(username));
+  const { data: leaders } = useQuery(leaderboardQuery());
+  const { data: projects } = useQuery(projectsQuery("Most Voted", "All", 48));
+  const { data: activity } = useQuery({
+    ...userActivityQuery(profile?.id ?? ""),
+    enabled: Boolean(profile?.id),
+  });
+  const avatar = useStoredImage("avatars", profile?.avatar_url);
+
+  if (isLoading) {
+    return <div className="mx-auto max-w-6xl px-4 py-20 text-[13px] text-muted-foreground sm:px-6">Loading profile…</div>;
+  }
+  if (!profile) {
+    return (
+      <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+        <h1 className="text-2xl font-semibold tracking-tight">Builder not found</h1>
+        <Link to="/projects" className="mt-6 inline-block text-[13px] underline underline-offset-4">
+          Back to projects
+        </Link>
+      </div>
+    );
+  }
+
+  const row = (leaders ?? []).find((l) => l.id === profile.id);
+  const mine = (projects ?? []).filter((p) => p.owner_id === profile.id);
+  const votes = row?.score ?? 0;
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-16">
-      <div className="flex flex-wrap items-start gap-6 border-b border-border pb-10">
+    <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
+      <div className="grid gap-6 border-b border-border pb-10 sm:grid-cols-[auto_minmax(0,1fr)]">
         <span
-          className="flex size-20 items-center justify-center font-mono text-xl font-bold text-ink"
-          style={{ background: b.color }}
+          className="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-full font-mono text-lg font-semibold text-ink sm:size-20"
+          style={{ background: profile.accent_color }}
         >
-          {b.initials}
+          {avatar ? <img src={avatar} alt="" className="size-full object-cover" /> : initialsOf(profile.display_name)}
         </span>
-        <div className="min-w-0 flex-1">
-          <h1 className="font-mono text-3xl font-semibold sm:text-4xl">{b.name}</h1>
+        <div className="min-w-0">
+          <h1 className="text-2xl font-semibold tracking-tight sm:text-4xl">{profile.display_name}</h1>
           <div className="mt-1 font-mono text-[12px] text-muted-foreground">
-            @{b.username} · joined {new Date(b.joined).toDateString()}
+            @{profile.username} · joined {new Date(profile.created_at).toDateString()}
           </div>
-          <p className="mt-4 max-w-2xl font-mono text-[13px] text-foreground/80">{b.bio}</p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {b.skills.map((s) => (
-              <span key={s} className="bg-muted px-2 py-1 font-mono text-[10px]">
-                {s}
-              </span>
-            ))}
-          </div>
-          <div className="mt-4 flex flex-wrap gap-4 font-mono text-[12px]">
-            <a href={b.github} className="underline underline-offset-4 hover:text-neon">GitHub</a>
-            <a href={b.linkedin} className="underline underline-offset-4 hover:text-neon">LinkedIn</a>
-            <a href={b.portfolio} className="underline underline-offset-4 hover:text-neon">Portfolio</a>
+          {profile.bio ? (
+            <p className="mt-4 max-w-2xl text-[14px] leading-relaxed text-muted-foreground">
+              {profile.bio}
+            </p>
+          ) : null}
+          <div className="mt-4 flex flex-wrap gap-5 font-mono text-[12px]">
+            {profile.github_url ? (
+              <a href={profile.github_url} target="_blank" rel="noreferrer noopener" className="underline underline-offset-4 hover:text-neon">
+                GitHub
+              </a>
+            ) : null}
+            {profile.portfolio_url ? (
+              <a href={profile.portfolio_url} target="_blank" rel="noreferrer noopener" className="underline underline-offset-4 hover:text-neon">
+                Portfolio
+              </a>
+            ) : null}
           </div>
         </div>
-        <button
-          onClick={() => setFollowing((f) => !f)}
-          className={`px-5 py-3 font-mono text-[12px] font-bold ${
-            following ? "rounded-lg border border-border" : "bg-neon text-ink"
-          }`}
-        >
-          {following ? "Following" : "Follow builder"}
-        </button>
       </div>
 
-      <div className="mt-8 grid grid-cols-2 rounded-lg border border-border sm:grid-cols-4">
+      <div className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-3">
         {[
-          ["Weekly Rank", `#${rank}`],
-          ["Total Votes", b.totalVotes.toLocaleString()],
-          ["Followers", b.followers.toLocaleString()],
-          ["Projects", String(projects.length)],
+          ["Rank", row?.rank ? `#${row.rank}` : "—"],
+          ["Upvotes received", votes.toLocaleString()],
+          ["Projects", String(mine.length)],
         ].map(([label, value]) => (
-          <div key={label} className="border-r border-border px-5 py-5 last:border-r-0">
-            <div className="font-mono text-2xl font-bold">{value}</div>
-            <div className="mt-1 font-mono text-[11px] tracking-normal text-muted-foreground">
-              {label}
-            </div>
+          <div key={label} className="bg-background px-5 py-5">
+            <div className="text-xl font-semibold tabular-nums">{value}</div>
+            <div className="mt-1 text-[12px] text-muted-foreground">{label}</div>
           </div>
         ))}
       </div>
 
       <section className="mt-12">
-        <h2 className="font-mono text-sm font-bold tracking-normal">Achievements</h2>
+        <h2 className="text-[15px] font-semibold tracking-tight">Achievements</h2>
         <div className="mt-4">
-          <AchievementTiles keys={b.achievements} />
+          <AchievementTiles
+            keys={earnedAchievements({
+              projectCount: mine.length,
+              score: votes,
+              rank: row?.rank ?? null,
+            })}
+          />
         </div>
       </section>
 
       <section className="mt-12">
-        <h2 className="font-mono text-sm font-bold tracking-normal">
-          Contribution Calendar
-        </h2>
-        <div className="mt-4 rounded-lg border border-border p-4">
-          <ContributionCalendar seed={b.username.length + 3} />
-        </div>
-      </section>
-
-      <section className="mt-12">
-        <h2 className="font-mono text-sm font-bold tracking-normal">Projects</h2>
-        <div className="mt-4 grid gap-5 md:grid-cols-2">
-          {projects.map((p) => (
-            <ProjectCard key={p.slug} project={p} />
+        <h2 className="text-[15px] font-semibold tracking-tight">Projects</h2>
+        <div className="mt-5 grid gap-5 md:grid-cols-2">
+          {mine.map((p) => (
+            <ProjectCard key={p.id} project={p} />
           ))}
         </div>
+        {mine.length === 0 ? (
+          <p className="mt-4 text-[13px] text-muted-foreground">No published projects yet.</p>
+        ) : null}
       </section>
 
       <section className="mt-12">
-        <h2 className="font-mono text-sm font-bold tracking-normal">Recent Activity</h2>
-        <ul className="mt-4 divide-y divide-border rounded-lg border border-border">
-          {[
-            `${b.name} shipped an update to ${projects[0]?.name ?? "a project"}`,
-            `${b.name} left feedback on DevMatch`,
-            `${b.name} received 12 votes`,
-            `${b.name} followed Sam Dev`,
-          ].map((line, i) => (
-            <li key={i} className="flex items-center gap-3 px-4 py-3 font-mono text-[12px]">
-              <span className="size-1.5 bg-neon" />
-              {line}
-            </li>
-          ))}
+        <h2 className="text-[15px] font-semibold tracking-tight">Recent activity</h2>
+        <ul className="mt-5 divide-y divide-border rounded-lg border border-border">
+          {(activity ?? []).length === 0 ? (
+            <li className="px-4 py-6 text-[13px] text-muted-foreground sm:px-5">Nothing yet.</li>
+          ) : (
+            (activity ?? []).map((a) => (
+              <li key={a.id} className="grid grid-cols-[minmax(0,1fr)_auto] gap-3 px-4 py-3.5 text-[13px] sm:px-5">
+                <span className="min-w-0 truncate">
+                  {ACTIVITY_LABELS[a.type] ?? a.type} {a.project?.title ?? ""}
+                </span>
+                <span className="font-mono text-[11px] text-muted-foreground">
+                  {relativeTime(a.created_at)}
+                </span>
+              </li>
+            ))
+          )}
         </ul>
       </section>
-
-      <div className="mt-10">
-        <Link to="/projects" className="font-mono text-[12px] underline underline-offset-4">
-          ← Back to projects
-        </Link>
-      </div>
     </div>
   );
 }

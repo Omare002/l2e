@@ -1,193 +1,216 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
-import { ExternalLink, Github, Triangle } from "lucide-react";
-import { PROJECTS, builderBy } from "@/data/community";
-import { useVotes } from "@/hooks/use-votes";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { ChevronUp, ExternalLink, Github } from "lucide-react";
+import { toast } from "sonner";
+import { commentsQuery, projectQuery } from "@/lib/db";
+import { addComment } from "@/lib/app.functions";
+import { useVote } from "@/hooks/use-vote";
+import { useAuth } from "@/hooks/use-auth";
+import { useStoredImage } from "@/lib/media";
+import { initialsOf, relativeTime } from "@/lib/display";
+import { statusLabel } from "@/data/community";
 
 export const Route = createFileRoute("/projects/$slug")({
-  loader: ({ params }) => {
-    const project = PROJECTS.find((p) => p.slug === params.slug);
-    if (!project) throw notFound();
-    return { slug: project.slug };
-  },
-  head: ({ loaderData }) => {
-    const project = loaderData ? PROJECTS.find((p) => p.slug === loaderData.slug) : undefined;
-    if (!project) {
-      return {
-        meta: [{ title: "Project not found — Leaderboard" }, { name: "robots", content: "noindex" }],
-      };
-    }
-    return {
-      meta: [
-        { title: `${project.name} — Leaderboard` },
-        { name: "description", content: project.tagline },
-        { property: "og:title", content: `${project.name} — Leaderboard` },
-        { property: "og:description", content: project.tagline },
-      ],
-    };
-  },
+  head: ({ params }) => ({
+    meta: [
+      { title: `${params.slug} — Leaderboard` },
+      { name: "description", content: "A project shipped by a LearnToEarn builder. Vote and leave feedback." },
+      { property: "og:title", content: `${params.slug} — Leaderboard` },
+      {
+        property: "og:description",
+        content: "A project shipped by a LearnToEarn builder. Vote and leave feedback.",
+      },
+      { property: "og:type", content: "article" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: ProjectPage,
 });
 
 function ProjectPage() {
-  const { slug } = Route.useLoaderData();
-  const project = PROJECTS.find((p) => p.slug === slug)!;
-  const builder = builderBy(project.builder)!;
-  const { toggle, voteCount, hasVoted, votes: allVotes } = useVotes();
-  const votes = voteCount(slug);
-  const voted = hasVoted(slug);
-  const [comments, setComments] = useState(project.comments);
+  const { slug } = Route.useParams();
+  const { data: project, isLoading } = useQuery(projectQuery(slug));
+  const { data: comments } = useQuery(commentsQuery(project?.id ?? undefined));
+  const { hasVoted, vote, isPending, isOwn } = useVote();
+  const { isAuthenticated } = useAuth();
+  const queryClient = useQueryClient();
+  const runComment = useServerFn(addComment);
   const [draft, setDraft] = useState("");
-  const rank =
-    [...PROJECTS]
-      .sort((a, b) => (allVotes[b.slug] ?? b.votes) - (allVotes[a.slug] ?? a.votes))
-      .findIndex((p) => p.slug === slug) + 1;
+  const thumb = useStoredImage("thumbnails", project?.thumbnail_url);
+
+  const post = useMutation({
+    mutationFn: (body: string) =>
+      runComment({ data: { projectId: project!.id!, body, kind: "feedback" } as never }),
+    onSuccess: () => {
+      setDraft("");
+      queryClient.invalidateQueries({ queryKey: ["comments"] });
+      queryClient.invalidateQueries({ queryKey: ["project"] });
+      toast.success("Feedback posted");
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Could not post feedback"),
+  });
+
+  if (isLoading) {
+    return <div className="mx-auto max-w-5xl px-4 py-20 text-[13px] text-muted-foreground sm:px-6">Loading project…</div>;
+  }
+  if (!project) {
+    return (
+      <div className="mx-auto max-w-5xl px-4 py-20 sm:px-6">
+        <h1 className="text-2xl font-semibold tracking-tight">Project not found</h1>
+        <Link to="/projects" className="mt-6 inline-block text-[13px] underline underline-offset-4">
+          Back to projects
+        </Link>
+      </div>
+    );
+  }
+
+  const voted = hasVoted(project.id!);
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-16">
+    <div className="mx-auto max-w-5xl px-4 py-14 sm:px-6 sm:py-16">
       <Link to="/projects" className="font-mono text-[12px] text-muted-foreground hover:text-foreground">
         ← Back to projects
       </Link>
 
-      <div className="mt-6 flex flex-wrap items-start justify-between gap-6">
-        <div>
-          <span className="bg-neon-dim px-2 py-1 font-mono text-[10px] font-bold tracking-normal">
-            Rank #{rank} · {project.category} · {project.status}
+      <div className="mt-6 grid gap-6 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
+        <div className="min-w-0">
+          <span className="rounded-full bg-neon-dim px-2.5 py-1 font-mono text-[10px]">
+            {project.category} · {statusLabel(project.status ?? "shipped")}
           </span>
-          <h1 className="mt-4 font-mono text-4xl font-semibold sm:text-5xl">
-            {project.name}
-          </h1>
-          <p className="mt-3 max-w-2xl font-mono text-[13px] text-muted-foreground">
+          <h1 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">{project.title}</h1>
+          <p className="mt-3 max-w-2xl text-[14px] leading-relaxed text-muted-foreground">
             {project.tagline}
           </p>
+          <Link
+            to="/builders/$username"
+            params={{ username: project.owner_username ?? "" }}
+            className="mt-4 inline-flex items-center gap-2.5 text-[13px] transition-colors duration-200 hover:text-neon"
+          >
+            <span
+              className="flex size-7 items-center justify-center rounded-full font-mono text-[10px] font-semibold text-ink"
+              style={{ background: project.owner_accent_color ?? "var(--neon)" }}
+            >
+              {initialsOf(project.owner_display_name)}
+            </span>
+            {project.owner_display_name} · @{project.owner_username}
+          </Link>
         </div>
         <button
+          type="button"
+          onClick={() => vote(project.id!, project.owner_id!)}
+          disabled={isPending(project.id!) || isOwn(project.owner_id!)}
           aria-pressed={voted}
-          onClick={() => toggle(slug)}
-          className={`flex items-center gap-2 px-5 py-3 font-mono text-sm font-bold ${
-            voted ? "bg-neon text-ink" : "bg-ink text-background"
+          className={`flex min-h-12 items-center justify-center gap-2 rounded-full border px-5 font-mono text-[13px] tabular-nums transition-colors duration-200 disabled:opacity-60 ${
+            voted ? "border-neon bg-neon/10 text-neon" : "border-border hover:border-neon"
           }`}
         >
-          <Triangle className="size-3.5 fill-current" /> {votes}
+          <ChevronUp className="size-4" /> {project.vote_count ?? 0}
         </button>
       </div>
 
-      <div
-        className="mt-8 h-64 w-full rounded-lg border border-border"
-        style={{
-          background: `repeating-linear-gradient(135deg, ${project.thumbTone}33 0 10px, #17171708 10px 20px)`,
-        }}
-        aria-hidden
-      />
+      {thumb ? (
+        <img
+          src={thumb}
+          alt={`${project.title} preview`}
+          className="mt-8 aspect-[16/7] w-full rounded-lg object-cover"
+        />
+      ) : null}
 
-      <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_280px]">
-        <div>
-          <h2 className="font-mono text-sm font-bold tracking-normal">About</h2>
-          <p className="mt-3 font-mono text-[13px] leading-relaxed text-foreground/80">
-            {project.description}
-          </p>
+      <p className="mt-8 max-w-3xl whitespace-pre-line text-[14px] leading-relaxed">
+        {project.description}
+      </p>
 
-          <h2 className="mt-10 font-mono text-sm font-bold tracking-normal">
-            Feedback ({comments.length})
-          </h2>
-          <p className="mt-2 font-mono text-[12px] text-muted-foreground">
-            Constructive notes, questions and celebrations — all welcome.
-          </p>
+      <div className="mt-6 flex flex-wrap gap-2">
+        {(project.tech ?? []).map((t) => (
+          <span key={t} className="rounded-full border border-border px-3 py-1.5 font-mono text-[11px]">
+            {t}
+          </span>
+        ))}
+      </div>
 
+      <div className="mt-6 flex flex-wrap gap-3">
+        {project.demo_url ? (
+          <a
+            href={project.demo_url}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="flex min-h-11 items-center gap-2 rounded-full border border-border px-4 text-[13px] transition-colors duration-200 hover:border-neon"
+          >
+            <ExternalLink className="size-3.5" /> Live demo
+          </a>
+        ) : null}
+        {project.github_url ? (
+          <a
+            href={project.github_url}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="flex min-h-11 items-center gap-2 rounded-full border border-border px-4 text-[13px] transition-colors duration-200 hover:border-neon"
+          >
+            <Github className="size-3.5" /> Source
+          </a>
+        ) : null}
+      </div>
+
+      <section className="mt-14">
+        <h2 className="text-xl font-semibold tracking-tight">
+          Feedback ({project.comment_count ?? 0})
+        </h2>
+
+        {isAuthenticated ? (
           <form
-            className="mt-4"
             onSubmit={(e) => {
               e.preventDefault();
-              if (!draft.trim()) return;
-              setComments((cs) => [
-                { id: `${Date.now()}`, author: "you", body: draft.trim(), at: "now", kind: "feedback" },
-                ...cs,
-              ]);
-              setDraft("");
+              if (draft.trim().length < 2) return;
+              post.mutate(draft.trim());
             }}
+            className="mt-5"
           >
             <textarea
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               rows={3}
               placeholder="What would make this project better?"
-              className="w-full rounded-lg border border-border bg-background p-3 font-mono text-[13px] outline-none focus:border-neon"
+              className="w-full rounded-lg border border-border bg-background px-3.5 py-3 text-[14px] outline-none transition-colors duration-200 focus:border-neon"
             />
-            <button className="mt-2 bg-ink px-4 py-2 font-mono text-[12px] font-bold text-background">
-              Post feedback
+            <button
+              type="submit"
+              disabled={post.isPending}
+              className="mt-3 min-h-11 rounded-full bg-foreground px-5 text-[13px] font-medium text-background transition-colors duration-200 hover:bg-foreground/90 disabled:opacity-60"
+            >
+              {post.isPending ? "Posting…" : "Post feedback"}
             </button>
           </form>
+        ) : (
+          <p className="mt-5 text-[13px] text-muted-foreground">
+            <Link to="/auth" className="underline underline-offset-4 hover:text-neon">
+              Sign in
+            </Link>{" "}
+            to leave feedback or upvote.
+          </p>
+        )}
 
-          <ul className="mt-6 divide-y divide-border border-y border-border">
-            {comments.map((cm) => (
-              <li key={cm.id} className="py-4">
-                <div className="flex items-center gap-2 font-mono text-[11px] text-muted-foreground">
-                  <span className="font-bold text-foreground">@{cm.author}</span>
-                  <span>· {cm.at}</span>
-                  <span className="ml-auto bg-muted px-2 py-0.5 tracking-normalr">
-                    {cm.kind}
+        <ul className="mt-8 divide-y divide-border rounded-lg border border-border">
+          {(comments ?? []).length === 0 ? (
+            <li className="px-4 py-8 text-center text-[13px] text-muted-foreground sm:px-5">
+              No feedback yet.
+            </li>
+          ) : (
+            (comments ?? []).map((c) => (
+              <li key={c.id} className="px-4 py-4 sm:px-5">
+                <div className="flex items-center gap-2.5 text-[13px]">
+                  <span className="font-medium">{c.author?.display_name ?? "Someone"}</span>
+                  <span className="font-mono text-[11px] text-muted-foreground">
+                    {relativeTime(c.created_at)}
                   </span>
                 </div>
-                <p className="mt-2 font-mono text-[13px] text-foreground/80">{cm.body}</p>
+                <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">{c.body}</p>
               </li>
-            ))}
-          </ul>
-        </div>
-
-        <aside className="space-y-6">
-          <div className="rounded-lg border border-border p-4">
-            <div className="font-mono text-[11px] tracking-normal text-muted-foreground">
-              Builder
-            </div>
-            <Link
-              to="/builders/$username"
-              params={{ username: builder.username }}
-              className="mt-3 flex items-center gap-3"
-            >
-              <span
-                className="flex size-10 items-center justify-center font-mono text-[12px] font-bold text-ink"
-                style={{ background: builder.color }}
-              >
-                {builder.initials}
-              </span>
-              <span>
-                <span className="block font-mono text-[13px] font-bold">{builder.name}</span>
-                <span className="block font-mono text-[11px] text-muted-foreground">
-                  @{builder.username}
-                </span>
-              </span>
-            </Link>
-          </div>
-
-          <div className="rounded-lg border border-border p-4">
-            <div className="font-mono text-[11px] tracking-normal text-muted-foreground">
-              Tech Stack
-            </div>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {project.tech.map((t) => (
-                <span key={t} className="bg-muted px-2 py-1 font-mono text-[10px]">
-                  {t}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <a
-              href={project.demoUrl}
-              className="flex items-center justify-center gap-2 bg-neon px-4 py-3 font-mono text-[12px] font-bold text-ink"
-            >
-              <ExternalLink className="size-3.5" /> Live Demo
-            </a>
-            <a
-              href={project.repoUrl}
-              className="flex items-center justify-center gap-2 rounded-lg border border-border px-4 py-3 font-mono text-[12px] font-bold"
-            >
-              <Github className="size-3.5" /> GitHub
-            </a>
-          </div>
-        </aside>
-      </div>
+            ))
+          )}
+        </ul>
+      </section>
     </div>
   );
 }
