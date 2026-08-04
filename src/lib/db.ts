@@ -263,20 +263,6 @@ export function repliesQuery(discussionId: string | undefined) {
   });
 }
 
-function _unusedCommentsWritten(userId: string) {
-  return queryOptions({
-    queryKey: qk.commentsWritten(userId),
-    queryFn: async (): Promise<number> => {
-      const { count, error } = await supabase
-        .from("comments")
-        .select("id", { count: "exact", head: true })
-        .eq("author_id", userId);
-      if (error) return 0;
-      return count ?? 0;
-    },
-  });
-}
-
 export function activityQuery(limit = 12) {
   return queryOptions({
     queryKey: [...qk.activity, limit],
