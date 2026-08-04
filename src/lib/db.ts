@@ -186,10 +186,84 @@ export function commentsQuery(projectId: string | undefined) {
         .limit(100);
       return (unwrap(res, "Could not load feedback") ?? []) as unknown as CommentWithAuthor[];
     },
+    placeholderData: keepPreviousData,
   });
 }
 
 export function commentsWrittenQuery(userId: string) {
+  return queryOptions({
+    queryKey: qk.commentsWritten(userId),
+    queryFn: async (): Promise<number> => {
+      const { count, error } = await supabase
+        .from("comments")
+        .select("id", { count: "exact", head: true })
+        .eq("author_id", userId);
+      if (error) return 0;
+      return count ?? 0;
+    },
+  });
+}
+
+const AUTHOR_SELECT = "username, display_name, avatar_url, accent_color";
+
+export function discussionsQuery() {
+  return queryOptions({
+    queryKey: qk.discussions,
+    queryFn: async (): Promise<DiscussionWithAuthor[]> => {
+      const res = await supabase
+        .from("discussions")
+        .select(
+          `*, author:profiles!discussions_author_id_fkey(${AUTHOR_SELECT}), discussion_replies(count)`,
+        )
+        .order("pinned", { ascending: false })
+        .order("last_activity_at", { ascending: false })
+        .limit(100);
+      const rows = (unwrap(res, "Could not load the forum") ?? []) as unknown as (DiscussionWithAuthor & {
+        discussion_replies?: { count: number }[];
+      })[];
+      return rows.map(({ discussion_replies, ...d }) => ({
+        ...d,
+        reply_count: discussion_replies?.[0]?.count ?? 0,
+      }));
+    },
+    staleTime: 10_000,
+    placeholderData: keepPreviousData,
+  });
+}
+
+export function discussionQuery(id: string) {
+  return queryOptions({
+    queryKey: qk.discussion(id),
+    queryFn: async (): Promise<DiscussionWithAuthor | null> => {
+      const res = await supabase
+        .from("discussions")
+        .select(`*, author:profiles!discussions_author_id_fkey(${AUTHOR_SELECT})`)
+        .eq("id", id)
+        .maybeSingle();
+      return unwrap(res, "Could not load this discussion") as unknown as DiscussionWithAuthor | null;
+    },
+    placeholderData: keepPreviousData,
+  });
+}
+
+export function repliesQuery(discussionId: string | undefined) {
+  return queryOptions({
+    queryKey: qk.replies(discussionId ?? "none"),
+    enabled: Boolean(discussionId),
+    queryFn: async (): Promise<ReplyWithAuthor[]> => {
+      const res = await supabase
+        .from("discussion_replies")
+        .select(`*, author:profiles!discussion_replies_author_id_fkey(${AUTHOR_SELECT})`)
+        .eq("discussion_id", discussionId!)
+        .order("created_at", { ascending: true })
+        .limit(200);
+      return (unwrap(res, "Could not load replies") ?? []) as unknown as ReplyWithAuthor[];
+    },
+    placeholderData: keepPreviousData,
+  });
+}
+
+function _unusedCommentsWritten(userId: string) {
   return queryOptions({
     queryKey: qk.commentsWritten(userId),
     queryFn: async (): Promise<number> => {
