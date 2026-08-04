@@ -5,7 +5,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { ChevronUp, ExternalLink, Github } from "lucide-react";
 import { toast } from "sonner";
 import { commentsQuery, projectQuery } from "@/lib/db";
-import { addComment } from "@/lib/app.functions";
+import { addComment, deleteComment, editComment } from "@/lib/app.functions";
+import { LoadFailure, SkeletonLines } from "@/components/skeleton-block";
 import { useVote } from "@/hooks/use-vote";
 import { useAuth } from "@/hooks/use-auth";
 import { useStoredImage } from "@/lib/media";
@@ -32,13 +33,23 @@ export const Route = createFileRoute("/projects/$slug")({
 function ProjectPage() {
   const { slug } = Route.useParams();
   const { data: project, isLoading } = useQuery(projectQuery(slug));
-  const { data: comments } = useQuery(commentsQuery(project?.id ?? undefined));
+  const commentsResult = useQuery(commentsQuery(project?.id ?? undefined));
+  const comments = commentsResult.data;
   const { hasVoted, vote, isPending, isOwn } = useVote();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, userId } = useAuth();
   const queryClient = useQueryClient();
   const runComment = useServerFn(addComment);
+  const runEditComment = useServerFn(editComment);
+  const runDeleteComment = useServerFn(deleteComment);
   const [draft, setDraft] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editDraft, setEditDraft] = useState("");
   const thumb = useStoredImage("thumbnails", project?.thumbnail_url);
+
+  function refreshComments() {
+    queryClient.invalidateQueries({ queryKey: ["comments"] });
+    queryClient.invalidateQueries({ queryKey: ["project"] });
+  }
 
   const post = useMutation({
     mutationFn: (body: string) =>
@@ -50,6 +61,22 @@ function ProjectPage() {
       toast.success("Feedback posted");
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : "Could not post feedback"),
+  });
+
+  const saveEdit = useMutation({
+    mutationFn: (vars: { id: string; body: string }) => runEditComment({ data: vars }),
+    onSuccess: () => {
+      setEditingId(null);
+      refreshComments();
+      toast.success("Feedback updated");
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Could not save your feedback"),
+  });
+
+  const remove = useMutation({
+    mutationFn: (id: string) => runDeleteComment({ data: { id } }),
+    onSuccess: () => refreshComments(),
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Could not delete this feedback"),
   });
 
   if (isLoading) {
@@ -192,20 +219,89 @@ function ProjectPage() {
         )}
 
         <ul className="mt-8 divide-y divide-border rounded-lg border border-border">
-          {(comments ?? []).length === 0 ? (
+          {commentsResult.isLoading && !comments ? (
+            <li className="p-4 sm:p-5">
+              <SkeletonLines rows={3} />
+            </li>
+          ) : commentsResult.isError && !comments ? (
+            <li>
+              <LoadFailure
+                message="Feedback couldn't load just now."
+                onRetry={() => commentsResult.refetch()}
+              />
+            </li>
+          ) : (comments ?? []).length === 0 ? (
             <li className="px-4 py-8 text-center text-[13px] text-muted-foreground sm:px-5">
               No feedback yet.
             </li>
           ) : (
             (comments ?? []).map((c) => (
               <li key={c.id} className="px-4 py-4 sm:px-5">
-                <div className="flex items-center gap-2.5 text-[13px]">
-                  <span className="font-medium">{c.author?.display_name ?? "Someone"}</span>
+                <div className="flex min-w-0 flex-wrap items-center gap-2.5 text-[13px]">
+                  <span className="truncate font-medium">
+                    {c.author?.display_name ?? "Someone"}
+                  </span>
                   <span className="font-mono text-[11px] text-muted-foreground">
                     {relativeTime(c.created_at)}
                   </span>
                 </div>
-                <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">{c.body}</p>
+                {editingId === c.id ? (
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      saveEdit.mutate({ id: c.id, body: editDraft });
+                    }}
+                    className="mt-2"
+                  >
+                    <textarea
+                      value={editDraft}
+                      onChange={(e) => setEditDraft(e.target.value)}
+                      rows={3}
+                      className="w-full rounded-lg border border-border bg-background px-3.5 py-3 text-[14px] outline-none focus:border-neon"
+                    />
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      <button
+                        type="submit"
+                        disabled={saveEdit.isPending}
+                        className="min-h-10 rounded-full bg-foreground px-4 text-[12px] font-medium text-background disabled:opacity-60"
+                      >
+                        Save
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditingId(null)}
+                        className="min-h-10 rounded-full border border-border px-4 text-[12px]"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  <p className="mt-2 whitespace-pre-line text-[13px] leading-relaxed text-muted-foreground">
+                    {c.body}
+                  </p>
+                )}
+                {c.author_id === userId && editingId !== c.id ? (
+                  <div className="mt-2.5 flex flex-wrap gap-3 font-mono text-[11px] text-muted-foreground">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditingId(c.id);
+                        setEditDraft(c.body);
+                      }}
+                      className="transition-colors duration-200 hover:text-neon"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => remove.mutate(c.id)}
+                      className="transition-colors duration-200 hover:text-neon"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                ) : null}
               </li>
             ))
           )}
