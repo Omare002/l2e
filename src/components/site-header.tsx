@@ -13,6 +13,7 @@ import { initialsOf } from "@/lib/display";
 const NAV = [
   { to: "/projects", label: "Projects" },
   { to: "/leaderboard", label: "Leaderboard" },
+  { to: "/forum", label: "Forums" },
   { to: "/hall-of-fame", label: "Hall of Fame" },
   { to: "/how-it-works", label: "How it works" },
 ] as const;

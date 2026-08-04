@@ -49,6 +49,28 @@ export const commentInputSchema = z.object({
   kind: z.enum(["feedback", "question", "celebration"]).default("feedback"),
 });
 
+export const DISCUSSION_CATEGORIES = [
+  "General",
+  "Help",
+  "Show & Tell",
+  "Ideas",
+  "Resources",
+] as const;
+
+export const discussionInputSchema = z.object({
+  id: z.string().uuid().optional(),
+  title: z.string().trim().min(4, "Give your discussion a title").max(120),
+  body: z.string().trim().min(10, "Add a little more detail").max(4000),
+  category: z
+    .enum(DISCUSSION_CATEGORIES as unknown as [string, ...string[]])
+    .default("General"),
+});
+
+export const replyInputSchema = z.object({
+  discussionId: z.string().uuid(),
+  body: z.string().trim().min(2, "Say a little more").max(2000),
+});
+
 export const credentialsSchema = z.object({
   email: z.string().trim().email("Enter a valid email").max(255),
   password: z.string().min(8, "Use at least 8 characters").max(72),

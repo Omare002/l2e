@@ -1,4 +1,4 @@
-import { queryOptions } from "@tanstack/react-query";
+import { keepPreviousData, queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 
@@ -7,6 +7,17 @@ export type ProjectRow = Tables<"projects">;
 export type ProjectStats = Tables<"project_stats">;
 export type LeaderboardRow = Tables<"leaderboard">;
 export type CommentRow = Tables<"comments">;
+export type DiscussionRow = Tables<"discussions">;
+export type DiscussionReplyRow = Tables<"discussion_replies">;
+
+type AuthorLite = Pick<ProfileRow, "username" | "display_name" | "avatar_url" | "accent_color">;
+
+export type DiscussionWithAuthor = DiscussionRow & {
+  author: AuthorLite | null;
+  reply_count?: number;
+};
+
+export type ReplyWithAuthor = DiscussionReplyRow & { author: AuthorLite | null };
 
 export type CommentWithAuthor = CommentRow & {
   author: Pick<ProfileRow, "username" | "display_name" | "avatar_url" | "accent_color"> | null;
@@ -44,6 +55,9 @@ export const qk = {
   myProfile: (userId: string) => ["my-profile", userId] as const,
   myVotes: (userId: string) => ["my-votes", userId] as const,
   comments: (projectId: string) => ["comments", projectId] as const,
+  discussions: ["discussions"] as const,
+  discussion: (id: string) => ["discussion", id] as const,
+  replies: (id: string) => ["discussion-replies", id] as const,
   activity: ["activity"] as const,
   stats: ["community-stats"] as const,
   rankHistory: (profileId: string) => ["rank-history", profileId] as const,
@@ -124,6 +138,7 @@ export function leaderboardQuery() {
       return unwrap(res, "Could not load the leaderboard") ?? [];
     },
     staleTime: 10_000,
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -171,6 +186,7 @@ export function commentsQuery(projectId: string | undefined) {
         .limit(100);
       return (unwrap(res, "Could not load feedback") ?? []) as unknown as CommentWithAuthor[];
     },
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -185,6 +201,65 @@ export function commentsWrittenQuery(userId: string) {
       if (error) return 0;
       return count ?? 0;
     },
+  });
+}
+
+const AUTHOR_SELECT = "username, display_name, avatar_url, accent_color";
+
+export function discussionsQuery() {
+  return queryOptions({
+    queryKey: qk.discussions,
+    queryFn: async (): Promise<DiscussionWithAuthor[]> => {
+      const res = await supabase
+        .from("discussions")
+        .select(
+          `*, author:profiles!discussions_author_id_fkey(${AUTHOR_SELECT}), discussion_replies(count)`,
+        )
+        .order("pinned", { ascending: false })
+        .order("last_activity_at", { ascending: false })
+        .limit(100);
+      const rows = (unwrap(res, "Could not load the forum") ?? []) as unknown as (DiscussionWithAuthor & {
+        discussion_replies?: { count: number }[];
+      })[];
+      return rows.map(({ discussion_replies, ...d }) => ({
+        ...d,
+        reply_count: discussion_replies?.[0]?.count ?? 0,
+      }));
+    },
+    staleTime: 10_000,
+    placeholderData: keepPreviousData,
+  });
+}
+
+export function discussionQuery(id: string) {
+  return queryOptions({
+    queryKey: qk.discussion(id),
+    queryFn: async (): Promise<DiscussionWithAuthor | null> => {
+      const res = await supabase
+        .from("discussions")
+        .select(`*, author:profiles!discussions_author_id_fkey(${AUTHOR_SELECT})`)
+        .eq("id", id)
+        .maybeSingle();
+      return unwrap(res, "Could not load this discussion") as unknown as DiscussionWithAuthor | null;
+    },
+    placeholderData: keepPreviousData,
+  });
+}
+
+export function repliesQuery(discussionId: string | undefined) {
+  return queryOptions({
+    queryKey: qk.replies(discussionId ?? "none"),
+    enabled: Boolean(discussionId),
+    queryFn: async (): Promise<ReplyWithAuthor[]> => {
+      const res = await supabase
+        .from("discussion_replies")
+        .select(`*, author:profiles!discussion_replies_author_id_fkey(${AUTHOR_SELECT})`)
+        .eq("discussion_id", discussionId!)
+        .order("created_at", { ascending: true })
+        .limit(200);
+      return (unwrap(res, "Could not load replies") ?? []) as unknown as ReplyWithAuthor[];
+    },
+    placeholderData: keepPreviousData,
   });
 }
 

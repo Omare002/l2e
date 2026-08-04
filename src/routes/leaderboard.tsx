@@ -3,6 +3,7 @@ import { motion } from "motion/react";
 import { RaceTrack } from "@/components/race-track";
 import { SeasonBanner } from "@/components/season-banner";
 import { SectionHeading } from "@/components/section-heading";
+import { LoadFailure, SkeletonLines } from "@/components/skeleton-block";
 import { useRace } from "@/hooks/use-race";
 import { useAuth } from "@/hooks/use-auth";
 import { initialsOf } from "@/lib/display";
@@ -29,7 +30,7 @@ export const Route = createFileRoute("/leaderboard")({
 });
 
 function LeaderboardPage() {
-  const { all, isLoading } = useRace(10);
+  const { all, isLoading, isError, refetch } = useRace(10);
   const { userId } = useAuth();
   const me = all.find((r) => r.id === userId);
   const inTop = all.slice(0, 20).some((r) => r.id === userId);
@@ -60,8 +61,13 @@ function LeaderboardPage() {
             <span className="hidden text-right sm:block">Projects</span>
           </div>
 
-          {isLoading ? (
-            <div className="px-5 py-8 text-[13px] text-muted-foreground">Loading standings…</div>
+          {isLoading && all.length === 0 ? (
+            <SkeletonLines rows={6} className="p-4 sm:p-5" />
+          ) : isError && all.length === 0 ? (
+            <LoadFailure
+              message="The standings couldn't load just now."
+              onRetry={() => refetch()}
+            />
           ) : all.length === 0 ? (
             <div className="px-5 py-8 text-[13px] text-muted-foreground">
               No builders on the board yet.

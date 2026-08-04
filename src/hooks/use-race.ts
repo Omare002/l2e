@@ -12,7 +12,7 @@ export type Racer = {
  * track is a real account (or a clearly labelled demo account).
  */
 export function useRace(limit = 8) {
-  const { data, isLoading } = useQuery(leaderboardQuery());
+  const { data, isLoading, isError, refetch } = useQuery(leaderboardQuery());
   const rows = (data ?? []).slice(0, limit);
   const leaderVotes = rows[0]?.score ?? 0;
   const target = Math.max(10, Math.ceil(Math.max(leaderVotes, 1) * 1.25));
@@ -23,5 +23,5 @@ export function useRace(limit = 8) {
     pct: Math.min(96, ((row.score ?? 0) / target) * 100),
   }));
 
-  return { racers, leaderVotes, target, isLoading, all: data ?? [] };
+  return { racers, leaderVotes, target, isLoading, isError, refetch, all: data ?? [] };
 }

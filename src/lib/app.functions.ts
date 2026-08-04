@@ -237,3 +237,26 @@ export const deleteComment = createServerFn({ method: "POST" })
     }
     return { ok: true };
   });
+
+export const editComment = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { id: string; body: string }) => {
+    if (!input?.id) throw new Error("Missing comment");
+    const body = (input.body ?? "").trim();
+    if (body.length < 2) throw new Error("Say a little more");
+    return { id: input.id, body: body.slice(0, 1000) };
+  })
+  .handler(async ({ data, context }) => {
+    const { data: updated, error } = await context.supabase
+      .from("comments")
+      .update({ body: data.body })
+      .eq("id", data.id)
+      .eq("author_id", context.userId)
+      .select("*")
+      .maybeSingle();
+    if (error || !updated) {
+      console.error("[editComment]", error?.message);
+      throw new Error("Could not save your feedback");
+    }
+    return updated;
+  });
