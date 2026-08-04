@@ -3,21 +3,34 @@ import { motion } from "motion/react";
 import { RaceCar } from "@/components/race-car";
 import { useRace } from "@/hooks/use-race";
 import { useAuth } from "@/hooks/use-auth";
+import { LoadFailure } from "@/components/skeleton-block";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 export function RaceTrack({ compact = false }: { compact?: boolean }) {
-  const { racers, target, isLoading } = useRace(compact ? 6 : 10);
+  const { racers, target, isLoading, isError, refetch } = useRace(compact ? 6 : 10);
   const { userId } = useAuth();
 
-  if (isLoading) {
+  if (isLoading && racers.length === 0) {
     return (
       <div className="surface-card px-5 py-6 sm:px-8 sm:py-8">
         <div className="flex flex-col gap-3">
           {Array.from({ length: compact ? 4 : 6 }).map((_, i) => (
-            <div key={i} className="h-7 animate-pulse rounded bg-white/[0.05]" />
+            <div
+              key={i}
+              className="h-7 animate-pulse rounded bg-white/[0.05]"
+              style={{ animationDelay: `${i * 70}ms` }}
+            />
           ))}
         </div>
+      </div>
+    );
+  }
+
+  if (isError && racers.length === 0) {
+    return (
+      <div className="surface-card">
+        <LoadFailure message="The race couldn't load just now." onRetry={() => refetch()} />
       </div>
     );
   }
