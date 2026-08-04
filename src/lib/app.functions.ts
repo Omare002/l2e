@@ -260,22 +260,3 @@ export const editComment = createServerFn({ method: "POST" })
     }
     return updated;
   });
-
-const _deleteCommentLegacy = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((input: { id: string }) => {
-    if (!input?.id) throw new Error("Missing comment");
-    return { id: input.id };
-  })
-  .handler(async ({ data, context }) => {
-    const { error } = await context.supabase
-      .from("comments")
-      .delete()
-      .eq("id", data.id)
-      .eq("author_id", context.userId);
-    if (error) {
-      console.error("[deleteComment]", error.message);
-      throw new Error("Could not delete this comment");
-    }
-    return { ok: true };
-  });
