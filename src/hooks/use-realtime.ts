@@ -36,6 +36,12 @@ export function useRealtimeSync() {
       .on("postgres_changes", { event: "*", schema: "public", table: "activity_events" }, () =>
         refresh(["activity", "user-activity"]),
       )
+      .on("postgres_changes", { event: "*", schema: "public", table: "discussions" }, () =>
+        refresh(["discussions", "discussion", "activity", "community-stats"]),
+      )
+      .on("postgres_changes", { event: "*", schema: "public", table: "discussion_replies" }, () =>
+        refresh(["discussions", "discussion", "discussion-replies", "activity"]),
+      )
       .subscribe();
 
     return () => {
