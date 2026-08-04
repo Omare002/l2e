@@ -40,8 +40,11 @@ export function TypingHeadline() {
   }, [phase, len]);
 
   return (
-    <span className="relative inline-grid text-left">
-      <span aria-hidden className="invisible col-start-1 row-start-1 whitespace-pre px-[0.35ch]">
+    <span className="relative inline-grid max-w-full text-left [font-size:clamp(1.9rem,9vw,4.5rem)]">
+      <span
+        aria-hidden
+        className="invisible col-start-1 row-start-1 whitespace-pre px-[0.35ch]"
+      >
         {SENTENCE}
       </span>
       <span className="col-start-1 row-start-1 justify-self-start whitespace-pre pl-[0.35ch]">
