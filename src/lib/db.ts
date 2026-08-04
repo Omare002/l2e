@@ -1,4 +1,4 @@
-import { queryOptions } from "@tanstack/react-query";
+import { keepPreviousData, queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 
@@ -7,6 +7,17 @@ export type ProjectRow = Tables<"projects">;
 export type ProjectStats = Tables<"project_stats">;
 export type LeaderboardRow = Tables<"leaderboard">;
 export type CommentRow = Tables<"comments">;
+export type DiscussionRow = Tables<"discussions">;
+export type DiscussionReplyRow = Tables<"discussion_replies">;
+
+type AuthorLite = Pick<ProfileRow, "username" | "display_name" | "avatar_url" | "accent_color">;
+
+export type DiscussionWithAuthor = DiscussionRow & {
+  author: AuthorLite | null;
+  reply_count?: number;
+};
+
+export type ReplyWithAuthor = DiscussionReplyRow & { author: AuthorLite | null };
 
 export type CommentWithAuthor = CommentRow & {
   author: Pick<ProfileRow, "username" | "display_name" | "avatar_url" | "accent_color"> | null;
@@ -44,6 +55,9 @@ export const qk = {
   myProfile: (userId: string) => ["my-profile", userId] as const,
   myVotes: (userId: string) => ["my-votes", userId] as const,
   comments: (projectId: string) => ["comments", projectId] as const,
+  discussions: ["discussions"] as const,
+  discussion: (id: string) => ["discussion", id] as const,
+  replies: (id: string) => ["discussion-replies", id] as const,
   activity: ["activity"] as const,
   stats: ["community-stats"] as const,
   rankHistory: (profileId: string) => ["rank-history", profileId] as const,
@@ -124,6 +138,7 @@ export function leaderboardQuery() {
       return unwrap(res, "Could not load the leaderboard") ?? [];
     },
     staleTime: 10_000,
+    placeholderData: keepPreviousData,
   });
 }
 
