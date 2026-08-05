@@ -4,6 +4,7 @@ import { RaceCar } from "@/components/race-car";
 import { useRace } from "@/hooks/use-race";
 import { useAuth } from "@/hooks/use-auth";
 import { LoadFailure } from "@/components/skeleton-block";
+import { UserAvatar } from "@/components/user-avatar";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
