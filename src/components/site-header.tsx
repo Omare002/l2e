@@ -64,7 +64,7 @@ export function SiteHeader() {
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4 sm:px-6">
         <Link to="/" className="group flex shrink-0 items-center" aria-label="Leaderboard home">
           <img
-            src={logo.url}
+            src={logo}
             alt="Leaderboard"
             width={210}
             height={67}
