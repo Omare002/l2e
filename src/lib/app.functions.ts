@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import {
   commentInputSchema,
+  avatarInputSchema,
   profileInputSchema,
   projectInputSchema,
   slugify,
@@ -57,6 +58,44 @@ export const saveProfile = createServerFn({ method: "POST" })
 
     if (current.avatar_url && current.avatar_url !== updated.avatar_url) {
       await removeStoredImage(context.supabase as never, "avatars", current.avatar_url, context.userId);
+    }
+    return updated;
+  });
+
+export const saveAvatar = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => avatarInputSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    const { ensureProfile, removeStoredImage } = await import("@/lib/profile.server");
+    const current = await ensureProfile(
+      context.supabase as never,
+      context.userId,
+      context.claims as never,
+    );
+
+    if (data.avatarPath && !data.avatarPath.startsWith(`${context.userId}/`)) {
+      throw new Error("Invalid image");
+    }
+
+    const { data: updated, error } = await context.supabase
+      .from("profiles")
+      .update({ avatar_url: data.avatarPath ?? null, updated_at: new Date().toISOString() })
+      .eq("id", context.userId)
+      .select("*")
+      .single();
+
+    if (error) {
+      console.error("[saveAvatar]", error.message);
+      throw new Error("Could not update your photo");
+    }
+
+    if (current.avatar_url && current.avatar_url !== updated.avatar_url) {
+      await removeStoredImage(
+        context.supabase as never,
+        "avatars",
+        current.avatar_url,
+        context.userId,
+      );
     }
     return updated;
   });
