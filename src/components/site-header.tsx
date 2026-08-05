@@ -3,7 +3,7 @@ import { Link, useRouter, useRouterState } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "motion/react";
 import { LogOut, Menu, X } from "lucide-react";
-import logo from "@/assets/logo.png.asset.json";
+import logo from "@/assets/logo.png";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { myProfileQuery } from "@/lib/db";
@@ -64,7 +64,7 @@ export function SiteHeader() {
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4 sm:px-6">
         <Link to="/" className="group flex shrink-0 items-center" aria-label="Leaderboard home">
           <img
-            src={logo.url}
+            src={logo}
             alt="Leaderboard"
             width={210}
             height={67}
