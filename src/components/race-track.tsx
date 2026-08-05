@@ -69,6 +69,12 @@ export function RaceTrack({ compact = false }: { compact?: boolean }) {
                   >
                     {i + 1}
                   </span>
+                  <UserAvatar
+                    name={r.row.display_name}
+                    path={r.row.avatar_url}
+                    accent={r.row.accent_color}
+                    size={24}
+                  />
                   <Link
                     to="/builders/$username"
                     params={{ username: r.row.username ?? "" }}

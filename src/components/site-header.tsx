@@ -7,8 +7,7 @@ import logo from "@/assets/logo.png";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { myProfileQuery } from "@/lib/db";
-import { useStoredImage } from "@/lib/media";
-import { initialsOf } from "@/lib/display";
+import { UserAvatar } from "@/components/user-avatar";
 
 const NAV = [
   { to: "/projects", label: "Projects" },
