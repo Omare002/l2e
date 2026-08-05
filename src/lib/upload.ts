@@ -2,11 +2,20 @@ import { supabase } from "@/integrations/supabase/client";
 
 const MAX_BYTES = 5 * 1024 * 1024;
 const MAX_EDGE = 1400;
+export const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+export const ACCEPT_ATTRIBUTE = ".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp";
+
+/** Throws a friendly message when a picked file isn't a supported, reasonably sized image. */
+export function validateImageFile(file: File) {
+  if (!ACCEPTED_IMAGE_TYPES.includes(file.type.toLowerCase())) {
+    throw new Error("Use a JPG, PNG or WebP image");
+  }
+  if (file.size > MAX_BYTES) throw new Error("Images must be smaller than 5MB");
+}
 
 /** Downscales and re-encodes an image in the browser before upload. */
 async function optimize(file: File): Promise<Blob> {
-  if (!file.type.startsWith("image/")) throw new Error("Please choose an image file");
-  if (file.size > MAX_BYTES) throw new Error("Images must be smaller than 5MB");
+  validateImageFile(file);
   if (typeof document === "undefined") return file;
 
   const bitmap = await createImageBitmap(file).catch(() => null);
@@ -27,12 +36,7 @@ async function optimize(file: File): Promise<Blob> {
   return blob ?? file;
 }
 
-export async function uploadImage(
-  bucket: "avatars" | "thumbnails",
-  userId: string,
-  file: File,
-): Promise<string> {
-  const blob = await optimize(file);
+async function put(bucket: "avatars" | "thumbnails", userId: string, blob: Blob) {
   const path = `${userId}/${crypto.randomUUID()}.webp`;
   const { error } = await supabase.storage.from(bucket).upload(path, blob, {
     contentType: blob.type || "image/webp",
@@ -43,4 +47,17 @@ export async function uploadImage(
     throw new Error("Upload failed. Please try again.");
   }
   return path;
+}
+
+export async function uploadImage(
+  bucket: "avatars" | "thumbnails",
+  userId: string,
+  file: File,
+): Promise<string> {
+  return put(bucket, userId, await optimize(file));
+}
+
+/** Uploads an already-cropped square avatar blob. */
+export async function uploadAvatarBlob(userId: string, blob: Blob): Promise<string> {
+  return put("avatars", userId, blob);
 }

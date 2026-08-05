@@ -4,8 +4,8 @@ import { ProjectCard } from "@/components/project-card";
 import { AchievementTiles } from "@/components/achievement-tiles";
 import { earnedAchievements } from "@/data/community";
 import { leaderboardQuery, profileQuery, projectsQuery, userActivityQuery } from "@/lib/db";
-import { useStoredImage } from "@/lib/media";
-import { ACTIVITY_LABELS, initialsOf, relativeTime } from "@/lib/display";
+import { UserAvatar } from "@/components/user-avatar";
+import { ACTIVITY_LABELS, relativeTime } from "@/lib/display";
 
 export const Route = createFileRoute("/builders/$username")({
   head: ({ params }) => ({
@@ -33,7 +33,6 @@ function BuilderProfile() {
     ...userActivityQuery(profile?.id ?? ""),
     enabled: Boolean(profile?.id),
   });
-  const avatar = useStoredImage("avatars", profile?.avatar_url);
 
   if (isLoading) {
     return <div className="mx-auto max-w-6xl px-4 py-20 text-[13px] text-muted-foreground sm:px-6">Loading profile…</div>;
@@ -56,12 +55,13 @@ function BuilderProfile() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
       <div className="grid gap-6 border-b border-border pb-10 sm:grid-cols-[auto_minmax(0,1fr)]">
-        <span
-          className="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-full font-mono text-lg font-semibold text-ink sm:size-20"
-          style={{ background: profile.accent_color }}
-        >
-          {avatar ? <img src={avatar} alt="" className="size-full object-cover" /> : initialsOf(profile.display_name)}
-        </span>
+        <UserAvatar
+          name={profile.display_name}
+          path={profile.avatar_url}
+          accent={profile.accent_color}
+          size={72}
+          eager
+        />
         <div className="min-w-0">
           <h1 className="text-2xl font-semibold tracking-tight sm:text-4xl">{profile.display_name}</h1>
           <div className="mt-1 font-mono text-[12px] text-muted-foreground">

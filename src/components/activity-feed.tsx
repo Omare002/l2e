@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "motion/react";
 import { activityQuery } from "@/lib/db";
 import { ACTIVITY_LABELS, relativeTime } from "@/lib/display";
+import { UserAvatar } from "@/components/user-avatar";
 
 export function ActivityFeed({ limit = 8 }: { limit?: number }) {
   const { data, isLoading } = useQuery(activityQuery(limit));
@@ -39,10 +40,12 @@ export function ActivityFeed({ limit = 8 }: { limit?: number }) {
             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
             className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3.5 text-[13px] sm:px-5"
           >
-            <span
-              className={`size-1.5 shrink-0 rounded-full ${
-                i === 0 ? "bg-neon" : "bg-muted-foreground/30"
-              }`}
+            <UserAvatar
+              name={item.actor?.display_name}
+              path={item.actor?.avatar_url}
+              accent={item.actor?.accent_color}
+              size={24}
+              className={i === 0 ? "ring-1 ring-neon" : ""}
             />
             <span className="min-w-0 truncate text-foreground/80">
               <Link

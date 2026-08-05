@@ -49,6 +49,10 @@ export const commentInputSchema = z.object({
   kind: z.enum(["feedback", "question", "celebration"]).default("feedback"),
 });
 
+export const avatarInputSchema = z.object({
+  avatarPath: z.string().trim().max(300).nullable(),
+});
+
 export const DISCUSSION_CATEGORIES = [
   "General",
   "Help",
