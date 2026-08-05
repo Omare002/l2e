@@ -160,12 +160,12 @@ function ForumIndex() {
                       {d.body}
                     </p>
                     <div className="mt-2.5 flex min-w-0 flex-wrap items-center gap-2 font-mono text-[11px] text-muted-foreground">
-                      <span
-                        className="flex size-5 shrink-0 items-center justify-center rounded-full text-[9px] font-semibold text-ink"
-                        style={{ background: d.author?.accent_color ?? "var(--neon)" }}
-                      >
-                        {initialsOf(d.author?.display_name)}
-                      </span>
+                      <UserAvatar
+                        name={d.author?.display_name}
+                        path={d.author?.avatar_url}
+                        accent={d.author?.accent_color}
+                        size={20}
+                      />
                       <span className="truncate">@{d.author?.username ?? "someone"}</span>
                       <span aria-hidden>·</span>
                       <span>{d.category}</span>
