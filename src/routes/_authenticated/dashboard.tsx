@@ -4,6 +4,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { AchievementTiles } from "@/components/achievement-tiles";
+import { AvatarPicker } from "@/components/avatar-picker";
+import { UserAvatar } from "@/components/user-avatar";
 import { earnedAchievements } from "@/data/community";
 import { deleteProject, saveProfile } from "@/lib/app.functions";
 import {
@@ -15,11 +17,9 @@ import {
   userActivityQuery,
 } from "@/lib/db";
 import { profileInputSchema } from "@/lib/validation";
-import { uploadImage } from "@/lib/upload";
-import { useStoredImage } from "@/lib/media";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
-import { ACTIVITY_LABELS, initialsOf, relativeTime } from "@/lib/display";
+import { ACTIVITY_LABELS, relativeTime } from "@/lib/display";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -77,7 +77,6 @@ function Dashboard() {
   const { data: written } = useQuery({ ...commentsWrittenQuery(id), enabled: Boolean(id) });
   const { data: trend } = useQuery({ ...rankHistoryQuery(id), enabled: Boolean(id) });
   const { data: activity } = useQuery({ ...userActivityQuery(id), enabled: Boolean(id) });
-  const avatar = useStoredImage("avatars", profile?.avatar_url);
 
   const runSaveProfile = useServerFn(saveProfile);
   const runDelete = useServerFn(deleteProject);
@@ -129,17 +128,6 @@ function Dashboard() {
     onError: (e) => toast.error(e instanceof Error ? e.message : "Could not delete this project"),
   });
 
-  async function pickAvatar(file: File | undefined) {
-    if (!file || !userId) return;
-    try {
-      const path = await uploadImage("avatars", userId, file);
-      setForm((f) => ({ ...f, avatarPath: path }));
-      toast.success("Avatar uploaded — save to apply");
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Upload failed");
-    }
-  }
-
   async function signOut() {
     await queryClient.cancelQueries();
     queryClient.clear();
@@ -151,12 +139,13 @@ function Dashboard() {
     <div className="mx-auto max-w-5xl px-4 py-14 sm:px-6 sm:py-20">
       <header className="grid gap-6 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
         <div className="flex min-w-0 items-start gap-4 sm:gap-5">
-          <span
-            className="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-full font-mono text-sm font-semibold text-ink sm:size-16"
-            style={{ background: profile?.accent_color ?? "var(--neon)" }}
-          >
-            {avatar ? <img src={avatar} alt="" className="size-full object-cover" /> : initialsOf(profile?.display_name)}
-          </span>
+          <UserAvatar
+            name={profile?.display_name}
+            path={profile?.avatar_url}
+            accent={profile?.accent_color}
+            size={60}
+            eager
+          />
           <div className="min-w-0">
             <h1 className="truncate text-2xl font-semibold tracking-tight sm:text-3xl">
               {profile?.display_name ?? "Your profile"}
@@ -357,15 +346,19 @@ function Dashboard() {
               className={FIELD}
             />
           </label>
-          <label className="text-[12px] text-muted-foreground sm:col-span-2">
-            Avatar
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => pickAvatar(e.target.files?.[0])}
-              className="mt-2 block w-full text-[12px] file:mr-3 file:min-h-11 file:rounded-full file:border file:border-border file:bg-background file:px-4 file:text-[13px]"
-            />
-          </label>
+          <div className="text-[12px] text-muted-foreground sm:col-span-2">
+            Profile photo
+            <div className="mt-3">
+              {userId ? (
+                <AvatarPicker
+                  userId={userId}
+                  name={profile?.display_name}
+                  path={profile?.avatar_url}
+                  accent={profile?.accent_color}
+                />
+              ) : null}
+            </div>
+          </div>
           <div className="sm:col-span-2">
             <button
               type="submit"
