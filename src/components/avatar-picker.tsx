@@ -23,7 +23,7 @@ export function AvatarPicker({ userId, name, path, accent, size = 64 }: Props) {
   const runSaveAvatar = useServerFn(saveAvatar);
 
   const mutation = useMutation({
-    mutationFn: (avatarPath: string | null) => runSaveAvatar({ data: { avatarPath } as never }),
+    mutationFn: (avatarPath: string | null) => runSaveAvatar({ data: { avatarPath } }),
     onSuccess: () => {
       // Every avatar surface reads from these caches, so the photo swaps in without a refresh.
       queryClient.invalidateQueries({ queryKey: ["my-profile"] });
