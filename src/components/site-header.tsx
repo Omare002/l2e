@@ -64,13 +64,23 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4 sm:px-6">
         <Link to="/" className="group flex shrink-0 items-center" aria-label="Leaderboard home">
-          <img
-            src={logo}
-            alt="Leaderboard"
-            width={210}
-            height={67}
-            className="h-5 w-auto transition-opacity duration-200 group-hover:opacity-80 sm:h-6"
-          />
+          {logoError ? (
+            <div className="flex h-5 items-center gap-1.5 sm:h-6" aria-hidden>
+              <span className="size-2 rounded-full bg-neon" />
+              <span className="font-mono text-[15px] font-semibold tracking-tight text-foreground sm:text-base">
+                Leaderboard
+              </span>
+            </div>
+          ) : (
+            <img
+              src={logo}
+              alt="Leaderboard"
+              width={210}
+              height={67}
+              onError={() => setLogoError(true)}
+              className="h-5 w-auto transition-opacity duration-200 group-hover:opacity-80 sm:h-6"
+            />
+          )}
         </Link>
 
         <nav className="ml-auto hidden items-center gap-7 md:flex">
