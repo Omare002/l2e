@@ -10,7 +10,8 @@ import { LoadFailure, SkeletonLines } from "@/components/skeleton-block";
 import { useVote } from "@/hooks/use-vote";
 import { useAuth } from "@/hooks/use-auth";
 import { useStoredImage } from "@/lib/media";
-import { initialsOf, relativeTime } from "@/lib/display";
+import { relativeTime } from "@/lib/display";
+import { UserAvatar } from "@/components/user-avatar";
 import { statusLabel } from "@/data/community";
 
 export const Route = createFileRoute("/projects/$slug")({
@@ -115,12 +116,13 @@ function ProjectPage() {
             params={{ username: project.owner_username ?? "" }}
             className="mt-4 inline-flex items-center gap-2.5 text-[13px] transition-colors duration-200 hover:text-neon"
           >
-            <span
-              className="flex size-7 items-center justify-center rounded-full font-mono text-[10px] font-semibold text-ink"
-              style={{ background: project.owner_accent_color ?? "var(--neon)" }}
-            >
-              {initialsOf(project.owner_display_name)}
-            </span>
+            <UserAvatar
+              name={project.owner_display_name}
+              path={project.owner_avatar_url}
+              accent={project.owner_accent_color}
+              size={28}
+              eager
+            />
             {project.owner_display_name} · @{project.owner_username}
           </Link>
         </div>
@@ -238,6 +240,12 @@ function ProjectPage() {
             (comments ?? []).map((c) => (
               <li key={c.id} className="px-4 py-4 sm:px-5">
                 <div className="flex min-w-0 flex-wrap items-center gap-2.5 text-[13px]">
+                  <UserAvatar
+                    name={c.author?.display_name}
+                    path={c.author?.avatar_url}
+                    accent={c.author?.accent_color}
+                    size={24}
+                  />
                   <span className="truncate font-medium">
                     {c.author?.display_name ?? "Someone"}
                   </span>

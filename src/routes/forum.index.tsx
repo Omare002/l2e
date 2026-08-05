@@ -10,7 +10,8 @@ import { discussionsQuery } from "@/lib/db";
 import { saveDiscussion } from "@/lib/forum.functions";
 import { DISCUSSION_CATEGORIES } from "@/lib/validation";
 import { useAuth } from "@/hooks/use-auth";
-import { initialsOf, relativeTime } from "@/lib/display";
+import { relativeTime } from "@/lib/display";
+import { UserAvatar } from "@/components/user-avatar";
 
 export const Route = createFileRoute("/forum/")({
   head: () => ({

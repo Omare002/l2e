@@ -7,7 +7,8 @@ import { LoadFailure, SkeletonLines } from "@/components/skeleton-block";
 import { discussionQuery, repliesQuery } from "@/lib/db";
 import { addReply, deleteDiscussion, deleteReply, editReply, saveDiscussion } from "@/lib/forum.functions";
 import { useAuth } from "@/hooks/use-auth";
-import { initialsOf, relativeTime } from "@/lib/display";
+import { relativeTime } from "@/lib/display";
+import { UserAvatar } from "@/components/user-avatar";
 
 export const Route = createFileRoute("/forum/$id")({
   head: () => ({
@@ -184,12 +185,12 @@ function DiscussionPage() {
           </span>
           <h1 className="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">{d.title}</h1>
           <div className="mt-3 flex min-w-0 flex-wrap items-center gap-2 font-mono text-[11px] text-muted-foreground">
-            <span
-              className="flex size-6 shrink-0 items-center justify-center rounded-full text-[9px] font-semibold text-ink"
-              style={{ background: d.author?.accent_color ?? "var(--neon)" }}
-            >
-              {initialsOf(d.author?.display_name)}
-            </span>
+            <UserAvatar
+              name={d.author?.display_name}
+              path={d.author?.avatar_url}
+              accent={d.author?.accent_color}
+              size={24}
+            />
             <span className="truncate">@{d.author?.username ?? "someone"}</span>
             <span aria-hidden>·</span>
             <span>{relativeTime(d.created_at)}</span>
@@ -243,6 +244,12 @@ function DiscussionPage() {
             list.map((r) => (
               <li key={r.id} className="px-4 py-4 sm:px-5">
                 <div className="flex min-w-0 flex-wrap items-center gap-2.5 text-[13px]">
+                  <UserAvatar
+                    name={r.author?.display_name}
+                    path={r.author?.avatar_url}
+                    accent={r.author?.accent_color}
+                    size={24}
+                  />
                   <span className="truncate font-medium">
                     {r.author?.display_name ?? "Someone"}
                   </span>

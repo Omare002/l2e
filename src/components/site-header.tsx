@@ -32,7 +32,6 @@ export function SiteHeader() {
     ...myProfileQuery(userId ?? ""),
     enabled: Boolean(userId),
   });
-  const avatar = useStoredImage("avatars", profile?.avatar_url);
 
   useEffect(() => {
     setOpen(false);
@@ -47,17 +46,13 @@ export function SiteHeader() {
   }
 
   const monogram = (
-    <span
-      className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full font-mono text-[10px] font-semibold text-ink"
-      style={{ background: profile?.accent_color ?? "var(--neon)" }}
-      aria-hidden
-    >
-      {avatar ? (
-        <img src={avatar} alt="" className="size-full object-cover" />
-      ) : (
-        initialsOf(profile?.display_name ?? "You")
-      )}
-    </span>
+    <UserAvatar
+      name={profile?.display_name ?? "You"}
+      path={profile?.avatar_url}
+      accent={profile?.accent_color}
+      size={32}
+      eager
+    />
   );
 
   return (

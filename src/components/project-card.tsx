@@ -4,12 +4,11 @@ import type { ProjectStats } from "@/lib/db";
 import { statusLabel } from "@/data/community";
 import { useVote } from "@/hooks/use-vote";
 import { useStoredImage } from "@/lib/media";
-import { initialsOf } from "@/lib/display";
+import { UserAvatar } from "@/components/user-avatar";
 
 export function ProjectCard({ project, rank }: { project: ProjectStats; rank?: number }) {
   const { hasVoted, vote, isPending, isOwn } = useVote();
   const thumb = useStoredImage("thumbnails", project.thumbnail_url);
-  const avatar = useStoredImage("avatars", project.owner_avatar_url);
 
   const projectId = project.id!;
   const ownerId = project.owner_id!;
@@ -21,16 +20,12 @@ export function ProjectCard({ project, rank }: { project: ProjectStats; rank?: n
     <article className="surface-card lift-hover group flex flex-col p-5 sm:p-6">
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
         <div className="flex min-w-0 items-center gap-3">
-          <span
-            className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full font-mono text-[10px] font-semibold text-ink"
-            style={{ background: project.owner_accent_color ?? "var(--neon)" }}
-          >
-            {avatar ? (
-              <img src={avatar} alt="" loading="lazy" className="size-full object-cover" />
-            ) : (
-              initialsOf(project.owner_display_name)
-            )}
-          </span>
+          <UserAvatar
+            name={project.owner_display_name}
+            path={project.owner_avatar_url}
+            accent={project.owner_accent_color}
+            size={32}
+          />
           <div className="min-w-0 leading-tight">
             <Link
               to="/builders/$username"

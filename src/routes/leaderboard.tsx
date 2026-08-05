@@ -6,7 +6,7 @@ import { SectionHeading } from "@/components/section-heading";
 import { LoadFailure, SkeletonLines } from "@/components/skeleton-block";
 import { useRace } from "@/hooks/use-race";
 import { useAuth } from "@/hooks/use-auth";
-import { initialsOf } from "@/lib/display";
+import { UserAvatar } from "@/components/user-avatar";
 
 export const Route = createFileRoute("/leaderboard")({
   head: () => ({
@@ -86,12 +86,12 @@ function LeaderboardPage() {
                   {String(r.rank ?? 0).padStart(2, "0")}
                 </span>
                 <span className="flex min-w-0 items-center gap-3">
-                  <span
-                    className="flex size-7 shrink-0 items-center justify-center rounded-full font-mono text-[10px] font-semibold text-ink"
-                    style={{ background: r.accent_color ?? "var(--neon)" }}
-                  >
-                    {initialsOf(r.display_name)}
-                  </span>
+                  <UserAvatar
+                    name={r.display_name}
+                    path={r.avatar_url}
+                    accent={r.accent_color}
+                    size={28}
+                  />
                   <Link
                     to="/builders/$username"
                     params={{ username: r.username ?? "" }}
