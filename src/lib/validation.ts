@@ -49,6 +49,16 @@ export const commentInputSchema = z.object({
   kind: z.enum(["feedback", "question", "celebration"]).default("feedback"),
 });
 
+export const avatarInputSchema = z.object({
+  avatarPath: z.string().trim().max(300).nullable(),
+});
+
+const _unusedCommentSchema = z.object({
+  projectId: z.string().uuid(),
+  body: z.string().trim().min(2, "Say a little more").max(1000),
+  kind: z.enum(["feedback", "question", "celebration"]).default("feedback"),
+});
+
 export const DISCUSSION_CATEGORIES = [
   "General",
   "Help",
