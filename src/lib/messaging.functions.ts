@@ -184,10 +184,10 @@ export const markConversationRead = createServerFn({ method: "POST" })
       .maybeSingle();
     if (!conv.data) return { ok: false };
 
-    const column = conv.data.user_a === context.userId ? "read_a_at" : "read_b_at";
+    const now = new Date().toISOString();
     await context.supabase
       .from("conversations")
-      .update({ [column]: new Date().toISOString() })
+      .update(conv.data.user_a === context.userId ? { read_a_at: now } : { read_b_at: now })
       .eq("id", data.conversationId);
     return { ok: true };
   });
