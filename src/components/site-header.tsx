@@ -16,6 +16,7 @@ const NAV = [
   { to: "/leaderboard", label: "Leaderboard" },
   { to: "/forum", label: "Forums" },
   { to: "/hall-of-fame", label: "Hall of Fame" },
+  { to: "/how-it-works", label: "How it works" },
 ] as const;
 
 const EASE = [0.22, 1, 0.36, 1] as const;

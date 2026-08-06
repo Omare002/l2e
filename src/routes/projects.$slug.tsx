@@ -12,6 +12,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useStoredImage } from "@/lib/media";
 import { relativeTime } from "@/lib/display";
 import { UserAvatar } from "@/components/user-avatar";
+import { MessageButton } from "@/components/messages/message-button";
 import { statusLabel } from "@/data/community";
 
 export const Route = createFileRoute("/projects/$slug")({

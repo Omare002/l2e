@@ -7,6 +7,7 @@ import { LoadFailure, SkeletonLines } from "@/components/skeleton-block";
 import { useRace } from "@/hooks/use-race";
 import { useAuth } from "@/hooks/use-auth";
 import { UserAvatar } from "@/components/user-avatar";
+import { MessageButton } from "@/components/messages/message-button";
 
 export const Route = createFileRoute("/leaderboard")({
   head: () => ({
@@ -104,8 +105,9 @@ function LeaderboardPage() {
                 <span className="text-right font-mono tabular-nums">
                   {(r.score ?? 0).toLocaleString()}
                 </span>
-                <span className="hidden text-right font-mono tabular-nums text-muted-foreground sm:block">
+                <span className="hidden items-center justify-end gap-1 text-right font-mono tabular-nums text-muted-foreground sm:flex">
                   {r.project_count ?? 0}
+                  <MessageButton recipientId={r.id} variant="icon" label="Message builder" />
                 </span>
               </motion.div>
             ))
