@@ -22,6 +22,7 @@ import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
 import { Route as ForumIdRouteImport } from './routes/forum.$id'
 import { Route as BuildersUsernameRouteImport } from './routes/builders.$username'
 import { Route as AuthenticatedSubmitRouteImport } from './routes/_authenticated/submit'
+import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -88,6 +89,11 @@ const AuthenticatedSubmitRoute = AuthenticatedSubmitRouteImport.update({
   path: '/submit',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMessagesRoute = AuthenticatedMessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -102,6 +108,7 @@ export interface FileRoutesByFullPath {
   '/leaderboard': typeof LeaderboardRoute
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/messages': typeof AuthenticatedMessagesRoute
   '/submit': typeof AuthenticatedSubmitRoute
   '/builders/$username': typeof BuildersUsernameRoute
   '/forum/$id': typeof ForumIdRoute
@@ -117,6 +124,7 @@ export interface FileRoutesByTo {
   '/leaderboard': typeof LeaderboardRoute
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/messages': typeof AuthenticatedMessagesRoute
   '/submit': typeof AuthenticatedSubmitRoute
   '/builders/$username': typeof BuildersUsernameRoute
   '/forum/$id': typeof ForumIdRoute
@@ -134,6 +142,7 @@ export interface FileRoutesById {
   '/leaderboard': typeof LeaderboardRoute
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/messages': typeof AuthenticatedMessagesRoute
   '/_authenticated/submit': typeof AuthenticatedSubmitRoute
   '/builders/$username': typeof BuildersUsernameRoute
   '/forum/$id': typeof ForumIdRoute
@@ -151,6 +160,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/reset-password'
     | '/dashboard'
+    | '/messages'
     | '/submit'
     | '/builders/$username'
     | '/forum/$id'
@@ -166,6 +176,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/reset-password'
     | '/dashboard'
+    | '/messages'
     | '/submit'
     | '/builders/$username'
     | '/forum/$id'
@@ -182,6 +193,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/reset-password'
     | '/_authenticated/dashboard'
+    | '/_authenticated/messages'
     | '/_authenticated/submit'
     | '/builders/$username'
     | '/forum/$id'
@@ -298,6 +310,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSubmitRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/messages': {
+      id: '/_authenticated/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof AuthenticatedMessagesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -310,11 +329,13 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedMessagesRoute: typeof AuthenticatedMessagesRoute
   AuthenticatedSubmitRoute: typeof AuthenticatedSubmitRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedMessagesRoute: AuthenticatedMessagesRoute,
   AuthenticatedSubmitRoute: AuthenticatedSubmitRoute,
 }
 
@@ -338,13 +359,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
