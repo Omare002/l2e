@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import type { StorageBucket } from "@/lib/media";
 
 const MAX_BYTES = 5 * 1024 * 1024;
 const MAX_EDGE = 1400;
@@ -36,7 +37,7 @@ async function optimize(file: File): Promise<Blob> {
   return blob ?? file;
 }
 
-async function put(bucket: "avatars" | "thumbnails", userId: string, blob: Blob) {
+async function put(bucket: StorageBucket, userId: string, blob: Blob) {
   const path = `${userId}/${crypto.randomUUID()}.webp`;
   const { error } = await supabase.storage.from(bucket).upload(path, blob, {
     contentType: blob.type || "image/webp",
@@ -50,7 +51,7 @@ async function put(bucket: "avatars" | "thumbnails", userId: string, blob: Blob)
 }
 
 export async function uploadImage(
-  bucket: "avatars" | "thumbnails",
+  bucket: StorageBucket,
   userId: string,
   file: File,
 ): Promise<string> {

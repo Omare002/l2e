@@ -9,6 +9,7 @@ import { addReply, deleteDiscussion, deleteReply, editReply, saveDiscussion } fr
 import { useAuth } from "@/hooks/use-auth";
 import { relativeTime } from "@/lib/display";
 import { UserAvatar } from "@/components/user-avatar";
+import { MessageButton } from "@/components/messages/message-button";
 
 export const Route = createFileRoute("/forum/$id")({
   head: () => ({
@@ -194,6 +195,7 @@ function DiscussionPage() {
             <span className="truncate">@{d.author?.username ?? "someone"}</span>
             <span aria-hidden>·</span>
             <span>{relativeTime(d.created_at)}</span>
+            <MessageButton recipientId={d.author_id} variant="icon" label="Message author" />
           </div>
           <p className="mt-6 whitespace-pre-line text-[14px] leading-relaxed">{d.body}</p>
           {isOwner ? (

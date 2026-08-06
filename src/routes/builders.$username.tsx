@@ -5,6 +5,7 @@ import { AchievementTiles } from "@/components/achievement-tiles";
 import { earnedAchievements } from "@/data/community";
 import { leaderboardQuery, profileQuery, projectsQuery, userActivityQuery } from "@/lib/db";
 import { UserAvatar } from "@/components/user-avatar";
+import { MessageButton } from "@/components/messages/message-button";
 import { ACTIVITY_LABELS, relativeTime } from "@/lib/display";
 
 export const Route = createFileRoute("/builders/$username")({
@@ -72,6 +73,9 @@ function BuilderProfile() {
               {profile.bio}
             </p>
           ) : null}
+          <div className="mt-5">
+            <MessageButton recipientId={profile.id} label={`Message ${profile.display_name}`} />
+          </div>
           <div className="mt-4 flex flex-wrap gap-5 font-mono text-[12px]">
             {profile.github_url ? (
               <a href={profile.github_url} target="_blank" rel="noreferrer noopener" className="underline underline-offset-4 hover:text-neon">

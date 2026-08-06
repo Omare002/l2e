@@ -12,6 +12,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useStoredImage } from "@/lib/media";
 import { relativeTime } from "@/lib/display";
 import { UserAvatar } from "@/components/user-avatar";
+import { MessageButton } from "@/components/messages/message-button";
 import { statusLabel } from "@/data/community";
 
 export const Route = createFileRoute("/projects/$slug")({
@@ -180,6 +181,7 @@ function ProjectPage() {
             <Github className="size-3.5" /> Source
           </a>
         ) : null}
+        <MessageButton recipientId={project.owner_id} projectId={project.id} />
       </div>
 
       <section className="mt-14">

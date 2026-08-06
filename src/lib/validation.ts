@@ -80,6 +80,37 @@ export const credentialsSchema = z.object({
   password: z.string().min(8, "Use at least 8 characters").max(72),
 });
 
+export const startConversationSchema = z.object({
+  recipientId: z.string().uuid(),
+  projectId: z.string().uuid().nullable().optional(),
+});
+
+export const sendMessageSchema = z
+  .object({
+    conversationId: z.string().uuid(),
+    body: z.string().trim().max(4000).default(""),
+    imagePath: z.string().trim().max(300).nullable().optional(),
+  })
+  .refine((v) => v.body.length > 0 || Boolean(v.imagePath), {
+    message: "Write a message first",
+    path: ["body"],
+  });
+
+export const respondRequestSchema = z.object({
+  conversationId: z.string().uuid(),
+  action: z.enum(["accept", "decline", "block"]),
+});
+
+export const blockUserSchema = z.object({
+  userId: z.string().uuid(),
+  action: z.enum(["block", "unblock"]),
+});
+
+export const reportConversationSchema = z.object({
+  conversationId: z.string().uuid(),
+  reason: z.string().trim().min(4, "Tell us what's wrong").max(500),
+});
+
 export function slugify(input: string) {
   return (
     input
