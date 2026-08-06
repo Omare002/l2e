@@ -8,13 +8,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { myProfileQuery } from "@/lib/db";
 import { UserAvatar } from "@/components/user-avatar";
+import { NotificationBell } from "@/components/messages/notification-bell";
+import { conversationsQuery } from "@/lib/messaging";
 
 const NAV = [
   { to: "/projects", label: "Projects" },
   { to: "/leaderboard", label: "Leaderboard" },
   { to: "/forum", label: "Forums" },
   { to: "/hall-of-fame", label: "Hall of Fame" },
-  { to: "/how-it-works", label: "How it works" },
 ] as const;
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -31,6 +32,13 @@ export function SiteHeader() {
     ...myProfileQuery(userId ?? ""),
     enabled: Boolean(userId),
   });
+
+  const { data: conversations } = useQuery(conversationsQuery(userId));
+  const unreadThreads = (conversations ?? []).filter((c) => {
+    const mine = c.user_a === userId ? c.read_a_at : c.read_b_at;
+    const pendingForMe = c.status === "pending" && c.requester_id !== userId;
+    return pendingForMe || !mine || new Date(c.last_message_at) > new Date(mine);
+  }).length;
 
   useEffect(() => {
     setOpen(false);
@@ -91,9 +99,25 @@ export function SiteHeader() {
               {item.label}
             </Link>
           ))}
+          {isAuthenticated ? (
+            <Link
+              to="/messages"
+              className="relative py-1 text-[13px] text-muted-foreground transition-colors duration-200 hover:text-foreground"
+              activeProps={{
+                className:
+                  "text-foreground after:absolute after:inset-x-0 after:-bottom-[9px] after:h-px after:bg-neon",
+              }}
+            >
+              Messages
+              {unreadThreads > 0 ? (
+                <span className="absolute -right-3 top-0 size-1.5 rounded-full bg-neon" />
+              ) : null}
+            </Link>
+          ) : null}
         </nav>
 
         <div className="ml-auto flex items-center gap-2 md:ml-6">
+          <NotificationBell />
           <Link
             to="/submit"
             className="hidden rounded-full border border-border px-4 py-2 text-[13px] font-medium transition-colors duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-neon hover:bg-muted/60 sm:inline-flex"
@@ -162,6 +186,14 @@ export function SiteHeader() {
               </Link>
               {isAuthenticated ? (
                 <>
+                  <Link
+                    to="/messages"
+                    className="flex min-h-12 items-center gap-2 border-b border-border/70 text-[14px] text-muted-foreground transition-colors duration-200 hover:text-foreground"
+                    activeProps={{ className: "text-foreground" }}
+                  >
+                    Messages
+                    {unreadThreads > 0 ? <span className="size-1.5 rounded-full bg-neon" /> : null}
+                  </Link>
                   <Link
                     to="/dashboard"
                     className="flex min-h-12 items-center gap-3 border-b border-border/70 text-[14px]"
