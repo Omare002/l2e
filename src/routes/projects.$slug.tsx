@@ -181,6 +181,7 @@ function ProjectPage() {
             <Github className="size-3.5" /> Source
           </a>
         ) : null}
+        <MessageButton recipientId={project.owner_id} projectId={project.id} />
       </div>
 
       <section className="mt-14">
