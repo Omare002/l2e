@@ -4,6 +4,8 @@ import { qk } from "@/lib/db";
 
 const ONE_HOUR = 3600;
 
+export type StorageBucket = "avatars" | "thumbnails" | "message-images";
+
 async function sign(bucket: string, path: string) {
   const { data, error } = await supabase.storage.from(bucket).createSignedUrl(path, ONE_HOUR);
   if (error) return null;
@@ -21,13 +23,13 @@ function options(bucket: string, path: string | null | undefined) {
 }
 
 /** Resolves a stored storage path into a temporary, secure URL. */
-export function useStoredImage(bucket: "avatars" | "thumbnails", path: string | null | undefined) {
+export function useStoredImage(bucket: StorageBucket, path: string | null | undefined) {
   const { data } = useQuery(options(bucket, path));
   return data ?? null;
 }
 
 export function useStoredImages(
-  bucket: "avatars" | "thumbnails",
+  bucket: StorageBucket,
   paths: (string | null | undefined)[],
 ) {
   const results = useQueries({ queries: paths.map((p) => options(bucket, p)) });
