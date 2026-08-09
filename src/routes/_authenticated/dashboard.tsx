@@ -411,6 +411,8 @@ function Dashboard() {
           </div>
         </div>
       </section>
+
+      <CollaborationInvites />
     </div>
   );
 }
