@@ -41,6 +41,13 @@ export type Database = {
             foreignKeyName: "activity_events_actor_id_fkey"
             columns: ["actor_id"]
             isOneToOne: false
+            referencedRelation: "follow_counts"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "activity_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
             referencedRelation: "leaderboard"
             referencedColumns: ["id"]
           },
@@ -91,6 +98,13 @@ export type Database = {
             foreignKeyName: "blocks_blocked_id_fkey"
             columns: ["blocked_id"]
             isOneToOne: false
+            referencedRelation: "follow_counts"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "blocks_blocked_id_fkey"
+            columns: ["blocked_id"]
+            isOneToOne: false
             referencedRelation: "leaderboard"
             referencedColumns: ["id"]
           },
@@ -100,6 +114,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "blocks_blocker_id_fkey"
+            columns: ["blocker_id"]
+            isOneToOne: false
+            referencedRelation: "follow_counts"
+            referencedColumns: ["profile_id"]
           },
           {
             foreignKeyName: "blocks_blocker_id_fkey"
@@ -146,6 +167,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "follow_counts"
+            referencedColumns: ["profile_id"]
+          },
           {
             foreignKeyName: "comments_author_id_fkey"
             columns: ["author_id"]
@@ -205,6 +233,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "conversations"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversation_reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "follow_counts"
+            referencedColumns: ["profile_id"]
           },
           {
             foreignKeyName: "conversation_reports_reporter_id_fkey"
@@ -284,6 +319,13 @@ export type Database = {
             foreignKeyName: "conversations_requester_id_fkey"
             columns: ["requester_id"]
             isOneToOne: false
+            referencedRelation: "follow_counts"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "conversations_requester_id_fkey"
+            columns: ["requester_id"]
+            isOneToOne: false
             referencedRelation: "leaderboard"
             referencedColumns: ["id"]
           },
@@ -298,6 +340,13 @@ export type Database = {
             foreignKeyName: "conversations_user_a_fkey"
             columns: ["user_a"]
             isOneToOne: false
+            referencedRelation: "follow_counts"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "conversations_user_a_fkey"
+            columns: ["user_a"]
+            isOneToOne: false
             referencedRelation: "leaderboard"
             referencedColumns: ["id"]
           },
@@ -307,6 +356,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_user_b_fkey"
+            columns: ["user_b"]
+            isOneToOne: false
+            referencedRelation: "follow_counts"
+            referencedColumns: ["profile_id"]
           },
           {
             foreignKeyName: "conversations_user_b_fkey"
@@ -350,6 +406,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "discussion_replies_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "follow_counts"
+            referencedColumns: ["profile_id"]
+          },
           {
             foreignKeyName: "discussion_replies_author_id_fkey"
             columns: ["author_id"]
@@ -419,12 +482,83 @@ export type Database = {
             foreignKeyName: "discussions_author_id_fkey"
             columns: ["author_id"]
             isOneToOne: false
+            referencedRelation: "follow_counts"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "discussions_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
             referencedRelation: "leaderboard"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "discussions_author_id_fkey"
             columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      follows: {
+        Row: {
+          created_at: string
+          follower_id: string
+          following_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          follower_id: string
+          following_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          follower_id?: string
+          following_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "follows_follower_id_fkey"
+            columns: ["follower_id"]
+            isOneToOne: false
+            referencedRelation: "follow_counts"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "follows_follower_id_fkey"
+            columns: ["follower_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "follows_follower_id_fkey"
+            columns: ["follower_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "follows_following_id_fkey"
+            columns: ["following_id"]
+            isOneToOne: false
+            referencedRelation: "follow_counts"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "follows_following_id_fkey"
+            columns: ["following_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "follows_following_id_fkey"
+            columns: ["following_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -466,6 +600,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "conversations"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "follow_counts"
+            referencedColumns: ["profile_id"]
           },
           {
             foreignKeyName: "messages_sender_id_fkey"
@@ -522,6 +663,13 @@ export type Database = {
             foreignKeyName: "notifications_actor_id_fkey"
             columns: ["actor_id"]
             isOneToOne: false
+            referencedRelation: "follow_counts"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "notifications_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
             referencedRelation: "leaderboard"
             referencedColumns: ["id"]
           },
@@ -552,6 +700,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "follow_counts"
+            referencedColumns: ["profile_id"]
           },
           {
             foreignKeyName: "notifications_user_id_fkey"
@@ -611,6 +766,96 @@ export type Database = {
         }
         Relationships: []
       }
+      project_collaborators: {
+        Row: {
+          can_edit: boolean
+          created_at: string
+          id: string
+          invited_by: string
+          project_id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          can_edit?: boolean
+          created_at?: string
+          id?: string
+          invited_by: string
+          project_id: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          can_edit?: boolean
+          created_at?: string
+          id?: string
+          invited_by?: string
+          project_id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_collaborators_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "follow_counts"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "project_collaborators_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_collaborators_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_collaborators_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_collaborators_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_collaborators_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "follow_counts"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "project_collaborators_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_collaborators_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       projects: {
         Row: {
           category: string
@@ -668,6 +913,13 @@ export type Database = {
             foreignKeyName: "projects_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
+            referencedRelation: "follow_counts"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "projects_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
             referencedRelation: "leaderboard"
             referencedColumns: ["id"]
           },
@@ -713,6 +965,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "votes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "follow_counts"
+            referencedColumns: ["profile_id"]
           },
           {
             foreignKeyName: "votes_user_id_fkey"
@@ -841,6 +1100,27 @@ export type Database = {
         }
         Relationships: []
       }
+      follow_counts: {
+        Row: {
+          followers: number | null
+          following: number | null
+          profile_id: string | null
+          username: string | null
+        }
+        Insert: {
+          followers?: never
+          following?: never
+          profile_id?: string | null
+          username?: string | null
+        }
+        Update: {
+          followers?: never
+          following?: never
+          profile_id?: string | null
+          username?: string | null
+        }
+        Relationships: []
+      }
       leaderboard: {
         Row: {
           accent_color: string | null
@@ -857,6 +1137,35 @@ export type Database = {
           username: string | null
         }
         Relationships: []
+      }
+      project_collaborators_public: {
+        Row: {
+          accent_color: string | null
+          avatar_url: string | null
+          can_edit: boolean | null
+          created_at: string | null
+          display_name: string | null
+          id: string | null
+          project_id: string | null
+          user_id: string | null
+          username: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_collaborators_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_collaborators_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       project_stats: {
         Row: {
@@ -888,6 +1197,13 @@ export type Database = {
             foreignKeyName: "projects_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
+            referencedRelation: "follow_counts"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "projects_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
             referencedRelation: "leaderboard"
             referencedColumns: ["id"]
           },
@@ -902,6 +1218,10 @@ export type Database = {
       }
     }
     Functions: {
+      can_edit_project: {
+        Args: { _project_id: string; _user_id: string }
+        Returns: boolean
+      }
       can_read_conversation: {
         Args: { _conversation_id: string; _user_id: string }
         Returns: boolean
@@ -913,6 +1233,17 @@ export type Database = {
       is_blocked_pair: {
         Args: { _one: string; _two: string }
         Returns: boolean
+      }
+      is_project_owner: {
+        Args: { _project_id: string; _user_id: string }
+        Returns: boolean
+      }
+      my_unread_counts: {
+        Args: never
+        Returns: {
+          conversation_id: string
+          unread: number
+        }[]
       }
       rank_history: {
         Args: { _days?: number; _profile_id: string }

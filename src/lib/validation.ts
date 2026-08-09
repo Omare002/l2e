@@ -121,3 +121,31 @@ export function slugify(input: string) {
       .slice(0, 48) || "project"
   );
 }
+
+export const followSchema = z.object({
+  userId: z.string().uuid(),
+  action: z.enum(["follow", "unfollow"]),
+});
+
+export const builderSearchSchema = z.object({
+  term: z.string().trim().min(2, "Type at least 2 characters").max(40),
+  projectId: z.string().uuid(),
+});
+
+export const inviteCollaboratorSchema = z.object({
+  projectId: z.string().uuid(),
+  userId: z.string().uuid(),
+  canEdit: z.boolean().default(false),
+});
+
+export const respondCollaborationSchema = z.object({
+  id: z.string().uuid(),
+  action: z.enum(["accept", "decline"]),
+});
+
+export const updateCollaborationSchema = z.object({
+  id: z.string().uuid(),
+  canEdit: z.boolean(),
+});
+
+export const removeCollaborationSchema = z.object({ id: z.string().uuid() });
