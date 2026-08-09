@@ -258,10 +258,8 @@ export function activityQuery(limit = 12) {
     queryKey: [...qk.activity, limit],
     queryFn: async (): Promise<ActivityItem[]> => {
       const res = await supabase
-        .from("activity_events")
-        .select(
-          "*, actor:profiles!activity_events_actor_id_fkey(username, display_name, avatar_url, accent_color), project:projects!activity_events_project_id_fkey(slug, title)",
-        )
+        .from("activity_public")
+        .select("*")
         .order("created_at", { ascending: false })
         .limit(limit);
       return (unwrap(res, "Could not load the activity feed") ?? []) as unknown as ActivityItem[];
@@ -270,16 +268,15 @@ export function activityQuery(limit = 12) {
   });
 }
 
-export function userActivityQuery(profileId: string, limit = 8) {
+/** Scoped by public username: guests never receive raw account IDs. */
+export function userActivityQuery(username: string, limit = 8) {
   return queryOptions({
-    queryKey: ["user-activity", profileId, limit],
+    queryKey: ["user-activity", username, limit],
     queryFn: async (): Promise<ActivityItem[]> => {
       const res = await supabase
-        .from("activity_events")
-        .select(
-          "*, actor:profiles!activity_events_actor_id_fkey(username, display_name, avatar_url, accent_color), project:projects!activity_events_project_id_fkey(slug, title)",
-        )
-        .eq("actor_id", profileId)
+        .from("activity_public")
+        .select("*")
+        .eq("actor_username", username)
         .order("created_at", { ascending: false })
         .limit(limit);
       return (unwrap(res, "Could not load recent activity") ?? []) as unknown as ActivityItem[];
@@ -302,31 +299,14 @@ export function communityStatsQuery() {
   return queryOptions({
     queryKey: qk.stats,
     queryFn: async () => {
-      const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString();
-      const count = async (
-        table: "profiles" | "projects" | "votes" | "comments",
-        build?: (q: any) => any,
-      ) => {
-        let q = supabase.from(table).select("id", { count: "exact", head: true });
-        if (build) q = build(q);
-        const { count: n } = await q;
-        return n ?? 0;
-      };
-
-      const [builders, projects, votes, votesWeek, projectsWeek] = await Promise.all([
-        count("profiles"),
-        count("projects", (q) => q.eq("published", true)),
-        count("votes"),
-        count("votes", (q) => q.gte("created_at", weekAgo)),
-        count("projects", (q) => q.eq("published", true).gte("created_at", weekAgo)),
-      ]);
+      const { data } = await supabase.from("community_totals").select("*").maybeSingle();
 
       return [
-        { label: "Builders", value: builders },
-        { label: "Projects published", value: projects },
-        { label: "Total upvotes", value: votes },
-        { label: "Upvotes this week", value: votesWeek },
-        { label: "New this week", value: projectsWeek },
+        { label: "Builders", value: data?.builders ?? 0 },
+        { label: "Projects published", value: data?.projects_published ?? 0 },
+        { label: "Total upvotes", value: data?.upvotes ?? 0 },
+        { label: "Upvotes this week", value: data?.upvotes_week ?? 0 },
+        { label: "New this week", value: data?.projects_week ?? 0 },
       ];
     },
     staleTime: 30_000,
