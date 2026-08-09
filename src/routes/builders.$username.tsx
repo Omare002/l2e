@@ -6,6 +6,8 @@ import { earnedAchievements } from "@/data/community";
 import { leaderboardQuery, profileQuery, projectsQuery, userActivityQuery } from "@/lib/db";
 import { UserAvatar } from "@/components/user-avatar";
 import { MessageButton } from "@/components/messages/message-button";
+import { FollowButton } from "@/components/follow-button";
+import { followCountsQuery } from "@/lib/social";
 import { ACTIVITY_LABELS, relativeTime } from "@/lib/display";
 
 export const Route = createFileRoute("/builders/$username")({
@@ -34,6 +36,7 @@ function BuilderProfile() {
     ...userActivityQuery(username),
     enabled: Boolean(username),
   });
+  const { data: counts } = useQuery(followCountsQuery(username));
 
   if (isLoading) {
     return <div className="mx-auto max-w-6xl px-4 py-20 text-[13px] text-muted-foreground sm:px-6">Loading profile…</div>;
@@ -73,7 +76,8 @@ function BuilderProfile() {
               {profile.bio}
             </p>
           ) : null}
-          <div className="mt-5">
+          <div className="mt-5 flex flex-wrap gap-2.5">
+            <FollowButton targetId={profile.id} username={profile.username} />
             <MessageButton recipientId={profile.id} label={`Message ${profile.display_name}`} />
           </div>
           <div className="mt-4 flex flex-wrap gap-5 font-mono text-[12px]">
@@ -91,11 +95,13 @@ function BuilderProfile() {
         </div>
       </div>
 
-      <div className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-3">
+      <div className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-5">
         {[
           ["Rank", row?.rank ? `#${row.rank}` : "—"],
           ["Upvotes received", votes.toLocaleString()],
           ["Projects", String(mine.length)],
+          ["Followers", (counts?.followers ?? 0).toLocaleString()],
+          ["Following", (counts?.following ?? 0).toLocaleString()],
         ].map(([label, value]) => (
           <div key={label} className="bg-background px-5 py-5">
             <div className="text-xl font-semibold tabular-nums">{value}</div>

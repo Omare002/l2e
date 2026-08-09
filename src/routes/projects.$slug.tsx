@@ -13,6 +13,7 @@ import { useStoredImage } from "@/lib/media";
 import { relativeTime } from "@/lib/display";
 import { UserAvatar } from "@/components/user-avatar";
 import { MessageButton } from "@/components/messages/message-button";
+import { BuiltBy } from "@/components/projects/built-by";
 import { statusLabel } from "@/data/community";
 
 export const Route = createFileRoute("/projects/$slug")({
@@ -112,20 +113,15 @@ function ProjectPage() {
           <p className="mt-3 max-w-2xl text-[14px] leading-relaxed text-muted-foreground">
             {project.tagline}
           </p>
-          <Link
-            to="/builders/$username"
-            params={{ username: project.owner_username ?? "" }}
-            className="mt-4 inline-flex items-center gap-2.5 text-[13px] transition-colors duration-200 hover:text-neon"
-          >
-            <UserAvatar
-              name={project.owner_display_name}
-              path={project.owner_avatar_url}
-              accent={project.owner_accent_color}
-              size={28}
-              eager
-            />
-            {project.owner_display_name} · @{project.owner_username}
-          </Link>
+          <BuiltBy
+            projectId={project.id ?? undefined}
+            owner={{
+              username: project.owner_username,
+              display_name: project.owner_display_name,
+              avatar_url: project.owner_avatar_url,
+              accent_color: project.owner_accent_color,
+            }}
+          />
         </div>
         <button
           type="button"
