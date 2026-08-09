@@ -204,8 +204,6 @@ export function commentsWrittenQuery(userId: string) {
   });
 }
 
-const AUTHOR_SELECT = "username, display_name, avatar_url, accent_color";
-
 export function discussionsQuery() {
   return queryOptions({
     queryKey: qk.discussions,
