@@ -179,8 +179,8 @@ export function commentsQuery(projectId: string | undefined) {
     enabled: Boolean(projectId),
     queryFn: async (): Promise<CommentWithAuthor[]> => {
       const res = await supabase
-        .from("comments")
-        .select("*, author:profiles!comments_author_id_fkey(username, display_name, avatar_url, accent_color)")
+        .from("comments_public")
+        .select("*")
         .eq("project_id", projectId!)
         .order("created_at", { ascending: false })
         .limit(100);
@@ -211,20 +211,12 @@ export function discussionsQuery() {
     queryKey: qk.discussions,
     queryFn: async (): Promise<DiscussionWithAuthor[]> => {
       const res = await supabase
-        .from("discussions")
-        .select(
-          `*, author:profiles!discussions_author_id_fkey(${AUTHOR_SELECT}), discussion_replies(count)`,
-        )
+        .from("discussions_public")
+        .select("*")
         .order("pinned", { ascending: false })
         .order("last_activity_at", { ascending: false })
         .limit(100);
-      const rows = (unwrap(res, "Could not load the forum") ?? []) as unknown as (DiscussionWithAuthor & {
-        discussion_replies?: { count: number }[];
-      })[];
-      return rows.map(({ discussion_replies, ...d }) => ({
-        ...d,
-        reply_count: discussion_replies?.[0]?.count ?? 0,
-      }));
+      return (unwrap(res, "Could not load the forum") ?? []) as unknown as DiscussionWithAuthor[];
     },
     staleTime: 10_000,
     placeholderData: keepPreviousData,
@@ -236,8 +228,8 @@ export function discussionQuery(id: string) {
     queryKey: qk.discussion(id),
     queryFn: async (): Promise<DiscussionWithAuthor | null> => {
       const res = await supabase
-        .from("discussions")
-        .select(`*, author:profiles!discussions_author_id_fkey(${AUTHOR_SELECT})`)
+        .from("discussions_public")
+        .select("*")
         .eq("id", id)
         .maybeSingle();
       return unwrap(res, "Could not load this discussion") as unknown as DiscussionWithAuthor | null;
@@ -252,8 +244,8 @@ export function repliesQuery(discussionId: string | undefined) {
     enabled: Boolean(discussionId),
     queryFn: async (): Promise<ReplyWithAuthor[]> => {
       const res = await supabase
-        .from("discussion_replies")
-        .select(`*, author:profiles!discussion_replies_author_id_fkey(${AUTHOR_SELECT})`)
+        .from("discussion_replies_public")
+        .select("*")
         .eq("discussion_id", discussionId!)
         .order("created_at", { ascending: true })
         .limit(200);
