@@ -371,6 +371,13 @@ export type Database = {
             referencedRelation: "discussions"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "discussion_replies_discussion_id_fkey"
+            columns: ["discussion_id"]
+            isOneToOne: false
+            referencedRelation: "discussions_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       discussions: {
@@ -725,6 +732,115 @@ export type Database = {
       }
     }
     Views: {
+      activity_public: {
+        Row: {
+          actor: Json | null
+          actor_id: string | null
+          actor_username: string | null
+          created_at: string | null
+          id: string | null
+          project: Json | null
+          project_id: string | null
+          type: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_events_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_events_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      comments_public: {
+        Row: {
+          author: Json | null
+          author_id: string | null
+          body: string | null
+          created_at: string | null
+          id: string | null
+          kind: string | null
+          project_id: string | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      community_totals: {
+        Row: {
+          builders: number | null
+          projects_published: number | null
+          projects_week: number | null
+          upvotes: number | null
+          upvotes_week: number | null
+        }
+        Relationships: []
+      }
+      discussion_replies_public: {
+        Row: {
+          author: Json | null
+          author_id: string | null
+          body: string | null
+          created_at: string | null
+          discussion_id: string | null
+          id: string | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "discussion_replies_discussion_id_fkey"
+            columns: ["discussion_id"]
+            isOneToOne: false
+            referencedRelation: "discussions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "discussion_replies_discussion_id_fkey"
+            columns: ["discussion_id"]
+            isOneToOne: false
+            referencedRelation: "discussions_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      discussions_public: {
+        Row: {
+          author: Json | null
+          author_id: string | null
+          body: string | null
+          category: string | null
+          created_at: string | null
+          id: string | null
+          last_activity_at: string | null
+          pinned: boolean | null
+          reply_count: number | null
+          title: string | null
+          updated_at: string | null
+        }
+        Relationships: []
+      }
       leaderboard: {
         Row: {
           accent_color: string | null

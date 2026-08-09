@@ -14,36 +14,52 @@ export function useChatPresence(conversationId: string | undefined, userId: stri
 
   useEffect(() => {
     if (!conversationId || !userId) return;
-    const channel = supabase.channel(`chat:${conversationId}`, {
-      config: { presence: { key: userId } },
-    });
-    channelRef.current = channel;
+    let cancelled = false;
+    let channel: ReturnType<typeof supabase.channel> | null = null;
 
-    const syncPresence = () => {
-      const state = channel.presenceState();
-      setPartnerOnline(Object.keys(state).some((key) => key !== userId));
-    };
+    // Only participants may join a conversation's presence channel. RLS on
+    // `conversations` decides this, so an outsider guessing an id gets nothing.
+    void (async () => {
+      const { data, error } = await supabase
+        .from("conversations")
+        .select("id")
+        .eq("id", conversationId)
+        .maybeSingle();
+      if (cancelled || error || !data) return;
 
-    channel
-      .on("presence", { event: "sync" }, syncPresence)
-      .on("presence", { event: "join" }, syncPresence)
-      .on("presence", { event: "leave" }, syncPresence)
-      .on("broadcast", { event: "typing" }, ({ payload }) => {
-        if (payload?.userId === userId) return;
-        setPartnerTyping(true);
-        if (typingTimer.current) clearTimeout(typingTimer.current);
-        typingTimer.current = setTimeout(() => setPartnerTyping(false), 2600);
-      })
-      .subscribe((status) => {
-        if (status === "SUBSCRIBED") void channel.track({ at: Date.now() });
+      const joined = supabase.channel(`chat:${conversationId}`, {
+        config: { presence: { key: userId }, private: true },
       });
+      channel = joined;
+      channelRef.current = joined;
+
+      const syncPresence = () => {
+        const state = joined.presenceState();
+        setPartnerOnline(Object.keys(state).some((key) => key !== userId));
+      };
+
+      joined
+        .on("presence", { event: "sync" }, syncPresence)
+        .on("presence", { event: "join" }, syncPresence)
+        .on("presence", { event: "leave" }, syncPresence)
+        .on("broadcast", { event: "typing" }, ({ payload }) => {
+          if (payload?.userId === userId) return;
+          setPartnerTyping(true);
+          if (typingTimer.current) clearTimeout(typingTimer.current);
+          typingTimer.current = setTimeout(() => setPartnerTyping(false), 2600);
+        })
+        .subscribe((status) => {
+          if (status === "SUBSCRIBED") void joined.track({ at: Date.now() });
+        });
+    })();
 
     return () => {
+      cancelled = true;
       if (typingTimer.current) clearTimeout(typingTimer.current);
       channelRef.current = null;
       setPartnerOnline(false);
       setPartnerTyping(false);
-      supabase.removeChannel(channel);
+      if (channel) supabase.removeChannel(channel);
     };
   }, [conversationId, userId]);
 

@@ -31,8 +31,8 @@ function BuilderProfile() {
   const { data: leaders } = useQuery(leaderboardQuery());
   const { data: projects } = useQuery(projectsQuery("Most Voted", "All", 48));
   const { data: activity } = useQuery({
-    ...userActivityQuery(profile?.id ?? ""),
-    enabled: Boolean(profile?.id),
+    ...userActivityQuery(username),
+    enabled: Boolean(username),
   });
 
   if (isLoading) {
