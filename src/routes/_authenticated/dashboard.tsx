@@ -76,7 +76,10 @@ function Dashboard() {
   const { data: leaders } = useQuery(leaderboardQuery());
   const { data: written } = useQuery({ ...commentsWrittenQuery(id), enabled: Boolean(id) });
   const { data: trend } = useQuery({ ...rankHistoryQuery(id), enabled: Boolean(id) });
-  const { data: activity } = useQuery({ ...userActivityQuery(id), enabled: Boolean(id) });
+  const { data: activity } = useQuery({
+    ...userActivityQuery(profile?.username ?? ""),
+    enabled: Boolean(profile?.username),
+  });
 
   const runSaveProfile = useServerFn(saveProfile);
   const runDelete = useServerFn(deleteProject);
