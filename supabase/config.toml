@@ -1,1 +1,6 @@
 project_id = "ygzzceodtfuwcdnajueg"
+
+[functions.send-push]
+# Called only by the notifications_push DB trigger (via pg_net) with a
+# shared-secret header, not by end users — no Supabase user JWT to verify.
+verify_jwt = false

@@ -1,23 +1,20 @@
 /**
- * Client-side web push setup: registers the service worker and asks the
- * browser for notification permission.
+ * Client-side web push setup: registers the service worker, asks the
+ * browser for notification permission, and creates a PushSubscription.
  *
- * IMPORTANT — this only covers the browser side. To actually deliver a push
- * you still need, on the server:
- *   1. A VAPID key pair (e.g. via `npx web-push generate-vapid-keys`).
- *   2. Somewhere to store each user's PushSubscription (endpoint + keys) —
- *      e.g. a `push_subscriptions` Supabase table.
- *   3. An endpoint (a Supabase edge function is a natural fit here) that
- *      uses the private VAPID key to send a push to a stored subscription.
- * None of that exists in this project yet — this module gets you a
- * subscription object in the browser; wiring it to a server is a separate
- * task.
+ * This only covers the browser side — persisting the subscription against
+ * the signed-in user happens in the calling component via the
+ * `savePushSubscription` server function (src/lib/push-subscriptions.functions.ts),
+ * since server functions need to be invoked through `useServerFn`, which is a
+ * hook and can't be called from this plain module. Delivery itself is handled
+ * by the `send-push` Supabase edge function, triggered from Postgres whenever
+ * a row lands in `notifications` (see supabase/migrations/20260825120000_add_push_notifications.sql).
  */
 
 export type PushSetupResult =
   | { status: "unsupported" }
   | { status: "denied" }
-  | { status: "granted"; subscription: PushSubscription | null };
+  | { status: "granted"; subscription: PushSubscription };
 
 /** True if the browser can register service workers and receive push. */
 export function isPushSupported(): boolean {
@@ -25,15 +22,13 @@ export function isPushSupported(): boolean {
 }
 
 /**
- * Registers /sw.js and requests notification permission. Must be called
- * from a user gesture (e.g. a button click) — most browsers ignore or block
- * permission prompts fired on page load.
- *
- * `vapidPublicKey` is optional: pass it once you generate a VAPID key pair
- * server-side, and this will also create a PushSubscription. Without it,
- * this only registers the service worker and requests permission.
+ * Registers /sw.js, requests notification permission, and subscribes to
+ * push with the given VAPID public key. Must be called from a user gesture
+ * (e.g. a button click) — most browsers ignore or block permission prompts
+ * fired on page load. The caller is responsible for persisting the returned
+ * subscription server-side (see savePushSubscription).
  */
-export async function enablePushNotifications(vapidPublicKey?: string): Promise<PushSetupResult> {
+export async function enablePushNotifications(vapidPublicKey: string): Promise<PushSetupResult> {
   if (!isPushSupported()) return { status: "unsupported" };
 
   const permission = await Notification.requestPermission();
@@ -42,10 +37,6 @@ export async function enablePushNotifications(vapidPublicKey?: string): Promise<
   const registration = await navigator.serviceWorker.register("/sw.js");
   await navigator.serviceWorker.ready;
 
-  if (!vapidPublicKey) {
-    return { status: "granted", subscription: null };
-  }
-
   const subscription =
     (await registration.pushManager.getSubscription()) ??
     (await registration.pushManager.subscribe({
@@ -53,8 +44,6 @@ export async function enablePushNotifications(vapidPublicKey?: string): Promise<
       applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
     }));
 
-  // TODO: send `subscription` to a server endpoint that stores it against
-  // the signed-in user, once that endpoint exists.
   return { status: "granted", subscription };
 }
 

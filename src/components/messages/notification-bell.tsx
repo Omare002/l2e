@@ -15,6 +15,8 @@ const LABELS: Record<string, string> = {
   message_request: "sent you a message request",
   collaborator_invited: "invited you to collaborate",
   collaborator_accepted: "accepted your collaboration invite",
+  collaborator_declined: "declined your collaboration invite",
+  new_follower: "started following you",
 };
 
 export function NotificationBell() {

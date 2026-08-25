@@ -127,6 +127,16 @@ export const followSchema = z.object({
   action: z.enum(["follow", "unfollow"]),
 });
 
+export const pushSubscriptionSchema = z.object({
+  endpoint: z.string().url().max(500),
+  p256dh: z.string().min(1).max(500),
+  auth: z.string().min(1).max(500),
+});
+
+export const removePushSubscriptionSchema = z.object({
+  endpoint: z.string().url().max(500),
+});
+
 export const builderSearchSchema = z.object({
   term: z.string().trim().min(2, "Type at least 2 characters").max(40),
   projectId: z.string().uuid(),

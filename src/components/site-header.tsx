@@ -9,10 +9,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { myProfileQuery } from "@/lib/db";
 import { UserAvatar } from "@/components/user-avatar";
+import { useServerFn } from "@tanstack/react-start";
 import { NotificationBell } from "@/components/messages/notification-bell";
 import { conversationsQuery } from "@/lib/messaging";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { enablePushNotifications, isPushSupported } from "@/lib/push-notifications";
+import { savePushSubscription } from "@/lib/push-subscriptions.functions";
 
 const NAV = [
   { to: "/projects", label: "Projects" },
@@ -43,19 +45,43 @@ export function SiteHeader() {
     const pendingForMe = c.status === "pending" && c.requester_id !== userId;
     return pendingForMe || !mine || new Date(c.last_message_at) > new Date(mine);
   }).length;
+  const runSavePushSubscription = useServerFn(savePushSubscription);
 
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
 
   async function enableNotifications() {
-    const result = await enablePushNotifications();
+    const vapidPublicKey = import.meta.env["VITE_VAPID_PUBLIC_KEY"];
+    if (!vapidPublicKey) {
+      toast.error("Push notifications aren't configured yet");
+      return;
+    }
+    const result = await enablePushNotifications(vapidPublicKey);
     if (result.status === "unsupported") {
       toast.error("This browser doesn't support push notifications");
-    } else if (result.status === "denied") {
+      return;
+    }
+    if (result.status === "denied") {
       toast.error("Notifications permission was denied");
-    } else {
+      return;
+    }
+    try {
+      const key = (name: string) => {
+        const raw = result.subscription.toJSON().keys?.[name];
+        if (!raw) throw new Error(`Missing ${name} key`);
+        return raw;
+      };
+      await runSavePushSubscription({
+        data: {
+          endpoint: result.subscription.endpoint,
+          p256dh: key("p256dh"),
+          auth: key("auth"),
+        },
+      } as never);
       toast.success("Notifications enabled");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not save that subscription");
     }
   }
 
