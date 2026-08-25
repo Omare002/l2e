@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ChevronUp, ExternalLink, Github, MessageSquare } from "lucide-react";
+import { ExternalLink, Github, Heart, MessageSquare } from "lucide-react";
 import type { ProjectStats } from "@/lib/db";
 import { statusLabel } from "@/data/community";
 import { useVote } from "@/hooks/use-vote";
@@ -119,7 +119,10 @@ export function ProjectCard({ project, rank }: { project: ProjectStats; rank?: n
               : "border-white/10 text-white/70 hover:border-neon/50 hover:text-neon"
           }`}
         >
-          <ChevronUp className={`size-3.5 ${pending ? "animate-pulse" : ""}`} />{" "}
+          <Heart
+            className={`size-3.5 ${pending ? "animate-pulse" : ""}`}
+            fill={voted ? "currentColor" : "none"}
+          />{" "}
           {project.vote_count ?? 0}
         </button>
       </div>
