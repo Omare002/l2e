@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { Link, useRouter, useRouterState } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "motion/react";
-import { LogOut, Menu, X } from "lucide-react";
+import { BellRing, LogOut, Menu, X } from "lucide-react";
+import { toast } from "sonner";
 import logo from "@/assets/logo.png";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -10,6 +11,8 @@ import { myProfileQuery } from "@/lib/db";
 import { UserAvatar } from "@/components/user-avatar";
 import { NotificationBell } from "@/components/messages/notification-bell";
 import { conversationsQuery } from "@/lib/messaging";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { enablePushNotifications, isPushSupported } from "@/lib/push-notifications";
 
 const NAV = [
   { to: "/projects", label: "Projects" },
@@ -44,6 +47,17 @@ export function SiteHeader() {
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
+
+  async function enableNotifications() {
+    const result = await enablePushNotifications();
+    if (result.status === "unsupported") {
+      toast.error("This browser doesn't support push notifications");
+    } else if (result.status === "denied") {
+      toast.error("Notifications permission was denied");
+    } else {
+      toast.success("Notifications enabled");
+    }
+  }
 
   async function signOut() {
     setOpen(false);
@@ -81,7 +95,7 @@ export function SiteHeader() {
               width={210}
               height={67}
               onError={() => setLogoError(true)}
-              className="h-5 w-auto transition-opacity duration-200 group-hover:opacity-80 sm:h-6"
+              className="h-7 w-auto transition-opacity duration-200 group-hover:opacity-80 sm:h-9"
             />
           )}
         </Link>
@@ -118,6 +132,17 @@ export function SiteHeader() {
         </nav>
 
         <div className="ml-auto flex items-center gap-2 md:ml-6">
+          {isPushSupported() ? (
+            <button
+              type="button"
+              onClick={enableNotifications}
+              aria-label="Enable push notifications"
+              className="hidden size-11 items-center justify-center rounded-full border border-border text-foreground transition-colors duration-200 hover:border-neon md:flex"
+            >
+              <BellRing className="size-4" />
+            </button>
+          ) : null}
+          <ThemeToggle />
           <NotificationBell />
           <Link
             to="/submit"
@@ -185,6 +210,10 @@ export function SiteHeader() {
               >
                 Submit project
               </Link>
+              <div className="flex min-h-12 items-center justify-between border-b border-border/70 text-[14px] text-muted-foreground">
+                Theme
+                <ThemeToggle />
+              </div>
               {isAuthenticated ? (
                 <>
                   <Link
