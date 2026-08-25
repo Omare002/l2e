@@ -91,7 +91,7 @@ export function SiteHeader() {
             <Link
               key={item.to}
               to={item.to}
-              className="relative py-1 text-[13px] text-muted-foreground transition-colors duration-200 hover:text-foreground"
+              className="relative py-1 text-[15px] text-muted-foreground transition-colors duration-200 hover:text-foreground"
               activeProps={{
                 className:
                   "text-foreground after:absolute after:inset-x-0 after:-bottom-[9px] after:h-px after:bg-neon",
@@ -103,7 +103,7 @@ export function SiteHeader() {
           {isAuthenticated ? (
             <Link
               to="/messages"
-              className="relative py-1 text-[13px] text-muted-foreground transition-colors duration-200 hover:text-foreground"
+              className="relative py-1 text-[15px] text-muted-foreground transition-colors duration-200 hover:text-foreground"
               activeProps={{
                 className:
                   "text-foreground after:absolute after:inset-x-0 after:-bottom-[9px] after:h-px after:bg-neon",
