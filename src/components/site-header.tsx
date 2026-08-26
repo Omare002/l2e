@@ -104,7 +104,7 @@ export function SiteHeader() {
   );
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-border bg-navbar/85 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4 sm:px-6">
         <Link to="/" className="group flex shrink-0 items-center" aria-label="Leaderboard home">
           {logoError ? (
@@ -118,10 +118,10 @@ export function SiteHeader() {
             <img
               src={logo}
               alt="Leaderboard"
-              width={210}
-              height={67}
+              width={1266}
+              height={210}
               onError={() => setLogoError(true)}
-              className="h-7 w-auto transition-opacity duration-200 group-hover:opacity-80 sm:h-9"
+              className="h-7 w-auto transition-opacity duration-200 group-hover:opacity-80 sm:h-9 dark:invert"
             />
           )}
         </Link>
@@ -216,7 +216,7 @@ export function SiteHeader() {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.24, ease: EASE }}
-            className="overflow-hidden border-t border-border bg-background md:hidden"
+            className="overflow-hidden border-t border-border bg-navbar md:hidden"
           >
             <nav className="mx-auto flex max-w-6xl flex-col px-4 py-2 sm:px-6">
               {NAV.map((item) => (
