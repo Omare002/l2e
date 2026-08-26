@@ -4,11 +4,14 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { AnimatePresence, motion } from "motion/react";
 import { Bell } from "lucide-react";
+import { toast } from "sonner";
 import { UserAvatar } from "@/components/user-avatar";
 import { useAuth } from "@/hooks/use-auth";
 import { relativeTime } from "@/lib/display";
 import { notificationsQuery } from "@/lib/messaging";
 import { markNotificationsRead } from "@/lib/messaging.functions";
+import { enablePushNotifications, isPushSupported } from "@/lib/push-notifications";
+import { savePushSubscription } from "@/lib/push-subscriptions.functions";
 
 const LABELS: Record<string, string> = {
   message_received: "sent you a message",
@@ -22,12 +25,18 @@ const LABELS: Record<string, string> = {
 export function NotificationBell() {
   const { userId, isAuthenticated } = useAuth();
   const [open, setOpen] = useState(false);
+  const [pushPermission, setPushPermission] = useState<NotificationPermission | null>(null);
   const wrap = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
   const runRead = useServerFn(markNotificationsRead);
+  const runSavePushSubscription = useServerFn(savePushSubscription);
   const { data } = useQuery(notificationsQuery(userId));
   const items = data ?? [];
   const unread = items.filter((n) => !n.read_at).length;
+
+  useEffect(() => {
+    if (isPushSupported()) setPushPermission(Notification.permission);
+  }, []);
 
   useEffect(() => {
     function onDown(event: MouseEvent) {
@@ -42,6 +51,42 @@ export function NotificationBell() {
   async function markAll() {
     await runRead({ data: { id: null } as never });
     queryClient.invalidateQueries({ queryKey: ["notifications"] });
+  }
+
+  async function enablePush() {
+    const vapidPublicKey = import.meta.env["VITE_VAPID_PUBLIC_KEY"];
+    if (!vapidPublicKey) {
+      toast.error("Push notifications aren't configured yet");
+      return;
+    }
+    const result = await enablePushNotifications(vapidPublicKey);
+    if (result.status === "unsupported") {
+      toast.error("This browser doesn't support push notifications");
+      return;
+    }
+    if (result.status === "denied") {
+      setPushPermission("denied");
+      toast.error("Notifications permission was denied");
+      return;
+    }
+    try {
+      const key = (name: string) => {
+        const raw = result.subscription.toJSON().keys?.[name];
+        if (!raw) throw new Error(`Missing ${name} key`);
+        return raw;
+      };
+      await runSavePushSubscription({
+        data: {
+          endpoint: result.subscription.endpoint,
+          p256dh: key("p256dh"),
+          auth: key("auth"),
+        },
+      } as never);
+      setPushPermission("granted");
+      toast.success("Push notifications enabled");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not save that subscription");
+    }
   }
 
   return (
@@ -79,6 +124,18 @@ export function NotificationBell() {
                 </button>
               ) : null}
             </div>
+            {pushPermission && pushPermission !== "granted" ? (
+              <div className="flex items-center justify-between border-b border-border/70 bg-muted/40 px-3.5 py-2">
+                <span className="text-[12px] text-muted-foreground">Get notified instantly</span>
+                <button
+                  type="button"
+                  onClick={enablePush}
+                  className="font-mono text-[11px] text-neon transition-colors duration-200 hover:text-foreground"
+                >
+                  Enable push
+                </button>
+              </div>
+            ) : null}
             <div className="max-h-[60vh] overflow-y-auto">
               {items.length === 0 ? (
                 <p className="px-4 py-8 text-center text-[13px] text-muted-foreground">

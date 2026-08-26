@@ -2,19 +2,15 @@ import { useEffect, useState } from "react";
 import { Link, useRouter, useRouterState } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "motion/react";
-import { BellRing, LogOut, Menu, X } from "lucide-react";
-import { toast } from "sonner";
+import { LogOut, Menu, X } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { myProfileQuery } from "@/lib/db";
 import { UserAvatar } from "@/components/user-avatar";
-import { useServerFn } from "@tanstack/react-start";
 import { NotificationBell } from "@/components/messages/notification-bell";
 import { conversationsQuery } from "@/lib/messaging";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { enablePushNotifications, isPushSupported } from "@/lib/push-notifications";
-import { savePushSubscription } from "@/lib/push-subscriptions.functions";
 
 const NAV = [
   { to: "/projects", label: "Projects" },
@@ -45,45 +41,10 @@ export function SiteHeader() {
     const pendingForMe = c.status === "pending" && c.requester_id !== userId;
     return pendingForMe || !mine || new Date(c.last_message_at) > new Date(mine);
   }).length;
-  const runSavePushSubscription = useServerFn(savePushSubscription);
 
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
-
-  async function enableNotifications() {
-    const vapidPublicKey = import.meta.env["VITE_VAPID_PUBLIC_KEY"];
-    if (!vapidPublicKey) {
-      toast.error("Push notifications aren't configured yet");
-      return;
-    }
-    const result = await enablePushNotifications(vapidPublicKey);
-    if (result.status === "unsupported") {
-      toast.error("This browser doesn't support push notifications");
-      return;
-    }
-    if (result.status === "denied") {
-      toast.error("Notifications permission was denied");
-      return;
-    }
-    try {
-      const key = (name: string) => {
-        const raw = result.subscription.toJSON().keys?.[name];
-        if (!raw) throw new Error(`Missing ${name} key`);
-        return raw;
-      };
-      await runSavePushSubscription({
-        data: {
-          endpoint: result.subscription.endpoint,
-          p256dh: key("p256dh"),
-          auth: key("auth"),
-        },
-      } as never);
-      toast.success("Notifications enabled");
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Could not save that subscription");
-    }
-  }
 
   async function signOut() {
     setOpen(false);
@@ -105,7 +66,7 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-navbar/85 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4 sm:px-6">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
         <Link to="/" className="group flex shrink-0 items-center" aria-label="Leaderboard home">
           {logoError ? (
             <div className="flex h-5 items-center gap-1.5 sm:h-6" aria-hidden>
@@ -126,12 +87,12 @@ export function SiteHeader() {
           )}
         </Link>
 
-        <nav className="ml-auto hidden items-center gap-7 md:flex">
+        <nav className="hidden items-center gap-6 md:flex">
           {NAV.map((item) => (
             <Link
               key={item.to}
               to={item.to}
-              className="relative py-1 text-[14px] text-muted-foreground transition-colors duration-200 hover:text-foreground"
+              className="relative whitespace-nowrap py-1 text-[14px] text-muted-foreground transition-colors duration-200 hover:text-foreground"
               activeProps={{
                 className:
                   "text-foreground after:absolute after:inset-x-0 after:-bottom-[9px] after:h-px after:bg-neon",
@@ -143,7 +104,7 @@ export function SiteHeader() {
           {isAuthenticated ? (
             <Link
               to="/messages"
-              className="relative py-1 text-[14px] text-muted-foreground transition-colors duration-200 hover:text-foreground"
+              className="relative whitespace-nowrap py-1 text-[14px] text-muted-foreground transition-colors duration-200 hover:text-foreground"
               activeProps={{
                 className:
                   "text-foreground after:absolute after:inset-x-0 after:-bottom-[9px] after:h-px after:bg-neon",
@@ -157,17 +118,7 @@ export function SiteHeader() {
           ) : null}
         </nav>
 
-        <div className="ml-auto flex items-center gap-2 md:ml-6">
-          {isPushSupported() ? (
-            <button
-              type="button"
-              onClick={enableNotifications}
-              aria-label="Enable push notifications"
-              className="hidden size-11 items-center justify-center rounded-full border border-border text-foreground transition-colors duration-200 hover:border-neon md:flex"
-            >
-              <BellRing className="size-4" />
-            </button>
-          ) : null}
+        <div className="flex shrink-0 items-center gap-2">
           <ThemeToggle />
           <NotificationBell />
           <Link
