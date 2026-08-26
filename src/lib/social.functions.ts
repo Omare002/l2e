@@ -58,7 +58,11 @@ export const searchBuilders = createServerFn({ method: "POST" })
       .eq("project_id", data.projectId);
     const taken = new Set([context.userId, ...(existing.data ?? []).map((r) => r.user_id)]);
 
-    const term = data.term.replace(/[%_,]/g, "");
+    // PostgREST's .or() filter treats , ( ) . as syntax, not data — an
+    // unescaped term could inject extra filter clauses. Escape every
+    // PostgREST-reserved character with a backslash per their filter
+    // syntax rather than just stripping a subset of them.
+    const term = data.term.replace(/[%_,()."\\]/g, (c) => `\\${c}`);
     const { data: found, error } = await context.supabase
       .from("profiles")
       .select("id, username, display_name, avatar_url, accent_color")
@@ -95,7 +99,8 @@ export const inviteCollaborator = createServerFn({ method: "POST" })
 
     if (existing.data) {
       if (existing.data.status === "accepted") throw new Error("They're already a collaborator");
-      if (existing.data.status === "pending") throw new Error("They already have a pending invitation");
+      if (existing.data.status === "pending")
+        throw new Error("They already have a pending invitation");
       const { error } = await context.supabase
         .from("project_collaborators")
         .update({ status: "pending", can_edit: data.canEdit, invited_by: context.userId })
@@ -151,11 +156,27 @@ export const respondToCollaboration = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-/** Owner grants or revokes edit rights. */
+/** Owner grants or revokes edit rights. Only the project owner may do this —
+ *  never the collaborator themselves, even for their own row. */
 export const setCollaboratorEdit = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => updateCollaborationSchema.parse(input))
   .handler(async ({ data, context }) => {
+    const row = await context.supabase
+      .from("project_collaborators")
+      .select("id, project_id")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (!row.data) throw new Error("That collaborator wasn't found");
+
+    const owns = await context.supabase
+      .from("projects")
+      .select("id")
+      .eq("id", row.data.project_id)
+      .eq("owner_id", context.userId)
+      .maybeSingle();
+    if (!owns.data) throw new Error("Only the project owner can change edit access");
+
     const { error } = await context.supabase
       .from("project_collaborators")
       .update({ can_edit: data.canEdit })
@@ -167,12 +188,34 @@ export const setCollaboratorEdit = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-/** Owner removes a collaborator, or a collaborator leaves. */
+/** Owner removes a collaborator, or a collaborator leaves. Checked here in
+ *  addition to RLS so an unauthorized attempt gets a clear error instead of
+ *  a silent no-op. */
 export const removeCollaborator = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => removeCollaborationSchema.parse(input))
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase.from("project_collaborators").delete().eq("id", data.id);
+    const row = await context.supabase
+      .from("project_collaborators")
+      .select("id, user_id, project_id")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (!row.data) throw new Error("That collaborator wasn't found");
+
+    if (row.data.user_id !== context.userId) {
+      const owns = await context.supabase
+        .from("projects")
+        .select("id")
+        .eq("id", row.data.project_id)
+        .eq("owner_id", context.userId)
+        .maybeSingle();
+      if (!owns.data) throw new Error("Only the project owner can remove a collaborator");
+    }
+
+    const { error } = await context.supabase
+      .from("project_collaborators")
+      .delete()
+      .eq("id", data.id);
     if (error) {
       console.error("[removeCollaborator]", error.message);
       throw new Error("Could not remove that collaborator");

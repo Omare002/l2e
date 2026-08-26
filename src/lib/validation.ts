@@ -75,6 +75,23 @@ export const replyInputSchema = z.object({
   body: z.string().trim().min(2, "Say a little more").max(2000),
 });
 
+export const commentIdSchema = z.object({
+  id: z.string().uuid(),
+});
+
+export const editCommentSchema = z.object({
+  id: z.string().uuid(),
+  body: z.string().trim().min(2, "Say a little more").max(1000),
+});
+
+export const markConversationReadSchema = z.object({
+  conversationId: z.string().uuid(),
+});
+
+export const markNotificationsReadSchema = z.object({
+  id: z.string().uuid().nullable().default(null),
+});
+
 export const credentialsSchema = z.object({
   email: z.string().trim().email("Enter a valid email").max(255),
   password: z.string().min(8, "Use at least 8 characters").max(72),

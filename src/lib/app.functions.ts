@@ -1,7 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import {
+  commentIdSchema,
   commentInputSchema,
+  editCommentSchema,
   avatarInputSchema,
   profileInputSchema,
   projectInputSchema,
@@ -260,10 +262,7 @@ export const addComment = createServerFn({ method: "POST" })
 
 export const deleteComment = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { id: string }) => {
-    if (!input?.id) throw new Error("Missing comment");
-    return { id: input.id };
-  })
+  .inputValidator((input: unknown) => commentIdSchema.parse(input))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase
       .from("comments")
@@ -279,12 +278,7 @@ export const deleteComment = createServerFn({ method: "POST" })
 
 export const editComment = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { id: string; body: string }) => {
-    if (!input?.id) throw new Error("Missing comment");
-    const body = (input.body ?? "").trim();
-    if (body.length < 2) throw new Error("Say a little more");
-    return { id: input.id, body: body.slice(0, 1000) };
-  })
+  .inputValidator((input: unknown) => editCommentSchema.parse(input))
   .handler(async ({ data, context }) => {
     const { data: updated, error } = await context.supabase
       .from("comments")

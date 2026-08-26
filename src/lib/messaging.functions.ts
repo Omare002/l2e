@@ -2,6 +2,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import {
   blockUserSchema,
+  markConversationReadSchema,
+  markNotificationsReadSchema,
   reportConversationSchema,
   respondRequestSchema,
   sendMessageSchema,
@@ -80,6 +82,23 @@ export const sendMessage = createServerFn({ method: "POST" })
       throw new Error("Invalid attachment");
     }
 
+    // RLS (can_send_message) enforces this too, but checking here first
+    // gives a clear error instead of a generic RLS-denied failure.
+    const conv = await context.supabase
+      .from("conversations")
+      .select("id, user_a, user_b, status")
+      .eq("id", data.conversationId)
+      .maybeSingle();
+    if (
+      !conv.data ||
+      (conv.data.user_a !== context.userId && conv.data.user_b !== context.userId)
+    ) {
+      throw new Error("Conversation not found");
+    }
+    if (conv.data.status !== "accepted" && conv.data.status !== "pending") {
+      throw new Error("This conversation isn't open for messages");
+    }
+
     const { data: message, error } = await context.supabase
       .from("messages")
       .insert({
@@ -107,7 +126,12 @@ export const respondToRequest = createServerFn({ method: "POST" })
       .select("*")
       .eq("id", data.conversationId)
       .maybeSingle();
-    if (!conv.data) throw new Error("Conversation not found");
+    if (
+      !conv.data ||
+      (conv.data.user_a !== context.userId && conv.data.user_b !== context.userId)
+    ) {
+      throw new Error("Conversation not found");
+    }
     if (conv.data.requester_id === context.userId) {
       throw new Error("Only the recipient can answer this request");
     }
@@ -175,7 +199,7 @@ export const reportConversation = createServerFn({ method: "POST" })
 
 export const markConversationRead = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => ({ conversationId: String((input as any).conversationId) }))
+  .inputValidator((input: unknown) => markConversationReadSchema.parse(input))
   .handler(async ({ data, context }) => {
     const conv = await context.supabase
       .from("conversations")
@@ -194,9 +218,7 @@ export const markConversationRead = createServerFn({ method: "POST" })
 
 export const markNotificationsRead = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => ({
-    id: (input as { id?: string | null } | null)?.id ?? null,
-  }))
+  .inputValidator((input: unknown) => markNotificationsReadSchema.parse(input))
   .handler(async ({ data, context }) => {
     let q = context.supabase
       .from("notifications")
