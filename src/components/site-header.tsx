@@ -67,7 +67,11 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-navbar/85 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
-        <Link to="/" className="group flex shrink-0 items-center" aria-label="Leaderboard home">
+        <Link
+          to="/"
+          className="group flex shrink-0 items-center pr-2 sm:pr-3"
+          aria-label="Leaderboard home"
+        >
           {logoError ? (
             <div className="flex h-5 items-center gap-1.5 sm:h-6" aria-hidden>
               <span className="size-2 rounded-full bg-neon" />
