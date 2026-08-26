@@ -35,7 +35,14 @@ export function NotificationBell() {
   const unread = items.filter((n) => !n.read_at).length;
 
   useEffect(() => {
-    if (isPushSupported()) setPushPermission(Notification.permission);
+    try {
+      if (isPushSupported()) setPushPermission(Notification.permission);
+    } catch {
+      // Some embedded/preview contexts expose serviceWorker + PushManager
+      // but still block the Notification API itself (e.g. an iframe
+      // without a "notifications" permissions-policy). Never let that
+      // take down the notification bell — just skip the push opt-in row.
+    }
   }, []);
 
   useEffect(() => {
