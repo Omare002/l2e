@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ExternalLink, Github, Heart } from "lucide-react";
+import { ChevronUp, ExternalLink, Github } from "lucide-react";
 import { toast } from "sonner";
 import { commentsQuery, projectQuery } from "@/lib/db";
 import { addComment, deleteComment, editComment } from "@/lib/app.functions";
@@ -132,8 +132,7 @@ function ProjectPage() {
             voted ? "border-neon bg-neon/10 text-neon" : "border-border hover:border-neon"
           }`}
         >
-          <Heart className="size-4" fill={voted ? "currentColor" : "none"} />{" "}
-          {project.vote_count ?? 0}
+          <ChevronUp className="size-4" /> {project.vote_count ?? 0}
         </button>
       </div>
 
