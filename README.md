@@ -398,7 +398,7 @@ Tech Stack
 
 Frontend:
 
- Next.js
+ Tanstack Start
 
  React
 
@@ -430,7 +430,7 @@ This project was built with [Lovable](https://lovable.dev).
 
 ## Build with Lovable
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/8cf5e713-c1c4-4caf-90a8-97fa6ea4ffd8).
+
 
 - **Ship faster**: describe what you want to build and Lovable handles the code.
 - **Stay in sync**: every change made in Lovable is committed straight to this repository.
