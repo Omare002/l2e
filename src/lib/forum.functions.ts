@@ -1,6 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { discussionInputSchema, replyInputSchema } from "@/lib/validation";
+import {
+  commentIdSchema,
+  discussionInputSchema,
+  editReplySchema,
+  replyInputSchema,
+} from "@/lib/validation";
 
 export const saveDiscussion = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -43,10 +48,7 @@ export const saveDiscussion = createServerFn({ method: "POST" })
 
 export const deleteDiscussion = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { id: string }) => {
-    if (!input?.id) throw new Error("Missing discussion");
-    return { id: input.id };
-  })
+  .inputValidator((input: unknown) => commentIdSchema.parse(input))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase
       .from("discussions")
@@ -81,12 +83,7 @@ export const addReply = createServerFn({ method: "POST" })
 
 export const editReply = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { id: string; body: string }) => {
-    if (!input?.id) throw new Error("Missing reply");
-    const body = (input.body ?? "").trim();
-    if (body.length < 2) throw new Error("Say a little more");
-    return { id: input.id, body: body.slice(0, 2000) };
-  })
+  .inputValidator((input: unknown) => editReplySchema.parse(input))
   .handler(async ({ data, context }) => {
     const { data: updated, error } = await context.supabase
       .from("discussion_replies")
@@ -104,10 +101,7 @@ export const editReply = createServerFn({ method: "POST" })
 
 export const deleteReply = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { id: string }) => {
-    if (!input?.id) throw new Error("Missing reply");
-    return { id: input.id };
-  })
+  .inputValidator((input: unknown) => commentIdSchema.parse(input))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase
       .from("discussion_replies")

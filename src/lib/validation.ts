@@ -84,6 +84,11 @@ export const editCommentSchema = z.object({
   body: z.string().trim().min(2, "Say a little more").max(1000),
 });
 
+export const editReplySchema = z.object({
+  id: z.string().uuid(),
+  body: z.string().trim().min(2, "Say a little more").max(2000),
+});
+
 export const markConversationReadSchema = z.object({
   conversationId: z.string().uuid(),
 });
