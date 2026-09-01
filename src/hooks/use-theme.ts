@@ -22,7 +22,10 @@ function applyTheme(theme: Theme) {
 
 /** Client-side dark/light theme state, persisted to localStorage and synced across tabs. */
 export function useTheme() {
-  const [theme, setTheme] = useState<Theme>(currentTheme);
+  // Keep the first render identical on the server and client. The inline
+  // anti-flash script may already have changed <html> before hydration, so
+  // reading the DOM in the state initializer would produce different markup.
+  const [theme, setTheme] = useState<Theme>("light");
 
   // Pick up the class the anti-flash script already set once we hydrate.
   useEffect(() => {
