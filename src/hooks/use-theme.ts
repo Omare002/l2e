@@ -4,12 +4,6 @@ export type Theme = "light" | "dark";
 
 const STORAGE_KEY = "theme";
 
-/** Reads the theme already applied to <html> by the inline anti-flash script in __root.tsx. */
-function currentTheme(): Theme {
-  if (typeof document === "undefined") return "light";
-  return document.documentElement.classList.contains("dark") ? "dark" : "light";
-}
-
 function savedTheme(): Theme {
   if (typeof window === "undefined") return "light";
   try {
@@ -38,11 +32,16 @@ export function useTheme() {
   // reading the DOM in the state initializer would produce different markup.
   const [theme, setTheme] = useState<Theme>("light");
 
-  // Pick up the class the anti-flash script already set once we hydrate.
+  // Defer the DOM update until after hydration has completed. This keeps the
+  // document shell identical on the server and client while preserving the
+  // user's saved theme immediately after the first paint.
   useEffect(() => {
-    const next = savedTheme();
-    applyTheme(next);
-    setTheme(next);
+    const timeoutId = window.setTimeout(() => {
+      const next = savedTheme();
+      applyTheme(next);
+      setTheme(next);
+    }, 0);
+    return () => window.clearTimeout(timeoutId);
   }, []);
 
   // Keep multiple tabs/windows in sync.
