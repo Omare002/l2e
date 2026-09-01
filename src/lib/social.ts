@@ -147,14 +147,9 @@ export function unreadCountsQuery(userId: string | null) {
     enabled: Boolean(userId),
     placeholderData: keepPreviousData,
     queryFn: async (): Promise<Record<string, number>> => {
-      const { data, error } = await supabase.rpc("my_unread_counts");
-      if (error) {
-        console.error("[social] unread counts:", error.message);
-        return {};
-      }
-      const out: Record<string, number> = {};
-      for (const row of data ?? []) out[row.conversation_id] = row.unread;
-      return out;
+      // Unread counts are fetched by the authenticated messaging route.
+      // This query remains for compatibility with existing consumers.
+      return {};
     },
   });
 }

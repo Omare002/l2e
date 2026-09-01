@@ -233,3 +233,18 @@ export const markNotificationsRead = createServerFn({ method: "POST" })
     }
     return { ok: true };
   });
+
+/** Computes unread counts inside the authenticated server boundary. */
+export const getUnreadCounts = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data, error } = await context.supabase.rpc("my_unread_counts");
+    if (error) {
+      console.error("[getUnreadCounts]", error.message);
+      throw new Error("Could not load unread messages");
+    }
+
+    const counts: Record<string, number> = {};
+    for (const row of data ?? []) counts[row.conversation_id] = row.unread;
+    return counts;
+  });
