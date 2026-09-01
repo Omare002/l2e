@@ -10,7 +10,7 @@ import { LoadFailure, SkeletonLines } from "@/components/skeleton-block";
 import { useAuth } from "@/hooks/use-auth";
 import { relativeTime } from "@/lib/display";
 import { conversationsQuery, decorate, messagesQuery } from "@/lib/messaging";
-import { startConversation } from "@/lib/messaging.functions";
+import { getUnreadCounts, startConversation } from "@/lib/messaging.functions";
 
 type Search = { c?: string; to?: string; project?: string };
 
@@ -46,17 +46,17 @@ function MessagesPage() {
   const [tab, setTab] = useState<Tab>("inbox");
   const [term, setTerm] = useState("");
   const runStart = useServerFn(startConversation);
+  const loadUnreadCounts = useServerFn(getUnreadCounts);
 
   const list = useQuery(conversationsQuery(userId));
+  const unreadCounts = useQuery({
+    queryKey: ["unread-counts", userId],
+    enabled: Boolean(userId),
+    queryFn: () => loadUnreadCounts(),
+  });
   const conversations = useMemo(() => {
-    const unread: Record<string, number> = {};
-    for (const conv of list.data ?? []) {
-      const isA = conv.user_a === userId;
-      const mine = isA ? conv.read_a_at : conv.read_b_at;
-      if (!mine || new Date(conv.last_message_at) > new Date(mine)) unread[conv.id] = 1;
-    }
-    return decorate(list.data ?? [], userId, unread);
-  }, [list.data, userId]);
+    return decorate(list.data ?? [], userId, unreadCounts.data ?? {});
+  }, [list.data, unreadCounts.data, userId]);
 
   // Opening a thread from a project, profile, leaderboard or the forum.
   useEffect(() => {
