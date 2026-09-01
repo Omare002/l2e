@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { pushSubscriptionSchema, removePushSubscriptionSchema } from "@/lib/validation";
 
@@ -7,7 +8,10 @@ export const savePushSubscription = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => pushSubscriptionSchema.parse(input))
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase.from("push_subscriptions").upsert(
+    // The generated database types have not yet picked up this new table.
+    // Keep the server-only access typed independently until they regenerate.
+    const db = context.supabase as unknown as SupabaseClient;
+    const { error } = await db.from("push_subscriptions").upsert(
       {
         user_id: context.userId,
         endpoint: data.endpoint,
@@ -28,7 +32,8 @@ export const removePushSubscription = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => removePushSubscriptionSchema.parse(input))
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase
+    const db = context.supabase as unknown as SupabaseClient;
+    const { error } = await db
       .from("push_subscriptions")
       .delete()
       .eq("endpoint", data.endpoint)

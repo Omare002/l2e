@@ -233,3 +233,32 @@ export const markNotificationsRead = createServerFn({ method: "POST" })
     }
     return { ok: true };
   });
+
+/** Computes unread counts inside the authenticated server boundary. */
+export const getUnreadCounts = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const counts: Record<string, number> = {};
+    const { data: conversations, error: conversationError } = await context.supabase
+      .from("conversations")
+      .select("id, user_a, read_a_at, read_b_at")
+      .or(`user_a.eq.${context.userId},user_b.eq.${context.userId}`);
+    if (conversationError) {
+      console.error("[getUnreadCounts]", conversationError.message);
+      throw new Error("Could not load unread messages");
+    }
+
+    for (const conversation of conversations ?? []) {
+      const isA = conversation.user_a === context.userId;
+      const readAt = isA ? conversation.read_a_at : conversation.read_b_at;
+      let query = context.supabase
+        .from("messages")
+        .select("id", { count: "exact", head: true })
+        .eq("conversation_id", conversation.id)
+        .neq("sender_id", context.userId);
+      query = readAt ? query.gt("created_at", readAt) : query;
+      const { count, error } = await query;
+      if (!error && count) counts[conversation.id] = count;
+    }
+    return counts;
+  });
