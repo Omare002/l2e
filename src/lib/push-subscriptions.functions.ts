@@ -10,7 +10,7 @@ export const savePushSubscription = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     // The generated database types have not yet picked up this new table.
     // Keep the server-only access typed independently until they regenerate.
-    const db = context.supabase as SupabaseClient;
+    const db = context.supabase as unknown as SupabaseClient;
     const { error } = await db.from("push_subscriptions").upsert(
       {
         user_id: context.userId,
@@ -32,7 +32,7 @@ export const removePushSubscription = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => removePushSubscriptionSchema.parse(input))
   .handler(async ({ data, context }) => {
-    const db = context.supabase as SupabaseClient;
+    const db = context.supabase as unknown as SupabaseClient;
     const { error } = await db
       .from("push_subscriptions")
       .delete()
