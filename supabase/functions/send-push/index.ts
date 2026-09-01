@@ -9,9 +9,9 @@
 //   VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY  — the pair generated for this app;
 //     the public half must also be set client-side as VITE_VAPID_PUBLIC_KEY
 //   VAPID_SUBJECT                        — e.g. "mailto:you@example.com"
-//   PUSH_TRIGGER_SECRET                  — must match the value baked into
-//     app.settings.push_trigger_secret in the migration above, so this
-//     function only responds to that trigger and not arbitrary callers
+//   PUSH_TRIGGER_SECRET                  — shared out-of-band with the database
+//     runtime, so this function only responds to the notification trigger and
+//     not arbitrary callers
 //
 // SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are provided automatically
 // by the Supabase Edge Functions runtime — no need to set them.
