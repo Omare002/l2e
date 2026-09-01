@@ -10,6 +10,17 @@ function currentTheme(): Theme {
   return document.documentElement.classList.contains("dark") ? "dark" : "light";
 }
 
+function savedTheme(): Theme {
+  if (typeof window === "undefined") return "light";
+  try {
+    const stored = window.localStorage.getItem(STORAGE_KEY);
+    if (stored === "light" || stored === "dark") return stored;
+  } catch {
+    /* localStorage unavailable — fall back to the OS preference */
+  }
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
 function applyTheme(theme: Theme) {
   document.documentElement.classList.toggle("dark", theme === "dark");
   document.documentElement.style.colorScheme = theme;
@@ -29,7 +40,9 @@ export function useTheme() {
 
   // Pick up the class the anti-flash script already set once we hydrate.
   useEffect(() => {
-    setTheme(currentTheme());
+    const next = savedTheme();
+    applyTheme(next);
+    setTheme(next);
   }, []);
 
   // Keep multiple tabs/windows in sync.
