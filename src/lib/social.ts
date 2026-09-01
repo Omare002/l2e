@@ -148,7 +148,8 @@ export function unreadCountsQuery(userId: string | null) {
     placeholderData: keepPreviousData,
     queryFn: async (): Promise<Record<string, number>> => {
       // Unread counts are fetched by the authenticated messaging route.
-      // This query remains for compatibility with existing consumers.
+      // This query remains for compatibility with existing consumers. The
+      // messages route uses its protected server function instead.
       return {};
     },
   });
