@@ -103,15 +103,6 @@ function AuthPage() {
     if (result?.error) toast.error(result.error.message ?? "Google sign-in failed");
   }
 
-  async function github() {
-    setRememberMe(remember);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "github",
-      options: { redirectTo: window.location.origin },
-    });
-    if (error) toast.error(friendlyAuthError(error, "GitHub sign-in failed."));
-  }
-
   if (sent) {
     return (
       <div className="mx-auto max-w-md px-4 py-24 text-center sm:px-6">
@@ -155,13 +146,6 @@ function AuthPage() {
           >
             Continue with Google
           </button>
-           <button
-             type="button"
-             onClick={github}
-             className="mt-3 flex min-h-12 w-full items-center justify-center gap-3 rounded-full border border-border text-[14px] font-medium transition-colors duration-200 hover:border-neon hover:bg-muted/50"
-           >
-             Continue with GitHub
-           </button>
           <div className="my-7 flex items-center gap-4 text-[11px] text-muted-foreground">
             <span className="h-px flex-1 bg-border" /> or email <span className="h-px flex-1 bg-border" />
           </div>
