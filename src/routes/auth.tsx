@@ -6,6 +6,7 @@ import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/hooks/use-auth";
 import { credentialsSchema } from "@/lib/validation";
 import { setRememberMe } from "@/lib/session";
+import { friendlyAuthError } from "@/lib/auth-errors";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -88,7 +89,7 @@ function AuthPage() {
       if (error) throw error;
       toast.success("Signed in");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Something went wrong");
+      toast.error(friendlyAuthError(error));
     } finally {
       setBusy(false);
     }
@@ -100,6 +101,15 @@ function AuthPage() {
       redirect_uri: window.location.origin,
     });
     if (result?.error) toast.error(result.error.message ?? "Google sign-in failed");
+  }
+
+  async function github() {
+    setRememberMe(remember);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "github",
+      options: { redirectTo: window.location.origin },
+    });
+    if (error) toast.error(friendlyAuthError(error, "GitHub sign-in failed."));
   }
 
   if (sent) {
@@ -145,6 +155,13 @@ function AuthPage() {
           >
             Continue with Google
           </button>
+           <button
+             type="button"
+             onClick={github}
+             className="mt-3 flex min-h-12 w-full items-center justify-center gap-3 rounded-full border border-border text-[14px] font-medium transition-colors duration-200 hover:border-neon hover:bg-muted/50"
+           >
+             Continue with GitHub
+           </button>
           <div className="my-7 flex items-center gap-4 text-[11px] text-muted-foreground">
             <span className="h-px flex-1 bg-border" /> or email <span className="h-px flex-1 bg-border" />
           </div>
