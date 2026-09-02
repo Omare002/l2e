@@ -6,6 +6,7 @@ import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/hooks/use-auth";
 import { credentialsSchema } from "@/lib/validation";
 import { setRememberMe } from "@/lib/session";
+import { friendlyAuthError } from "@/lib/auth-errors";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -88,7 +89,7 @@ function AuthPage() {
       if (error) throw error;
       toast.success("Signed in");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Something went wrong");
+      toast.error(friendlyAuthError(error));
     } finally {
       setBusy(false);
     }
@@ -99,7 +100,7 @@ function AuthPage() {
     const result = await lovable.auth.signInWithOAuth("google", {
       redirect_uri: window.location.origin,
     });
-    if (result?.error) toast.error(result.error.message ?? "Google sign-in failed");
+    if (result?.error) toast.error(friendlyAuthError(result.error, "Google sign-in failed."));
   }
 
   if (sent) {
