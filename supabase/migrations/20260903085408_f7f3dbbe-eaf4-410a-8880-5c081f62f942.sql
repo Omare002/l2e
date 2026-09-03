@@ -1,0 +1,14 @@
+GRANT SELECT ON public.leaderboard TO anon, authenticated;
+GRANT SELECT ON public.project_stats TO anon, authenticated;
+GRANT SELECT ON public.activity_public TO anon, authenticated;
+GRANT SELECT ON public.comments_public TO anon, authenticated;
+GRANT SELECT ON public.discussions_public TO anon, authenticated;
+GRANT SELECT ON public.discussion_replies_public TO anon, authenticated;
+GRANT SELECT ON public.follow_counts TO anon, authenticated;
+GRANT SELECT ON public.projects TO anon, authenticated;
+GRANT SELECT ON public.profiles TO anon, authenticated;
+GRANT SELECT ON public.votes TO anon, authenticated;
+GRANT SELECT ON public.comments TO authenticated;
+GRANT SELECT ON public.discussions TO authenticated;
+GRANT SELECT ON public.discussion_replies TO authenticated;
+GRANT SELECT ON public.activity_events TO authenticated;
