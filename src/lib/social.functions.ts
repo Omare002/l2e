@@ -24,6 +24,14 @@ export const setFollow = createServerFn({ method: "POST" })
         console.error("[setFollow]", error.message);
         throw new Error("Could not follow this builder");
       }
+      if (!error) {
+        const { sendPushToUser, actorName } = await import("@/lib/push.server");
+        await sendPushToUser(data.userId, {
+          kind: "new_follower",
+          actorName: await actorName(context.supabase as never, context.userId),
+          url: "/",
+        });
+      }
       return { following: true };
     }
 
