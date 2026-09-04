@@ -52,6 +52,28 @@ export async function enablePushNotifications(vapidPublicKey: string): Promise<P
   return { status: "granted", subscription };
 }
 
+/**
+ * Unsubscribes this browser from push. Returns the endpoint that was removed
+ * so the caller can delete the matching row server-side, or null when this
+ * browser had no active subscription.
+ */
+export async function disablePushNotifications(): Promise<string | null> {
+  if (!isPushSupported()) return null;
+  const registration = await navigator.serviceWorker.getRegistration("/sw.js");
+  const subscription = await registration?.pushManager.getSubscription();
+  if (!subscription) return null;
+  const { endpoint } = subscription;
+  await subscription.unsubscribe();
+  return endpoint;
+}
+
+/** True when this browser currently holds an active push subscription. */
+export async function hasPushSubscription(): Promise<boolean> {
+  if (!isPushSupported()) return false;
+  const registration = await navigator.serviceWorker.getRegistration("/sw.js");
+  return Boolean(await registration?.pushManager.getSubscription());
+}
+
 function urlBase64ToUint8Array(base64String: string): BufferSource {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
