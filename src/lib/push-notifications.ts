@@ -7,8 +7,8 @@
  * `savePushSubscription` server function (src/lib/push-subscriptions.functions.ts),
  * since server functions need to be invoked through `useServerFn`, which is a
  * hook and can't be called from this plain module. Delivery itself is handled
- * by the `send-push` Supabase edge function, triggered from Postgres whenever
- * a row lands in `notifications` (see supabase/migrations/20260825120000_add_push_notifications.sql).
+ * server-side in src/lib/push.server.ts, called from the server functions
+ * behind follows, upvotes, messages and quest invitations.
  */
 
 export type PushSetupResult =
