@@ -13,6 +13,7 @@ import { useStoredImage } from "@/lib/media";
 import { relativeTime } from "@/lib/display";
 import { UserAvatar } from "@/components/user-avatar";
 import { MessageButton } from "@/components/messages/message-button";
+import { FollowButton } from "@/components/follow-button";
 import { BuiltBy } from "@/components/projects/built-by";
 import { statusLabel } from "@/data/community";
 
@@ -177,6 +178,7 @@ function ProjectPage() {
             <Github className="size-3.5" /> Source
           </a>
         ) : null}
+        <FollowButton targetId={project.owner_id} username={project.owner_username ?? undefined} />
         <MessageButton recipientId={project.owner_id} projectId={project.id} />
       </div>
 
