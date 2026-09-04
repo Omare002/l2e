@@ -177,6 +177,7 @@ function ProjectPage() {
             <Github className="size-3.5" /> Source
           </a>
         ) : null}
+        <FollowButton targetId={project.owner_id} username={project.owner_username ?? undefined} />
         <MessageButton recipientId={project.owner_id} projectId={project.id} />
       </div>
 
