@@ -13,6 +13,7 @@ import { useStoredImage } from "@/lib/media";
 import { relativeTime } from "@/lib/display";
 import { UserAvatar } from "@/components/user-avatar";
 import { MessageButton } from "@/components/messages/message-button";
+import { FollowButton } from "@/components/follow-button";
 import { BuiltBy } from "@/components/projects/built-by";
 import { statusLabel } from "@/data/community";
 
