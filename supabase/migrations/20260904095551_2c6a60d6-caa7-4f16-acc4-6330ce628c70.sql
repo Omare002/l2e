@@ -1,0 +1,1 @@
+REVOKE ALL ON FUNCTION public.on_vote_created() FROM PUBLIC, anon, authenticated;

@@ -231,6 +231,19 @@ export const toggleVote = createServerFn({ method: "POST" })
         console.error("[toggleVote:insert]", error.message);
         throw new Error("Could not register your upvote");
       }
+      const project = await context.supabase
+        .from("projects")
+        .select("owner_id, slug")
+        .eq("id", data.projectId)
+        .maybeSingle();
+      if (project.data && project.data.owner_id !== context.userId) {
+        const { sendPushToUser, actorName } = await import("@/lib/push.server");
+        await sendPushToUser(project.data.owner_id, {
+          kind: "project_upvoted",
+          actorName: await actorName(context.supabase as never, context.userId),
+          url: `/projects/${project.data.slug}`,
+        });
+      }
     }
 
     const { count } = await context.supabase

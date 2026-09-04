@@ -24,6 +24,14 @@ export const setFollow = createServerFn({ method: "POST" })
         console.error("[setFollow]", error.message);
         throw new Error("Could not follow this builder");
       }
+      if (!error) {
+        const { sendPushToUser, actorName } = await import("@/lib/push.server");
+        await sendPushToUser(data.userId, {
+          kind: "new_follower",
+          actorName: await actorName(context.supabase as never, context.userId),
+          url: "/",
+        });
+      }
       return { following: true };
     }
 
@@ -126,6 +134,14 @@ export const inviteCollaborator = createServerFn({ method: "POST" })
     if (error) {
       console.error("[inviteCollaborator]", error.message);
       throw new Error("Could not send that invitation");
+    }
+    {
+      const { sendPushToUser, actorName } = await import("@/lib/push.server");
+      await sendPushToUser(data.userId, {
+        kind: "collaborator_invited",
+        actorName: await actorName(context.supabase as never, context.userId),
+        url: "/dashboard",
+      });
     }
     return { id: created.id, reinvited: false };
   });

@@ -7,8 +7,8 @@
  * `savePushSubscription` server function (src/lib/push-subscriptions.functions.ts),
  * since server functions need to be invoked through `useServerFn`, which is a
  * hook and can't be called from this plain module. Delivery itself is handled
- * by the `send-push` Supabase edge function, triggered from Postgres whenever
- * a row lands in `notifications` (see supabase/migrations/20260825120000_add_push_notifications.sql).
+ * server-side in src/lib/push.server.ts, called from the server functions
+ * behind follows, upvotes, messages and quest invitations.
  */
 
 export type PushSetupResult =
@@ -50,6 +50,28 @@ export async function enablePushNotifications(vapidPublicKey: string): Promise<P
     }));
 
   return { status: "granted", subscription };
+}
+
+/**
+ * Unsubscribes this browser from push. Returns the endpoint that was removed
+ * so the caller can delete the matching row server-side, or null when this
+ * browser had no active subscription.
+ */
+export async function disablePushNotifications(): Promise<string | null> {
+  if (!isPushSupported()) return null;
+  const registration = await navigator.serviceWorker.getRegistration("/sw.js");
+  const subscription = await registration?.pushManager.getSubscription();
+  if (!subscription) return null;
+  const { endpoint } = subscription;
+  await subscription.unsubscribe();
+  return endpoint;
+}
+
+/** True when this browser currently holds an active push subscription. */
+export async function hasPushSubscription(): Promise<boolean> {
+  if (!isPushSupported()) return false;
+  const registration = await navigator.serviceWorker.getRegistration("/sw.js");
+  return Boolean(await registration?.pushManager.getSubscription());
 }
 
 function urlBase64ToUint8Array(base64String: string): BufferSource {

@@ -8,10 +8,19 @@ import { toast } from "sonner";
 import { UserAvatar } from "@/components/user-avatar";
 import { useAuth } from "@/hooks/use-auth";
 import { relativeTime } from "@/lib/display";
-import { notificationsQuery } from "@/lib/messaging";
+import { notificationsQuery, type NotificationItem } from "@/lib/messaging";
 import { markNotificationsRead } from "@/lib/messaging.functions";
-import { enablePushNotifications, isPushSupported } from "@/lib/push-notifications";
-import { savePushSubscription } from "@/lib/push-subscriptions.functions";
+import {
+  disablePushNotifications,
+  enablePushNotifications,
+  hasPushSubscription,
+  isPushSupported,
+} from "@/lib/push-notifications";
+import { getPushPublicKey } from "@/lib/push-config.functions";
+import {
+  removePushSubscription,
+  savePushSubscription,
+} from "@/lib/push-subscriptions.functions";
 
 const LABELS: Record<string, string> = {
   message_received: "sent you a message",
@@ -20,23 +29,43 @@ const LABELS: Record<string, string> = {
   collaborator_accepted: "accepted your collaboration invite",
   collaborator_declined: "declined your collaboration invite",
   new_follower: "started following you",
+  project_upvoted: "upvoted your project",
 };
+
+/** Where clicking a notification should take you. */
+function destination(n: NotificationItem): { to: string; search: Record<string, string> } {
+  if (n.conversation_id) return { to: "/messages", search: { c: n.conversation_id } };
+  if (n.type === "new_follower" && n.actor?.username) {
+    return { to: `/builders/${n.actor.username}`, search: {} };
+  }
+  if (n.type === "project_upvoted" || n.type.startsWith("collaborator")) {
+    return { to: "/dashboard", search: {} };
+  }
+  return { to: "/messages", search: {} };
+}
 
 export function NotificationBell() {
   const { userId, isAuthenticated } = useAuth();
   const [open, setOpen] = useState(false);
   const [pushPermission, setPushPermission] = useState<NotificationPermission | null>(null);
+  const [pushOn, setPushOn] = useState(false);
+  const [busy, setBusy] = useState(false);
   const wrap = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
   const runRead = useServerFn(markNotificationsRead);
   const runSavePushSubscription = useServerFn(savePushSubscription);
+  const runRemovePushSubscription = useServerFn(removePushSubscription);
+  const runGetPushPublicKey = useServerFn(getPushPublicKey);
   const { data } = useQuery(notificationsQuery(userId));
   const items = data ?? [];
   const unread = items.filter((n) => !n.read_at).length;
 
   useEffect(() => {
     try {
-      if (isPushSupported()) setPushPermission(Notification.permission);
+      if (isPushSupported()) {
+        setPushPermission(Notification.permission);
+        void hasPushSubscription().then(setPushOn);
+      }
     } catch {
       // Some embedded/preview contexts expose serviceWorker + PushManager
       // but still block the Notification API itself (e.g. an iframe
@@ -61,22 +90,23 @@ export function NotificationBell() {
   }
 
   async function enablePush() {
-    const vapidPublicKey = import.meta.env["VITE_VAPID_PUBLIC_KEY"];
-    if (!vapidPublicKey) {
-      toast.error("Push notifications aren't configured yet");
-      return;
-    }
-    const result = await enablePushNotifications(vapidPublicKey);
-    if (result.status === "unsupported") {
-      toast.error("This browser doesn't support push notifications");
-      return;
-    }
-    if (result.status === "denied") {
-      setPushPermission("denied");
-      toast.error("Notifications permission was denied");
-      return;
-    }
+    setBusy(true);
     try {
+      const { publicKey } = await runGetPushPublicKey({} as never);
+      if (!publicKey) {
+        toast.error("Push notifications aren't configured yet");
+        return;
+      }
+      const result = await enablePushNotifications(publicKey);
+      if (result.status === "unsupported") {
+        toast.error("This browser doesn't support push notifications");
+        return;
+      }
+      if (result.status === "denied") {
+        setPushPermission("denied");
+        toast.error("Notifications permission was denied — you'll still get them in the app");
+        return;
+      }
       const key = (name: string) => {
         const raw = result.subscription.toJSON().keys?.[name];
         if (!raw) throw new Error(`Missing ${name} key`);
@@ -90,9 +120,26 @@ export function NotificationBell() {
         },
       } as never);
       setPushPermission("granted");
+      setPushOn(true);
       toast.success("Push notifications enabled");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Could not save that subscription");
+      toast.error(error instanceof Error ? error.message : "Could not enable push notifications");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function disablePush() {
+    setBusy(true);
+    try {
+      const endpoint = await disablePushNotifications();
+      if (endpoint) await runRemovePushSubscription({ data: { endpoint } } as never);
+      setPushOn(false);
+      toast.success("Push notifications turned off");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not turn push off");
+    } finally {
+      setBusy(false);
     }
   }
 
@@ -131,16 +178,25 @@ export function NotificationBell() {
                 </button>
               ) : null}
             </div>
-            {pushPermission && pushPermission !== "granted" ? (
+            {pushPermission ? (
               <div className="flex items-center justify-between border-b border-border/70 bg-muted/40 px-3.5 py-2">
-                <span className="text-[12px] text-muted-foreground">Get notified instantly</span>
-                <button
-                  type="button"
-                  onClick={enablePush}
-                  className="font-mono text-[11px] text-neon transition-colors duration-200 hover:text-foreground"
-                >
-                  Enable push
-                </button>
+                <span className="text-[12px] text-muted-foreground">
+                  {pushPermission === "denied"
+                    ? "Push blocked by your browser"
+                    : pushOn
+                      ? "Push notifications on"
+                      : "Get notified instantly"}
+                </span>
+                {pushPermission === "denied" ? null : (
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={pushOn ? disablePush : enablePush}
+                    className="font-mono text-[11px] text-neon transition-colors duration-200 hover:text-foreground disabled:opacity-50"
+                  >
+                    {pushOn ? "Turn off" : "Enable push"}
+                  </button>
+                )}
               </div>
             ) : null}
             <div className="max-h-[60vh] overflow-y-auto">
@@ -149,44 +205,47 @@ export function NotificationBell() {
                   Nothing yet.
                 </p>
               ) : (
-                items.map((n) => (
-                  <Link
-                    key={n.id}
-                    to="/messages"
-                    search={n.conversation_id ? { c: n.conversation_id } : {}}
-                    onClick={async () => {
-                      setOpen(false);
-                      if (!n.read_at) {
-                        await runRead({ data: { id: n.id } as never });
-                        queryClient.invalidateQueries({ queryKey: ["notifications"] });
-                      }
-                    }}
-                    className={`flex items-start gap-3 border-b border-border/70 px-3.5 py-3 transition-colors duration-200 hover:bg-muted/60 ${
-                      n.read_at ? "" : "bg-neon-dim/30"
-                    }`}
-                  >
-                    <UserAvatar
-                      name={n.actor?.display_name}
-                      path={n.actor?.avatar_url}
-                      accent={n.actor?.accent_color}
-                      size={30}
-                    />
-                    <span className="min-w-0 flex-1">
-                      <span className="block text-[13px]">
-                        <span className="font-medium">{n.actor?.display_name ?? "Someone"}</span>{" "}
-                        {LABELS[n.type] ?? n.type}
-                      </span>
-                      {n.body ? (
-                        <span className="mt-0.5 block truncate text-[12px] text-muted-foreground">
-                          {n.body}
+                items.map((n) => {
+                  const target = destination(n);
+                  return (
+                    <Link
+                      key={n.id}
+                      to={target.to}
+                      search={target.search}
+                      onClick={async () => {
+                        setOpen(false);
+                        if (!n.read_at) {
+                          await runRead({ data: { id: n.id } as never });
+                          queryClient.invalidateQueries({ queryKey: ["notifications"] });
+                        }
+                      }}
+                      className={`flex items-start gap-3 border-b border-border/70 px-3.5 py-3 transition-colors duration-200 hover:bg-muted/60 ${
+                        n.read_at ? "" : "bg-neon-dim/30"
+                      }`}
+                    >
+                      <UserAvatar
+                        name={n.actor?.display_name}
+                        path={n.actor?.avatar_url}
+                        accent={n.actor?.accent_color}
+                        size={30}
+                      />
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-[13px]">
+                          <span className="font-medium">{n.actor?.display_name ?? "Someone"}</span>{" "}
+                          {LABELS[n.type] ?? n.type}
                         </span>
-                      ) : null}
-                      <span className="mt-0.5 block font-mono text-[10px] text-muted-foreground">
-                        {relativeTime(n.created_at)}
+                        {n.body ? (
+                          <span className="mt-0.5 block truncate text-[12px] text-muted-foreground">
+                            {n.body}
+                          </span>
+                        ) : null}
+                        <span className="mt-0.5 block font-mono text-[10px] text-muted-foreground">
+                          {relativeTime(n.created_at)}
+                        </span>
                       </span>
-                    </span>
-                  </Link>
-                ))
+                    </Link>
+                  );
+                })
               )}
             </div>
           </motion.div>
