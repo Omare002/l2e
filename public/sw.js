@@ -1,11 +1,8 @@
 // Minimal service worker for web push notifications.
 // Registration + permission request lives in src/lib/push-notifications.ts.
 //
-// NOTE: this file only handles push events already sent to the browser.
-// Actually *sending* a push still requires a server with a VAPID key pair
-// and this client's subscription (endpoint + keys) stored somewhere it can
-// read from — neither exists in this project yet. See the comment in
-// push-notifications.ts for what's still missing.
+// Server-side app actions deliver the push events; this worker displays them
+// and opens the relevant in-app destination when the user taps one.
 
 self.addEventListener("install", () => {
   self.skipWaiting();

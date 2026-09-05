@@ -64,7 +64,7 @@ export function NotificationBell() {
     try {
       if (isPushSupported()) {
         setPushPermission(Notification.permission);
-        void hasPushSubscription().then(setPushOn);
+        void hasPushSubscription().then(setPushOn).catch(() => setPushOn(false));
       }
     } catch {
       // Some embedded/preview contexts expose serviceWorker + PushManager
@@ -92,7 +92,7 @@ export function NotificationBell() {
   async function enablePush() {
     setBusy(true);
     try {
-      const { publicKey } = await runGetPushPublicKey({} as never);
+      const { publicKey } = await runGetPushPublicKey();
       if (!publicKey) {
         toast.error("Push notifications aren't configured yet");
         return;
@@ -210,7 +210,7 @@ export function NotificationBell() {
                   return (
                     <Link
                       key={n.id}
-                      to={target.to}
+                      to={target.to as "/messages"}
                       search={target.search}
                       onClick={async () => {
                         setOpen(false);
