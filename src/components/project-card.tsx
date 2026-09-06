@@ -128,11 +128,12 @@ export function ProjectCard({ project, rank }: { project: ProjectStats; rank?: n
           disabled={pending || own}
           onClick={() => vote(projectId, ownerId)}
           title={own ? "You can't upvote your own project" : undefined}
-          className={`flex min-h-9 shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 font-mono text-[11px] tabular-nums transition-colors duration-200 disabled:opacity-50 ${
+          className={`glass-pill flex min-h-9 shrink-0 items-center gap-1.5 px-3 py-1.5 font-mono text-[11px] tabular-nums transition-colors duration-200 disabled:opacity-50 ${
             voted
-              ? "border-neon/50 bg-neon/10 text-neon"
-              : "border-white/10 text-white/70 hover:border-neon/50 hover:text-neon"
+              ? "border-neon/45 bg-neon/10 text-neon"
+              : "text-foreground/75 hover:border-neon/40 hover:text-neon"
           }`}
+
         >
           <ChevronUp className={`size-3.5 ${pending ? "animate-pulse" : ""}`} />{" "}
           {project.vote_count ?? 0}
