@@ -98,7 +98,7 @@ export function SiteHeader() {
             <Link
               key={item.to}
               to={item.to}
-              className="relative whitespace-nowrap py-1 text-[14px] text-muted-foreground transition-colors duration-200 hover:text-foreground"
+              className="relative whitespace-nowrap py-1 text-[14px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
               activeProps={{
                 className:
                   "text-foreground after:absolute after:inset-x-0 after:-bottom-[9px] after:h-px after:bg-neon",
@@ -110,7 +110,7 @@ export function SiteHeader() {
           {isAuthenticated ? (
             <Link
               to="/messages"
-              className="relative whitespace-nowrap py-1 text-[14px] text-muted-foreground transition-colors duration-200 hover:text-foreground"
+              className="relative whitespace-nowrap py-1 text-[14px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
               activeProps={{
                 className:
                   "text-foreground after:absolute after:inset-x-0 after:-bottom-[9px] after:h-px after:bg-neon",
@@ -181,7 +181,7 @@ export function SiteHeader() {
                 <Link
                   key={item.to}
                   to={item.to}
-                  className="flex min-h-12 items-center border-b border-border/70 text-[14px] text-muted-foreground transition-colors duration-200 hover:text-foreground"
+                  className="flex min-h-12 items-center border-b border-border/70 text-[14px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
                   activeProps={{ className: "text-foreground" }}
                 >
                   {item.label}
@@ -189,12 +189,12 @@ export function SiteHeader() {
               ))}
               <Link
                 to="/submit"
-                className="flex min-h-12 items-center border-b border-border/70 text-[14px] text-muted-foreground transition-colors duration-200 hover:text-foreground"
+                className="flex min-h-12 items-center border-b border-border/70 text-[14px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
                 activeProps={{ className: "text-foreground" }}
               >
                 Submit project
               </Link>
-              <div className="flex min-h-12 items-center justify-between border-b border-border/70 text-[14px] text-muted-foreground">
+              <div className="flex min-h-12 items-center justify-between border-b border-border/70 text-[14px] text-foreground/70">
                 Theme
                 <ThemeToggle />
               </div>
@@ -202,7 +202,7 @@ export function SiteHeader() {
                 <>
                   <Link
                     to="/messages"
-                    className="flex min-h-12 items-center gap-2 border-b border-border/70 text-[14px] text-muted-foreground transition-colors duration-200 hover:text-foreground"
+                    className="flex min-h-12 items-center gap-2 border-b border-border/70 text-[14px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
                     activeProps={{ className: "text-foreground" }}
                   >
                     Messages
@@ -210,7 +210,7 @@ export function SiteHeader() {
                   </Link>
                   <Link
                     to="/dashboard"
-                    className="flex min-h-12 items-center gap-3 border-b border-border/70 text-[14px]"
+                    className="flex min-h-12 items-center gap-3 border-b border-border/70 text-[14px] text-foreground/70"
                     activeProps={{ className: "text-foreground" }}
                   >
                     {monogram}
@@ -219,7 +219,7 @@ export function SiteHeader() {
                   <button
                     type="button"
                     onClick={signOut}
-                    className="flex min-h-12 items-center gap-2 text-left text-[14px] text-muted-foreground transition-colors duration-200 hover:text-foreground"
+                    className="flex min-h-12 items-center gap-2 text-left text-[14px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
                   >
                     <LogOut className="size-4" /> Sign out
                   </button>
