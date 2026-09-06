@@ -306,6 +306,16 @@
   box-shadow: 0 6px 18px -12px rgb(0 0 0 / 45%);
 }
 
+/* Badges that sit on always-dark surfaces (project cards, race track):
+   dark glass in BOTH themes so on-dark text keeps readable contrast. */
+@utility glass-pill-dark {
+  background-color: rgb(255 255 255 / 7%);
+  backdrop-filter: blur(var(--glass-blur)) saturate(115%);
+  border: 1px solid rgb(255 255 255 / 12%);
+  border-radius: 999px;
+  box-shadow: 0 6px 18px -12px rgb(0 0 0 / 45%);
+}
+
 /* Layer 3: project imagery, lifted a touch above its own card. */
 @utility elevated-media {
   border-radius: 24px;
