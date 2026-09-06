@@ -46,7 +46,7 @@ function Index() {
         <h1 className="mt-6 text-center text-[2.15rem] font-semibold leading-[1.1] tracking-tight sm:text-6xl">
           <TypingHeadline />
         </h1>
-        <p className="mt-6 max-w-xl text-balance text-[14px] leading-relaxed text-foreground/80 sm:mt-7 sm:text-[15px]">
+        <p className="mt-6 max-w-xl text-balance text-[13px] leading-relaxed text-foreground/80 sm:mt-7 sm:text-[14px]">
           Showcase your work, gather real feedback, and follow the weekly race as it unfolds.
         </p>
         <div className="mt-9 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:justify-center">
