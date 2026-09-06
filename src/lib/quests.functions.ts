@@ -50,14 +50,19 @@ export const getWeeklyTasks = createServerFn({ method: "GET" }).handler(async ()
   return res.data ?? [];
 });
 
-/** Every quest, newest first. Finished quests get their winner recorded first. */
+/**
+ * Every quest, newest first. Finished quests get their winner recorded first.
+ *
+ * Public projection: guests receive display names, deadlines, participant
+ * counts and winners, but never raw account identifiers.
+ */
 export const getPublicQuests = createServerFn({ method: "GET" }).handler(async () => {
   const db = await admin();
   await closeFinished(db);
   const res = await db
     .from("quests")
     .select(
-      "*, creator:profiles!quests_creator_id_fkey(username, display_name, avatar_url, accent_color), winner:profiles!quests_winner_id_fkey(username, display_name), task:weekly_tasks(title), participants:quest_participants(id, status)",
+      "id, title, description, kind, starts_at, ends_at, closed_at, winner_votes, creator:profiles!quests_creator_id_fkey(username, display_name, avatar_url, accent_color), winner:profiles!quests_winner_id_fkey(username, display_name), task:weekly_tasks(title), participants:quest_participants(status)",
     )
     .order("created_at", { ascending: false })
     .limit(60);
@@ -65,10 +70,13 @@ export const getPublicQuests = createServerFn({ method: "GET" }).handler(async (
     console.error("[getPublicQuests]", res.error.message);
     return [];
   }
-  return res.data ?? [];
+  return (res.data ?? []).map((q) => ({
+    ...q,
+    participants: (q.participants ?? []).map((p: { status: string }) => ({ status: p.status })),
+  }));
 });
 
-/** One quest plus live standings, readable by guests. */
+/** One quest plus live standings, readable by guests — identity-free. */
 export const getPublicQuest = createServerFn({ method: "GET" })
   .inputValidator((input: unknown) => idSchema.parse(input))
   .handler(async ({ data }) => {
@@ -78,7 +86,7 @@ export const getPublicQuest = createServerFn({ method: "GET" })
     const quest = await db
       .from("quests")
       .select(
-        "*, creator:profiles!quests_creator_id_fkey(username, display_name, avatar_url, accent_color), winner:profiles!quests_winner_id_fkey(username, display_name), task:weekly_tasks(title, prompt)",
+        "id, title, description, kind, starts_at, ends_at, closed_at, winner_votes, creator:profiles!quests_creator_id_fkey(username, display_name, avatar_url, accent_color), winner:profiles!quests_winner_id_fkey(username, display_name), task:weekly_tasks(title, prompt)",
       )
       .eq("id", data.questId)
       .maybeSingle();
@@ -88,7 +96,82 @@ export const getPublicQuest = createServerFn({ method: "GET" })
     const standings = await db.rpc("quest_standings", { _quest_id: data.questId });
     if (standings.error) console.error("[getPublicQuest/standings]", standings.error.message);
 
-    return { quest: quest.data, standings: standings.data ?? [] };
+    // Drop user_id / project_id UUIDs: the UI keys off the public username and slug.
+    const safe = (standings.data ?? []).map(
+      (s: {
+        username: string;
+        display_name: string;
+        avatar_url: string | null;
+        accent_color: string;
+        status: string;
+        project_title: string | null;
+        project_slug: string | null;
+        votes: number;
+      }) => ({
+        username: s.username,
+        display_name: s.display_name,
+        avatar_url: s.avatar_url,
+        accent_color: s.accent_color,
+        status: s.status,
+        project_title: s.project_title,
+        project_slug: s.project_slug,
+        votes: s.votes,
+      }),
+    );
+
+    return { quest: quest.data, standings: safe };
+  });
+
+/** The signed-in member's own row in a quest (status + entry). */
+export const getMyQuestEntry = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => idSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    const res = await context.supabase
+      .from("quest_participants")
+      .select("status, project_id")
+      .eq("quest_id", data.questId)
+      .eq("user_id", context.userId)
+      .maybeSingle();
+    if (res.error) {
+      console.error("[getMyQuestEntry]", res.error.message);
+      return null;
+    }
+    return res.data ?? null;
+  });
+
+/** Quests the member took part in, with deadline, size and winner — for history. */
+export const getMyQuestHistory = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const rows = await context.supabase
+      .from("quest_participants")
+      .select("quest_id, status, project_id")
+      .eq("user_id", context.userId);
+    if (rows.error) {
+      console.error("[getMyQuestHistory]", rows.error.message);
+      return [];
+    }
+    const ids = (rows.data ?? []).map((r) => r.quest_id);
+    if (ids.length === 0) return [];
+
+    const quests = await context.supabase
+      .from("quests")
+      .select(
+        "id, title, kind, starts_at, ends_at, closed_at, winner_votes, winner:profiles!quests_winner_id_fkey(username, display_name), task:weekly_tasks(title), participants:quest_participants(status)",
+      )
+      .in("id", ids)
+      .order("ends_at", { ascending: false });
+    if (quests.error) {
+      console.error("[getMyQuestHistory/quests]", quests.error.message);
+      return [];
+    }
+    const mine = new Map((rows.data ?? []).map((r) => [r.quest_id, r]));
+    return (quests.data ?? []).map((q) => ({
+      ...q,
+      my_status: mine.get(q.id)?.status ?? "invited",
+      submitted: Boolean(mine.get(q.id)?.project_id),
+    }));
   });
 
 /** Quests the signed-in member created, joined, or was invited to. */

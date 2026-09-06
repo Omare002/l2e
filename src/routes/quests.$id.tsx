@@ -9,7 +9,14 @@ import { UserAvatar } from "@/components/user-avatar";
 import { useAuth } from "@/hooks/use-auth";
 import { myProjectsQuery } from "@/lib/db";
 import { respondToQuest, submitQuestProject } from "@/lib/quests.functions";
-import { QUEST_KIND_LABEL, type QuestKind, questKeys, questQuery, timeLeft } from "@/lib/quests";
+import {
+  QUEST_KIND_LABEL,
+  type QuestKind,
+  myQuestEntryQuery,
+  questKeys,
+  questQuery,
+  timeLeft,
+} from "@/lib/quests";
 
 export const Route = createFileRoute("/quests/$id")({
   head: () => ({
@@ -38,6 +45,7 @@ function QuestDetailPage() {
   const queryClient = useQueryClient();
   const detail = useQuery(questQuery(id));
   const mine = useQuery({ ...myProjectsQuery(userId ?? ""), enabled: Boolean(userId) });
+  const entry = useQuery(myQuestEntryQuery(id, userId));
 
   const runRespond = useServerFn(respondToQuest);
   const runSubmit = useServerFn(submitQuestProject);
@@ -51,6 +59,7 @@ function QuestDetailPage() {
   const refresh = () => {
     queryClient.invalidateQueries({ queryKey: questKeys.one(id) });
     queryClient.invalidateQueries({ queryKey: questKeys.all });
+    queryClient.invalidateQueries({ queryKey: questKeys.entry(id, userId ?? "anon") });
   };
 
   const respond = useMutation({
@@ -88,7 +97,7 @@ function QuestDetailPage() {
   }
 
   const { quest, standings } = detail.data;
-  const me = standings.find((s) => s.user_id === userId) ?? null;
+  const me = entry.data ?? null;
   const finished = Boolean(quest.closed_at) || new Date(quest.ends_at) <= new Date();
   const accepted = standings.filter((s) => s.status === "accepted");
   const invited = standings.filter((s) => s.status === "invited");
@@ -217,7 +226,7 @@ function QuestDetailPage() {
         ) : (
           <ol className="surface-card mt-4 divide-y divide-white/[0.05]">
             {accepted.map((s, i) => (
-              <li key={s.user_id} className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-5 py-4">
+              <li key={s.username} className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-5 py-4">
                 <span
                   className={`font-mono text-[12px] tabular-nums ${
                     i === 0 ? "text-neon" : "text-on-dark-muted"
@@ -269,7 +278,7 @@ function QuestDetailPage() {
             <div className="mt-3 flex flex-wrap gap-2">
               {invited.map((s) => (
                 <span
-                  key={s.user_id}
+                  key={s.username}
                   className="glass-pill flex items-center gap-2 px-2.5 py-1.5 text-[12px] text-muted-foreground"
                 >
                   <UserAvatar
