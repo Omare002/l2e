@@ -226,51 +226,70 @@ function QuestDetailPage() {
         ) : (
           <ol className="surface-card mt-4 divide-y divide-white/[0.05]">
             {accepted.map((s, i) => (
-              <li key={s.username} className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-5 py-4">
-                <span
-                  className={`font-mono text-[12px] tabular-nums ${
-                    i === 0 ? "text-neon" : "text-on-dark-muted"
-                  }`}
-                >
-                  {i + 1}
-                </span>
-                <div className="flex min-w-0 items-center gap-3">
-                  <UserAvatar
-                    name={s.display_name}
-                    path={s.avatar_url}
-                    accent={s.accent_color}
-                    size={28}
-                  />
-                  <div className="min-w-0 leading-tight">
-                    <Link
-                      to="/builders/$username"
-                      params={{ username: s.username }}
-                      className="block truncate text-[13px] font-medium text-on-dark hover:text-neon"
-                    >
-                      {s.display_name}
-                    </Link>
-                    {s.project_slug ? (
+              <li key={s.username} className="px-4 py-4 sm:px-5">
+                <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3">
+                  <span
+                    className={`font-mono text-[12px] tabular-nums ${
+                      i === 0 ? "text-neon" : "text-on-dark-muted"
+                    }`}
+                  >
+                    {i + 1}
+                  </span>
+                  <div className="flex min-w-0 items-center gap-3">
+                    <UserAvatar
+                      name={s.display_name}
+                      path={s.avatar_url}
+                      accent={s.accent_color}
+                      size={28}
+                    />
+                    <div className="min-w-0 leading-tight">
                       <Link
-                        to="/projects/$slug"
-                        params={{ slug: s.project_slug }}
-                        className="block truncate font-mono text-[11px] text-on-dark-muted hover:text-neon"
+                        to="/builders/$username"
+                        params={{ username: s.username }}
+                        className="block truncate text-[13px] font-medium text-on-dark hover:text-neon"
                       >
-                        {s.project_title}
+                        {s.display_name}
                       </Link>
-                    ) : (
-                      <span className="block font-mono text-[11px] text-on-dark-muted">
-                        No entry yet
-                      </span>
-                    )}
+                      {s.project_slug ? (
+                        <Link
+                          to="/projects/$slug"
+                          params={{ slug: s.project_slug }}
+                          className="block truncate font-mono text-[11px] text-on-dark-muted hover:text-neon"
+                        >
+                          {s.project_title}
+                        </Link>
+                      ) : (
+                        <span className="block font-mono text-[11px] text-on-dark-muted">
+                          No entry yet
+                        </span>
+                      )}
+                    </div>
                   </div>
+                  <span className="glass-pill flex shrink-0 items-center gap-1 px-2.5 py-1.5 font-mono text-[11px] tabular-nums text-on-dark-muted">
+                    <ChevronUp className="size-3.5" /> {s.votes}
+                  </span>
                 </div>
-                <span className="glass-pill flex items-center gap-1.5 px-3 py-1.5 font-mono text-[11px] tabular-nums text-on-dark-muted">
-                  <ChevronUp className="size-3.5" /> {s.votes}
-                </span>
+
+                <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 pl-[1.6rem] font-mono text-[10px] text-on-dark-muted">
+                  <span className="flex items-center gap-1">
+                    <Clock className="size-3" /> joined {sinceLabel(s.joined_at)}
+                  </span>
+                  <span>
+                    {!s.project_slug
+                      ? "no project entered"
+                      : s.project_published === false
+                        ? "entry is a draft"
+                        : `entry live${s.project_status ? ` · ${s.project_status}` : ""}`}
+                  </span>
+                  <span>
+                    {s.votes === 1 ? "1 upvote earned" : `${s.votes} upvotes earned`}
+                  </span>
+                </div>
               </li>
             ))}
           </ol>
         )}
+
 
         {invited.length > 0 ? (
           <div className="mt-6">
