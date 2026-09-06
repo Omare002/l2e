@@ -40,13 +40,13 @@ function Index() {
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6">
       <section className="flex flex-col items-center pt-20 pb-14 text-center sm:pt-32 sm:pb-20">
-        <span className="font-mono text-[11px] tracking-[0.18em] text-muted-foreground">
-          THE LEARNTOEARN SHOWCASE
+        <span className="inline-flex items-center rounded-full border border-border bg-secondary px-2.5 py-1 font-mono text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+          The LearnToEarn Showcase
         </span>
         <h1 className="mt-6 text-center text-[2.15rem] font-semibold leading-[1.1] tracking-tight sm:text-6xl">
           <TypingHeadline />
         </h1>
-        <p className="mt-6 max-w-xl text-balance text-[14px] leading-relaxed text-muted-foreground sm:mt-7 sm:text-[15px]">
+        <p className="mt-6 max-w-xl text-balance text-[14px] leading-relaxed text-foreground/80 sm:mt-7 sm:text-[15px]">
           Showcase your work, gather real feedback, and follow the weekly race as it unfolds.
         </p>
         <div className="mt-9 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:justify-center">
@@ -58,7 +58,7 @@ function Index() {
           </Link>
           <Link
             to="/submit"
-            className="flex min-h-12 items-center justify-center rounded-full border border-border px-5 text-[14px] font-medium transition-colors duration-200 hover:border-neon hover:bg-muted/60"
+            className="flex min-h-12 items-center justify-center rounded-full border border-border bg-secondary px-5 text-[14px] font-medium text-secondary-foreground transition-colors duration-200 hover:bg-muted hover:border-neon/40"
           >
             Submit a project
           </Link>
