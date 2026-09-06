@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 
 export type ProfileRow = Tables<"profiles">;
+export type PublicProfileRow = Omit<ProfileRow, "id"> & { id: string | null };
 export type ProjectRow = Tables<"projects">;
 export type ProjectStats = Tables<"project_stats">;
 export type LeaderboardRow = Tables<"leaderboard">;
@@ -29,7 +30,10 @@ export type ActivityItem = Tables<"activity_events"> & {
 };
 
 /** Any Supabase error becomes a friendly, non-leaking Error. */
-function unwrap<T>(result: { data: T | null; error: { message: string } | null }, fallback: string): T {
+function unwrap<T>(
+  result: { data: T | null; error: { message: string } | null },
+  fallback: string,
+): T {
   if (result.error) {
     console.error(`[db] ${fallback}:`, result.error.message);
     throw new Error(fallback);
@@ -67,17 +71,18 @@ export const qk = {
 
 export const PROJECT_PAGE_SIZE = 12;
 
-function applySort(
-  query: any,
-  sort: ProjectSort,
-) {
+function applySort(query: any, sort: ProjectSort) {
   switch (sort) {
     case "Newest":
       return query.order("created_at", { ascending: false });
     case "Most Voted":
-      return query.order("vote_count", { ascending: false }).order("created_at", { ascending: false });
+      return query
+        .order("vote_count", { ascending: false })
+        .order("created_at", { ascending: false });
     case "Most Commented":
-      return query.order("comment_count", { ascending: false }).order("created_at", { ascending: false });
+      return query
+        .order("comment_count", { ascending: false })
+        .order("created_at", { ascending: false });
     case "Recently Updated":
       return query.order("updated_at", { ascending: false });
     default:
@@ -145,8 +150,14 @@ export function leaderboardQuery() {
 export function profileQuery(username: string) {
   return queryOptions({
     queryKey: qk.profile(username),
-    queryFn: async (): Promise<ProfileRow | null> => {
-      const res = await supabase.from("profiles").select("*").eq("username", username).maybeSingle();
+    queryFn: async (): Promise<PublicProfileRow | null> => {
+      const res = await supabase
+        .from("profiles")
+        .select(
+          "id, username, display_name, avatar_url, bio, github_url, portfolio_url, accent_color, is_demo, created_at, updated_at",
+        )
+        .eq("username", username)
+        .maybeSingle();
       return unwrap(res, "Could not load this profile");
     },
   });
@@ -225,12 +236,11 @@ export function discussionQuery(id: string) {
   return queryOptions({
     queryKey: qk.discussion(id),
     queryFn: async (): Promise<DiscussionWithAuthor | null> => {
-      const res = await supabase
-        .from("discussions_public")
-        .select("*")
-        .eq("id", id)
-        .maybeSingle();
-      return unwrap(res, "Could not load this discussion") as unknown as DiscussionWithAuthor | null;
+      const res = await supabase.from("discussions_public").select("*").eq("id", id).maybeSingle();
+      return unwrap(
+        res,
+        "Could not load this discussion",
+      ) as unknown as DiscussionWithAuthor | null;
     },
     placeholderData: keepPreviousData,
   });
