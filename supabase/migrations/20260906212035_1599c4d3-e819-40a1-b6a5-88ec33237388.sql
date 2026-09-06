@@ -1,0 +1,1 @@
+ALTER VIEW public.project_stats SET (security_invoker = on);
