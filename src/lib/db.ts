@@ -2,6 +2,16 @@ import { keepPreviousData, queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 import { getPublicProjects } from "@/lib/public-projects.functions";
+import {
+  getPublicActivity,
+  getPublicComments,
+  getPublicDiscussion,
+  getPublicDiscussions,
+  getPublicLeaderboard,
+  getPublicProfile,
+  getPublicProject,
+  getPublicReplies,
+} from "@/lib/public-reads.functions";
 
 export type ProfileRow = Tables<"profiles">;
 export type PublicProfileRow = Omit<ProfileRow, "id"> & { id: string | null };
@@ -106,8 +116,13 @@ export function projectQuery(slug: string) {
   return queryOptions({
     queryKey: qk.project(slug),
     queryFn: async (): Promise<ProjectStats | null> => {
+      // Public read first so guests always see published projects; signed-in
+      // owners fall back to their own (possibly unpublished) row.
+      const published = await getPublicProject({ data: { slug } });
+      if (published) return published as ProjectStats;
       const res = await supabase.from("project_stats").select("*").eq("slug", slug).maybeSingle();
-      return unwrap(res, "Could not load this project");
+      if (res.error) return null;
+      return res.data ?? null;
     },
     staleTime: 10_000,
   });
@@ -130,14 +145,8 @@ export function myProjectsQuery(userId: string) {
 export function leaderboardQuery() {
   return queryOptions({
     queryKey: qk.leaderboard,
-    queryFn: async (): Promise<LeaderboardRow[]> => {
-      const res = await supabase
-        .from("leaderboard")
-        .select("*")
-        .order("rank", { ascending: true })
-        .limit(100);
-      return unwrap(res, "Could not load the leaderboard") ?? [];
-    },
+    queryFn: async (): Promise<LeaderboardRow[]> =>
+      (await getPublicLeaderboard()) as LeaderboardRow[],
     staleTime: 10_000,
     placeholderData: keepPreviousData,
   });
@@ -146,16 +155,8 @@ export function leaderboardQuery() {
 export function profileQuery(username: string) {
   return queryOptions({
     queryKey: qk.profile(username),
-    queryFn: async (): Promise<PublicProfileRow | null> => {
-      const res = await supabase
-        .from("profiles")
-        .select(
-          "id, username, display_name, avatar_url, bio, github_url, portfolio_url, accent_color, is_demo, created_at, updated_at",
-        )
-        .eq("username", username)
-        .maybeSingle();
-      return unwrap(res, "Could not load this profile");
-    },
+    queryFn: async (): Promise<PublicProfileRow | null> =>
+      (await getPublicProfile({ data: { username } })) as PublicProfileRow | null,
   });
 }
 
@@ -185,13 +186,9 @@ export function commentsQuery(projectId: string | undefined) {
     queryKey: qk.comments(projectId ?? "none"),
     enabled: Boolean(projectId),
     queryFn: async (): Promise<CommentWithAuthor[]> => {
-      const res = await supabase
-        .from("comments_public")
-        .select("*")
-        .eq("project_id", projectId!)
-        .order("created_at", { ascending: false })
-        .limit(100);
-      return (unwrap(res, "Could not load feedback") ?? []) as unknown as CommentWithAuthor[];
+      return (await getPublicComments({
+        data: { projectId: projectId! },
+      })) as unknown as CommentWithAuthor[];
     },
     placeholderData: keepPreviousData,
   });
@@ -215,13 +212,7 @@ export function discussionsQuery() {
   return queryOptions({
     queryKey: qk.discussions,
     queryFn: async (): Promise<DiscussionWithAuthor[]> => {
-      const res = await supabase
-        .from("discussions_public")
-        .select("*")
-        .order("pinned", { ascending: false })
-        .order("last_activity_at", { ascending: false })
-        .limit(100);
-      return (unwrap(res, "Could not load the forum") ?? []) as unknown as DiscussionWithAuthor[];
+      return (await getPublicDiscussions()) as unknown as DiscussionWithAuthor[];
     },
     staleTime: 10_000,
     placeholderData: keepPreviousData,
@@ -232,11 +223,9 @@ export function discussionQuery(id: string) {
   return queryOptions({
     queryKey: qk.discussion(id),
     queryFn: async (): Promise<DiscussionWithAuthor | null> => {
-      const res = await supabase.from("discussions_public").select("*").eq("id", id).maybeSingle();
-      return unwrap(
-        res,
-        "Could not load this discussion",
-      ) as unknown as DiscussionWithAuthor | null;
+      return (await getPublicDiscussion({
+        data: { id },
+      })) as unknown as DiscussionWithAuthor | null;
     },
     placeholderData: keepPreviousData,
   });
@@ -247,13 +236,9 @@ export function repliesQuery(discussionId: string | undefined) {
     queryKey: qk.replies(discussionId ?? "none"),
     enabled: Boolean(discussionId),
     queryFn: async (): Promise<ReplyWithAuthor[]> => {
-      const res = await supabase
-        .from("discussion_replies_public")
-        .select("*")
-        .eq("discussion_id", discussionId!)
-        .order("created_at", { ascending: true })
-        .limit(200);
-      return (unwrap(res, "Could not load replies") ?? []) as unknown as ReplyWithAuthor[];
+      return (await getPublicReplies({
+        data: { discussionId: discussionId! },
+      })) as unknown as ReplyWithAuthor[];
     },
     placeholderData: keepPreviousData,
   });
@@ -263,12 +248,7 @@ export function activityQuery(limit = 12) {
   return queryOptions({
     queryKey: [...qk.activity, limit],
     queryFn: async (): Promise<ActivityItem[]> => {
-      const res = await supabase
-        .from("activity_public")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(limit);
-      return (unwrap(res, "Could not load the activity feed") ?? []) as unknown as ActivityItem[];
+      return (await getPublicActivity({ data: { limit } })) as unknown as ActivityItem[];
     },
     staleTime: 10_000,
   });
@@ -279,13 +259,7 @@ export function userActivityQuery(username: string, limit = 8) {
   return queryOptions({
     queryKey: ["user-activity", username, limit],
     queryFn: async (): Promise<ActivityItem[]> => {
-      const res = await supabase
-        .from("activity_public")
-        .select("*")
-        .eq("actor_username", username)
-        .order("created_at", { ascending: false })
-        .limit(limit);
-      return (unwrap(res, "Could not load recent activity") ?? []) as unknown as ActivityItem[];
+      return (await getPublicActivity({ data: { limit, username } })) as unknown as ActivityItem[];
     },
   });
 }
