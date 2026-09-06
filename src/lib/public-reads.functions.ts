@@ -168,3 +168,84 @@ export const getPublicCommunityTotals = createServerFn({ method: "GET" }).handle
     projects_week: res.data?.projects_week ?? 0,
   };
 });
+
+export type WeeklyStanding = {
+  id: string;
+  username: string | null;
+  display_name: string | null;
+  avatar_url: string | null;
+  accent_color: string | null;
+  score: number;
+  project_count: number;
+  rank: number;
+  top_project_title: string | null;
+};
+
+/**
+ * Standings for one race week. Only votes cast inside the window count, so the
+ * weekly race resets while all-time totals stay untouched.
+ */
+export const getPublicWeeklyLeaderboard = createServerFn({ method: "GET" })
+  .inputValidator((input: unknown) =>
+    z
+      .object({ startsAt: z.string().min(4), endsAt: z.string().min(4) })
+      .parse(input),
+  )
+  .handler(async ({ data }): Promise<WeeklyStanding[]> => {
+    const db = await admin();
+    const votes = await db
+      .from("votes")
+      .select("project_id")
+      .gte("created_at", data.startsAt)
+      .lt("created_at", data.endsAt);
+    if (votes.error) fail("Could not load this week's standings", votes.error.message);
+
+    const projects = await db
+      .from("projects")
+      .select("id, owner_id, title")
+      .eq("published", true);
+    if (projects.error) fail("Could not load this week's standings", projects.error.message);
+
+    const rows = projects.data ?? [];
+    const ownerIds = [...new Set(rows.map((p) => p.owner_id))];
+    const profiles = ownerIds.length
+      ? await db
+          .from("profiles")
+          .select("id, username, display_name, avatar_url, accent_color")
+          .in("id", ownerIds)
+      : { data: [], error: null };
+    if (profiles.error) fail("Could not load this week's standings", profiles.error.message);
+
+    const perProject = new Map<string, number>();
+    for (const v of votes.data ?? []) {
+      perProject.set(v.project_id, (perProject.get(v.project_id) ?? 0) + 1);
+    }
+
+    const byOwner = new Map<string, { score: number; projects: number; top: [string, number] }>();
+    for (const p of rows) {
+      const score = perProject.get(p.id) ?? 0;
+      const entry = byOwner.get(p.owner_id) ?? { score: 0, projects: 0, top: [p.title, -1] as [string, number] };
+      entry.score += score;
+      entry.projects += 1;
+      if (score > entry.top[1]) entry.top = [p.title, score];
+      byOwner.set(p.owner_id, entry);
+    }
+
+    return (profiles.data ?? [])
+      .map((profile) => {
+        const entry = byOwner.get(profile.id);
+        return {
+          id: profile.id,
+          username: profile.username,
+          display_name: profile.display_name,
+          avatar_url: profile.avatar_url,
+          accent_color: profile.accent_color,
+          score: entry?.score ?? 0,
+          project_count: entry?.projects ?? 0,
+          top_project_title: entry?.top[0] ?? null,
+          rank: 0,
+        };
+      })
+      .sort((a, b) => b.score - a.score || (a.display_name ?? "").localeCompare(b.display_name ?? ""))
+      .map((row, i) => ({ ...row, rank: i + 1 }));
+  });
