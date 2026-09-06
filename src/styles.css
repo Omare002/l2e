@@ -128,49 +128,45 @@
 }
 
 .dark {
-  /* Tonal charcoal-green depth system — deliberately not an inverted
-   * light mode. Each surface below sits a step lighter than the last
-   * (background < navbar < card < elevated < hover < border), so depth
-   * reads from tone alone even before borders or shadows kick in. */
+  /* Warm charcoal depth system — premium creative-tech, not cyberpunk.
+   * Clear tonal steps: background #121412 < navbar < card #191C19 <
+   * elevated #202420 < hover < border. Warm-neutral hues, no pure black. */
 
-  /* #0D0F0E — page background, the darkest surface */
-  --background: oklch(0.166 0.004 164.52);
-  /* #F2F2F2 — primary text: soft white, never pure white */
-  --foreground: oklch(0.958 0 0);
+  /* #121412 — warm charcoal page background */
+  --background: #121412;
+  /* #F2F3F0 — soft warm white, never pure white */
+  --foreground: #f2f3f0;
 
+  /* #191C19 — cards (project cards, race track, hall of fame) */
+  --card: #191c19;
+  --card-foreground: #f2f3f0;
 
-  /* #151916 — cards (project cards, race track, hall of fame) */
-  --card: oklch(0.208 0.008 153.167);
-  --card-foreground: oklch(0.962 0.006 128.527);
+  /* #202420 — elevated surfaces: dropdowns, popovers, selects, modals */
+  --popover: #202420;
+  --popover-foreground: #f2f3f0;
 
-  /* #1A1E1B — elevated surfaces: dropdowns, popovers, selects, modals */
-  --popover: oklch(0.23 0.008 153.252);
-  --popover-foreground: oklch(0.962 0.006 128.527);
-
-  --primary: oklch(0.962 0.006 128.527);
-  --primary-foreground: oklch(0.166 0.004 164.52);
+  --primary: #f2f3f0;
+  --primary-foreground: #121412;
 
   /* Secondary surfaces share the elevated tone */
-  --secondary: oklch(0.23 0.008 153.252);
-  --secondary-foreground: oklch(0.962 0.006 128.527);
+  --secondary: #202420;
+  --secondary-foreground: #f2f3f0;
 
-  /* Muted backgrounds sit at card level; muted TEXT is the A8A8A8 tier */
-  --muted: oklch(0.208 0.008 153.167);
-  /* #A8A8A8 — secondary text */
-  --muted-foreground: oklch(0.717 0 0);
+  /* Muted backgrounds sit at card level; muted TEXT is the A9ACA6 tier */
+  --muted: #191c19;
+  /* #A9ACA6 — warm secondary text */
+  --muted-foreground: #a9aca6;
 
-
-  /* #20251F — hover surfaces (menu items, list rows, nav hover) */
-  --accent: oklch(0.257 0.013 140.453);
-  --accent-foreground: oklch(0.962 0.006 128.527);
+  /* #262B26 — hover surfaces (menu items, list rows, nav hover) */
+  --accent: #262b26;
+  --accent-foreground: #f2f3f0;
 
   --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
+  --destructive-foreground: #f2f3f0;
 
-  /* #292E2A — borders, the lightest neutral surface tone before text */
-  --border: oklch(0.295 0.01 151.486);
-  --input: oklch(0.295 0.01 151.486);
-  /* Focus rings pick up the neon accent rather than a neutral gray */
+  /* #2E332E — warm borders, the lightest neutral surface before text */
+  --border: #2e332e;
+  --input: #2e332e;
   --ring: var(--neon);
 
   --chart-1: oklch(0.488 0.243 264.376);
@@ -179,25 +175,28 @@
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
 
-  /* Nav-like panel — same family as the navbar tone below */
-  --sidebar: oklch(0.187 0.006 156.576);
-  --sidebar-foreground: oklch(0.962 0.006 128.527);
+  /* Nav-like panel — one step above the page background */
+  --sidebar: #151815;
+  --sidebar-foreground: #f2f3f0;
   --sidebar-primary: var(--neon);
-  --sidebar-primary-foreground: oklch(0.166 0.004 164.52);
-  --sidebar-accent: oklch(0.257 0.013 140.453);
-  --sidebar-accent-foreground: oklch(0.962 0.006 128.527);
-  --sidebar-border: oklch(0.295 0.01 151.486);
+  --sidebar-primary-foreground: #121412;
+  --sidebar-accent: #262b26;
+  --sidebar-accent-foreground: #f2f3f0;
+  --sidebar-border: #2e332e;
   --sidebar-ring: var(--neon);
 
-  /* The project's real "cards" system — surface-card utility below reads
-   * from these, used by project cards, the race track, and hall of fame. */
-  /* #151916 */
-  --surface-dark: oklch(0.208 0.008 153.167);
-  /* #1A1E1B */
-  --surface-darker: oklch(0.23 0.008 153.252);
+  /* Card surface system read by the surface-card utility */
+  --surface-dark: #191c19;
+  --surface-darker: #202420;
 
-  /* #111412 — navbar, one step above the page background */
-  --navbar: oklch(0.187 0.006 156.576);
+  /* #151815 — navbar, one step above the page background */
+  --navbar: #151815;
+
+  /* Intentional glass: visible translucency + hairline light border */
+  --glass-bg: rgb(255 255 255 / 6%);
+  --glass-bg-strong: rgb(255 255 255 / 8%);
+  --glass-border: rgb(255 255 255 / 12%);
+  --glass-blur: 16px;
 }
 
 @layer base {
