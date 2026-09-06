@@ -261,11 +261,16 @@
   );
 }
 
+/* Layer 2: the card surface. Translucent tone + a light 12px blur so cards
+ * float above the ambient background instead of sitting flat on it. */
 @utility surface-card {
-  background-color: var(--surface-dark);
-  border: 1px solid oklch(1 0 0 / 8%);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
+  background-color: color-mix(in oklab, var(--surface-dark) 76%, transparent);
+  backdrop-filter: blur(12px) saturate(120%);
+  border: 1px solid oklch(1 0 0 / 7%);
+  border-radius: calc(var(--radius) + 6px);
+  box-shadow:
+    0 1px 0 0 oklch(1 0 0 / 4%) inset,
+    0 18px 40px -28px oklch(0 0 0 / 65%);
   transition:
     border-color 200ms var(--ease-out-soft),
     background-color 200ms var(--ease-out-soft),
@@ -273,7 +278,33 @@
     transform 200ms var(--ease-out-soft);
 }
 
-/* Restrained hover: 2px lift, slightly deeper shadow, neutral -> neon border. */
+/* Layer 1: a wider, quieter glass section that groups content (profile
+ * headers, hero panels). Less contrast than a card on purpose. */
+@utility glass-panel {
+  background-color: oklch(1 0 0 / 3.5%);
+  backdrop-filter: blur(12px) saturate(120%);
+  border: 1px solid oklch(1 0 0 / 6%);
+  border-radius: calc(var(--radius) + 14px);
+  box-shadow: 0 24px 60px -40px oklch(0 0 0 / 70%);
+}
+
+/* Layer 4: small floating controls and badges. */
+@utility glass-pill {
+  background-color: oklch(1 0 0 / 6%);
+  backdrop-filter: blur(12px) saturate(120%);
+  border: 1px solid oklch(1 0 0 / 8%);
+  border-radius: 999px;
+}
+
+/* Layer 3: project imagery, lifted a touch above its own card. */
+@utility elevated-media {
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 22px 45px -30px oklch(0 0 0 / 80%);
+  transform: translateY(-2px);
+}
+
+/* Restrained hover: 3px lift, slightly deeper shadow, neutral -> neon border. */
 @utility lift-hover {
   transition:
     border-color 200ms var(--ease-out-soft),
@@ -282,11 +313,14 @@
     transform 200ms var(--ease-out-soft);
 
   &:hover {
-    transform: translateY(-2px);
-    border-color: color-mix(in oklab, var(--neon) 45%, transparent);
-    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
+    border-color: color-mix(in oklab, var(--neon) 30%, transparent);
+    box-shadow:
+      0 1px 0 0 oklch(1 0 0 / 5%) inset,
+      0 26px 55px -30px oklch(0 0 0 / 75%);
   }
 }
+
 
 @keyframes caret-blink {
   0%,
