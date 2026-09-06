@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 
 export type ProfileRow = Tables<"profiles">;
+export type PublicProfileRow = Omit<ProfileRow, "id"> & { id: string | null };
 export type ProjectRow = Tables<"projects">;
 export type ProjectStats = Tables<"project_stats">;
 export type LeaderboardRow = Tables<"leaderboard">;
@@ -145,8 +146,14 @@ export function leaderboardQuery() {
 export function profileQuery(username: string) {
   return queryOptions({
     queryKey: qk.profile(username),
-    queryFn: async (): Promise<ProfileRow | null> => {
-      const res = await supabase.from("profiles").select("*").eq("username", username).maybeSingle();
+    queryFn: async (): Promise<PublicProfileRow | null> => {
+      const res = await supabase
+        .from("profiles")
+        .select(
+          "id, username, display_name, avatar_url, bio, github_url, portfolio_url, accent_color, is_demo, created_at, updated_at",
+        )
+        .eq("username", username)
+        .maybeSingle();
       return unwrap(res, "Could not load this profile");
     },
   });
