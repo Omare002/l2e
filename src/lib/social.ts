@@ -17,19 +17,26 @@ export type PublicCollaborator = {
 };
 
 export type CollaboratorRow = Tables<"project_collaborators"> & {
-  member: Pick<Tables<"profiles">, "id" | "username" | "display_name" | "avatar_url" | "accent_color"> | null;
+  member: Pick<
+    Tables<"profiles">,
+    "id" | "username" | "display_name" | "avatar_url" | "accent_color"
+  > | null;
 };
 
 export type InviteRow = Tables<"project_collaborators"> & {
   project: Pick<Tables<"projects">, "slug" | "title" | "tagline"> | null;
-  inviter: Pick<Tables<"profiles">, "username" | "display_name" | "avatar_url" | "accent_color"> | null;
+  inviter: Pick<
+    Tables<"profiles">,
+    "username" | "display_name" | "avatar_url" | "accent_color"
+  > | null;
 };
 
 const MEMBER = "id, username, display_name, avatar_url, accent_color";
 
 export const sqk = {
   followCounts: (username: string) => ["follow-counts", username] as const,
-  followState: (viewerId: string, targetId: string) => ["follow-state", viewerId, targetId] as const,
+  followState: (viewerId: string, targetId: string) =>
+    ["follow-state", viewerId, targetId] as const,
   collaborators: (projectId: string) => ["collaborators", projectId] as const,
   collaboratorAdmin: (projectId: string) => ["collaborators-admin", projectId] as const,
   invites: (userId: string) => ["collab-invites", userId] as const,

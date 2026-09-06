@@ -40,7 +40,11 @@ export const getPublicProject = createServerFn({ method: "GET" })
 
 export const getPublicLeaderboard = createServerFn({ method: "GET" }).handler(async () => {
   const db = await admin();
-  const res = await db.from("leaderboard").select("*").order("rank", { ascending: true }).limit(100);
+  const res = await db
+    .from("leaderboard")
+    .select("*")
+    .order("rank", { ascending: true })
+    .limit(100);
   if (res.error) fail("Could not load the leaderboard", res.error.message);
   return res.data ?? [];
 });
@@ -108,7 +112,9 @@ export const getPublicReplies = createServerFn({ method: "GET" })
   });
 
 export const getPublicProfile = createServerFn({ method: "GET" })
-  .inputValidator((input: unknown) => z.object({ username: z.string().trim().max(80) }).parse(input))
+  .inputValidator((input: unknown) =>
+    z.object({ username: z.string().trim().max(80) }).parse(input),
+  )
   .handler(async ({ data }) => {
     const db = await admin();
     const res = await db
@@ -123,7 +129,9 @@ export const getPublicProfile = createServerFn({ method: "GET" })
   });
 
 export const getPublicFollowCounts = createServerFn({ method: "GET" })
-  .inputValidator((input: unknown) => z.object({ username: z.string().trim().max(80) }).parse(input))
+  .inputValidator((input: unknown) =>
+    z.object({ username: z.string().trim().max(80) }).parse(input),
+  )
   .handler(async ({ data }) => {
     const db = await admin();
     const res = await db
