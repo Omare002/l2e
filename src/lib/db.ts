@@ -5,6 +5,7 @@ import { getPublicProjects } from "@/lib/public-projects.functions";
 import {
   getPublicActivity,
   getPublicComments,
+  getPublicCommunityTotals,
   getPublicDiscussion,
   getPublicDiscussions,
   getPublicLeaderboard,
