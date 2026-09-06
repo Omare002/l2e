@@ -1,6 +1,7 @@
 import { keepPreviousData, queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
+import { getPublicCollaborators, getPublicFollowCounts } from "@/lib/public-reads.functions";
 
 export type FollowCounts = { followers: number; following: number };
 
@@ -42,16 +43,12 @@ export function followCountsQuery(username: string | undefined) {
     enabled: Boolean(username),
     placeholderData: keepPreviousData,
     queryFn: async (): Promise<FollowCounts> => {
-      const { data, error } = await supabase
-        .from("follow_counts")
-        .select("followers, following")
-        .eq("username", username!)
-        .maybeSingle();
-      if (error) {
-        console.error("[social] follow counts:", error.message);
+      try {
+        return await getPublicFollowCounts({ data: { username: username! } });
+      } catch (error) {
+        console.error("[social] follow counts:", error);
         return { followers: 0, following: 0 };
       }
-      return { followers: data?.followers ?? 0, following: data?.following ?? 0 };
     },
   });
 }
@@ -83,16 +80,13 @@ export function collaboratorsQuery(projectId: string | undefined) {
     enabled: Boolean(projectId),
     placeholderData: keepPreviousData,
     queryFn: async (): Promise<PublicCollaborator[]> => {
-      const { data, error } = await supabase
-        .from("project_collaborators_public")
-        .select("id, project_id, user_id, can_edit, username, display_name, avatar_url, accent_color")
-        .eq("project_id", projectId!)
-        .order("created_at", { ascending: true });
-      if (error) {
-        console.error("[social] collaborators:", error.message);
+      try {
+        const rows = await getPublicCollaborators({ data: { projectId: projectId! } });
+        return rows as unknown as PublicCollaborator[];
+      } catch (error) {
+        console.error("[social] collaborators:", error);
         return [];
       }
-      return (data ?? []) as unknown as PublicCollaborator[];
     },
   });
 }

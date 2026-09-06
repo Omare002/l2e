@@ -121,3 +121,29 @@ export const getPublicProfile = createServerFn({ method: "GET" })
     if (res.error) fail("Could not load this profile", res.error.message);
     return res.data ?? null;
   });
+
+export const getPublicFollowCounts = createServerFn({ method: "GET" })
+  .inputValidator((input: unknown) => z.object({ username: z.string().trim().max(80) }).parse(input))
+  .handler(async ({ data }) => {
+    const db = await admin();
+    const res = await db
+      .from("follow_counts")
+      .select("followers, following")
+      .eq("username", data.username)
+      .maybeSingle();
+    if (res.error) fail("Could not load follower counts", res.error.message);
+    return { followers: res.data?.followers ?? 0, following: res.data?.following ?? 0 };
+  });
+
+export const getPublicCollaborators = createServerFn({ method: "GET" })
+  .inputValidator((input: unknown) => z.object({ projectId: z.string().uuid() }).parse(input))
+  .handler(async ({ data }) => {
+    const db = await admin();
+    const res = await db
+      .from("project_collaborators_public")
+      .select("id, project_id, user_id, can_edit, username, display_name, avatar_url, accent_color")
+      .eq("project_id", data.projectId)
+      .order("created_at", { ascending: true });
+    if (res.error) fail("Could not load collaborators", res.error.message);
+    return res.data ?? [];
+  });
