@@ -981,6 +981,201 @@ export type Database = {
           },
         ]
       }
+      quest_participants: {
+        Row: {
+          created_at: string
+          id: string
+          invited_by: string | null
+          project_id: string | null
+          quest_id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          invited_by?: string | null
+          project_id?: string | null
+          quest_id: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          invited_by?: string | null
+          project_id?: string | null
+          quest_id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quest_participants_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "follow_counts"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "quest_participants_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quest_participants_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quest_participants_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quest_participants_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quest_participants_quest_id_fkey"
+            columns: ["quest_id"]
+            isOneToOne: false
+            referencedRelation: "quests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quest_participants_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "follow_counts"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "quest_participants_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quest_participants_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quests: {
+        Row: {
+          closed_at: string | null
+          created_at: string
+          creator_id: string
+          description: string
+          ends_at: string
+          id: string
+          kind: string
+          starts_at: string
+          task_id: string | null
+          title: string
+          updated_at: string
+          winner_id: string | null
+          winner_votes: number | null
+        }
+        Insert: {
+          closed_at?: string | null
+          created_at?: string
+          creator_id: string
+          description?: string
+          ends_at: string
+          id?: string
+          kind?: string
+          starts_at?: string
+          task_id?: string | null
+          title: string
+          updated_at?: string
+          winner_id?: string | null
+          winner_votes?: number | null
+        }
+        Update: {
+          closed_at?: string | null
+          created_at?: string
+          creator_id?: string
+          description?: string
+          ends_at?: string
+          id?: string
+          kind?: string
+          starts_at?: string
+          task_id?: string | null
+          title?: string
+          updated_at?: string
+          winner_id?: string | null
+          winner_votes?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quests_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "follow_counts"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "quests_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quests_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quests_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quests_winner_id_fkey"
+            columns: ["winner_id"]
+            isOneToOne: false
+            referencedRelation: "follow_counts"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "quests_winner_id_fkey"
+            columns: ["winner_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quests_winner_id_fkey"
+            columns: ["winner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       votes: {
         Row: {
           created_at: string
@@ -1037,6 +1232,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      weekly_tasks: {
+        Row: {
+          created_at: string
+          ends_at: string
+          id: string
+          prompt: string
+          starts_at: string
+          title: string
+          updated_at: string
+          week: number
+          year: number
+        }
+        Insert: {
+          created_at?: string
+          ends_at: string
+          id?: string
+          prompt: string
+          starts_at: string
+          title: string
+          updated_at?: string
+          week: number
+          year: number
+        }
+        Update: {
+          created_at?: string
+          ends_at?: string
+          id?: string
+          prompt?: string
+          starts_at?: string
+          title?: string
+          updated_at?: string
+          week?: number
+          year?: number
+        }
+        Relationships: []
       }
     }
     Views: {
@@ -1267,11 +1498,27 @@ export type Database = {
       }
     }
     Functions: {
+      close_finished_quests: { Args: never; Returns: number }
       my_unread_counts: {
         Args: never
         Returns: {
           conversation_id: string
           unread: number
+        }[]
+      }
+      quest_standings: {
+        Args: { _quest_id: string }
+        Returns: {
+          accent_color: string
+          avatar_url: string
+          display_name: string
+          project_id: string
+          project_slug: string
+          project_title: string
+          status: string
+          user_id: string
+          username: string
+          votes: number
         }[]
       }
       rank_history: {
