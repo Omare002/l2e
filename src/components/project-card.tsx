@@ -18,7 +18,7 @@ export function ProjectCard({ project, rank }: { project: ProjectStats; rank?: n
 
   return (
     <article className="surface-card lift-hover group flex flex-col p-5 sm:p-6">
-      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
         <div className="flex min-w-0 items-center gap-3">
           <UserAvatar
             name={project.owner_display_name}
@@ -31,28 +31,32 @@ export function ProjectCard({ project, rank }: { project: ProjectStats; rank?: n
               <Link
                 to="/builders/$username"
                 params={{ username: project.owner_username }}
-                className="block truncate text-[13px] font-medium text-white transition-colors duration-200 hover:text-neon"
+                className="block truncate text-[13px] font-medium text-foreground transition-colors duration-200 hover:text-neon"
               >
                 {project.owner_display_name ?? "Builder"}
               </Link>
             ) : (
-              <span className="block truncate text-[13px] font-medium text-white">
+              <span className="block truncate text-[13px] font-medium text-foreground">
                 {project.owner_display_name ?? "Builder"}
               </span>
             )}
-            <div className="mt-0.5 truncate font-mono text-[11px] text-white/40">
+            <div className="mt-0.5 truncate font-mono text-[11px] text-muted-foreground">
               {project.owner_username ? `@${project.owner_username}` : "Builder"}
             </div>
           </div>
         </div>
         {rank ? (
-          <span className="shrink-0 rounded-full border border-white/10 px-2.5 py-1 font-mono text-[10px] tabular-nums text-white/50">
+          <span
+            className={`glass-pill shrink-0 px-3 py-1.5 font-mono text-[10px] tabular-nums ${
+              rank <= 3 ? "text-neon" : "text-muted-foreground"
+            }`}
+          >
             #{rank}
           </span>
         ) : null}
       </div>
 
-      <div className="mt-5 aspect-[16/7] w-full overflow-hidden rounded-md border border-white/[0.06] bg-white/[0.03]">
+      <div className="elevated-media mt-6 aspect-[16/7] w-full bg-white/[0.03]">
         {thumb ? (
           <img
             src={thumb}
@@ -66,11 +70,12 @@ export function ProjectCard({ project, rank }: { project: ProjectStats; rank?: n
       <Link
         to="/projects/$slug"
         params={{ slug: project.slug ?? "" }}
-        className="mt-5 text-[15px] font-semibold tracking-tight text-white transition-colors duration-200 group-hover:text-neon sm:text-base"
+        className="mt-5 text-[15px] font-semibold tracking-tight text-foreground transition-colors duration-200 group-hover:text-neon sm:text-base"
       >
         {project.title}
       </Link>
-      <p className="mt-2 text-[13px] leading-relaxed text-white/55">{project.tagline}</p>
+      <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">{project.tagline}</p>
+
 
       <div className="mt-4 flex flex-wrap gap-2">
         <span className="rounded-full border border-neon/40 bg-neon-dim/30 px-2.5 py-1 font-mono text-[10px] text-neon">
