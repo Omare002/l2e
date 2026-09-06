@@ -41,21 +41,45 @@ export type Comment = {
 };
 
 export type Category =
+  | "Web & Apps"
+  | "E-commerce"
+  | "3D & Creative"
+  | "Cybersecurity"
+  | "AI & Machine Learning"
+  | "Mobile"
+  | "Games"
   | "Developer Tools"
-  | "AI"
-  | "Education"
-  | "Community"
-  | "Productivity"
-  | "Design";
+  | "Design & UI/UX"
+  | "Data & Analytics"
+  | "Hardware & IoT"
+  | "Social & Community";
 
+/** Every project has exactly one primary track; `tech` holds the optional extra tags. */
 export const CATEGORIES: Category[] = [
+  "Web & Apps",
+  "E-commerce",
+  "3D & Creative",
+  "Cybersecurity",
+  "AI & Machine Learning",
+  "Mobile",
+  "Games",
   "Developer Tools",
-  "AI",
-  "Education",
-  "Community",
-  "Productivity",
-  "Design",
+  "Design & UI/UX",
+  "Data & Analytics",
+  "Hardware & IoT",
+  "Social & Community",
 ];
+
+export const FALLBACK_CATEGORY: Category = "Web & Apps";
+
+/**
+ * Anything missing or unrecognised reads as the fallback track, so a project can
+ * never vanish from the grid because of odd category data.
+ */
+export function normalizeCategory(value: string | null | undefined): Category {
+  const match = CATEGORIES.find((c) => c.toLowerCase() === (value ?? "").trim().toLowerCase());
+  return match ?? FALLBACK_CATEGORY;
+}
 
 export const ACHIEVEMENTS: { key: string; emoji: string; label: string; note: string }[] = [
   { key: "first-launch", emoji: "🚀", label: "First Launch", note: "Shipped a first project" },
@@ -226,7 +250,7 @@ export const PROJECTS: Project[] = [
       "Free, unlimited background removal right in the browser. No upload required, runs entirely on-device using transformers.js and WebGPU. Nothing ever leaves your machine.",
     builder: "samdev",
     tech: ["AI", "WebGPU", "transformers.js"],
-    category: "AI",
+    category: "AI & Machine Learning",
     status: "Shipped",
     demoUrl: "https://cutout.demo",
     repoUrl: "https://github.com/samdev/cutout",
@@ -247,7 +271,7 @@ export const PROJECTS: Project[] = [
       "Generate custom variable fonts from a single prompt. Great for finding that perfect aesthetic for your landing page, and every export ships with a working @font-face snippet.",
     builder: "kyles",
     tech: ["Design", "SaaS", "Canvas"],
-    category: "Design",
+    category: "Design & UI/UX",
     status: "Shipped",
     demoUrl: "https://typeforge.demo",
     repoUrl: "https://github.com/kyles/typeforge",
@@ -268,7 +292,7 @@ export const PROJECTS: Project[] = [
       "Swipe right on builders whose skills complement yours. 500 matches in week one. Matching runs on a simple skill-complement score rather than an opaque ranking model.",
     builder: "jj",
     tech: ["Community", "React", "Supabase"],
-    category: "Community",
+    category: "Social & Community",
     status: "Shipped",
     demoUrl: "https://devmatch.demo",
     repoUrl: "https://github.com/jj/devmatch",
@@ -286,7 +310,7 @@ export const PROJECTS: Project[] = [
       "Turn your fellowship notes into spaced-repetition decks automatically. Import from Notion, review in two minutes a day, and track retention week over week.",
     builder: "taylorm",
     tech: ["Vue", "Postgres", "Notion API"],
-    category: "Education",
+    category: "Web & Apps",
     status: "In Progress",
     demoUrl: "https://studyhub.demo",
     repoUrl: "https://github.com/taylorm/studyhub",
@@ -325,7 +349,7 @@ export const PROJECTS: Project[] = [
       "Twenty-four motion primitives with the code visible on hover. Built while learning Framer Motion in public, one component per day.",
     builder: "caseyb",
     tech: ["React", "Framer Motion", "Design"],
-    category: "Design",
+    category: "Design & UI/UX",
     status: "In Progress",
     demoUrl: "https://motionkit.demo",
     repoUrl: "https://github.com/caseyb/motionkit",
@@ -343,7 +367,7 @@ export const PROJECTS: Project[] = [
       "My very first shipped project in the fellowship. Hand-written HTML and CSS, no framework, deployed on a Friday night.",
     builder: "jamiel",
     tech: ["HTML", "CSS", "Vanilla JS"],
-    category: "Productivity",
+    category: "Web & Apps",
     status: "Prototype",
     demoUrl: "https://jamie.dev",
     repoUrl: "https://github.com/jamiel/portfolio",

@@ -875,7 +875,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-          category: string
+          category?: string
           created_at?: string
           demo_url?: string | null
           description: string

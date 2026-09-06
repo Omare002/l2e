@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ChevronUp, ExternalLink, Github, MessageSquare } from "lucide-react";
 import type { ProjectStats } from "@/lib/db";
-import { statusLabel } from "@/data/community";
+import { normalizeCategory, statusLabel } from "@/data/community";
 import { useVote } from "@/hooks/use-vote";
 import { useStoredImage } from "@/lib/media";
 import { UserAvatar } from "@/components/user-avatar";
@@ -41,8 +41,7 @@ export function ProjectCard({ project, rank }: { project: ProjectStats; rank?: n
               </span>
             )}
             <div className="mt-0.5 truncate font-mono text-[11px] text-white/40">
-              {project.owner_username ? `@${project.owner_username} · ` : ""}
-              {project.category}
+              {project.owner_username ? `@${project.owner_username}` : "Builder"}
             </div>
           </div>
         </div>
@@ -74,6 +73,9 @@ export function ProjectCard({ project, rank }: { project: ProjectStats; rank?: n
       <p className="mt-2 text-[13px] leading-relaxed text-white/55">{project.tagline}</p>
 
       <div className="mt-4 flex flex-wrap gap-2">
+        <span className="rounded-full border border-neon/40 bg-neon-dim/30 px-2.5 py-1 font-mono text-[10px] text-neon">
+          {normalizeCategory(project.category)}
+        </span>
         <span className="rounded-full bg-white/[0.06] px-2.5 py-1 font-mono text-[10px] text-white/55">
           {statusLabel(project.status ?? "shipped")}
         </span>

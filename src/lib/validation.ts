@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { CATEGORIES, STATUSES } from "@/data/community";
+import { STATUSES } from "@/data/community";
 
 const optionalUrl = z
   .string()
@@ -17,7 +17,7 @@ export const projectInputSchema = z.object({
   title: z.string().trim().min(2, "Give your project a name").max(80),
   tagline: z.string().trim().min(4, "One short sentence, please").max(140),
   description: z.string().trim().min(10, "Tell us a little more").max(4000),
-  category: z.enum(CATEGORIES as unknown as [string, ...string[]]),
+  category: z.string().trim().min(1).max(60).default("Web & Apps"),
   status: z.enum(STATUSES.map((s) => s.value) as unknown as [string, ...string[]]),
   demoUrl: optionalUrl,
   githubUrl: optionalUrl,

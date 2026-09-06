@@ -193,7 +193,7 @@ function SubmitPage() {
 
         <div className="grid gap-6 sm:grid-cols-2">
           <label className="block text-[12px] text-muted-foreground">
-            Category
+            Track
             <select
               value={form.category}
               onChange={(e) => set("category", e.target.value)}
