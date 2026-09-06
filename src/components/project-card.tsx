@@ -78,16 +78,16 @@ export function ProjectCard({ project, rank }: { project: ProjectStats; rank?: n
 
 
       <div className="mt-3.5 flex flex-wrap gap-1.5 pb-5">
-        <span className="glass-pill border-neon/25 bg-neon-dim/20 px-2.5 py-1 font-mono text-[10px] text-neon">
+        <span className="glass-pill-dark border-neon/25 bg-neon-dim/20 px-2.5 py-1 font-mono text-[10px] text-neon">
           {normalizeCategory(project.category)}
         </span>
-        <span className="glass-pill px-2.5 py-1 font-mono text-[10px] text-on-dark-muted">
+        <span className="glass-pill-dark px-2.5 py-1 font-mono text-[10px] text-on-dark">
           {statusLabel(project.status ?? "shipped")}
         </span>
         {(project.tech ?? []).slice(0, 3).map((t) => (
           <span
             key={t}
-            className="glass-pill px-2.5 py-1 font-mono text-[10px] text-on-dark-muted"
+            className="glass-pill-dark px-2.5 py-1 font-mono text-[10px] text-on-dark"
           >
             {t}
           </span>
