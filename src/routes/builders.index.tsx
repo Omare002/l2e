@@ -93,7 +93,7 @@ function BuilderDirectory() {
           results.map((b) => (
             <div
               key={b.id}
-              className="flex flex-wrap items-center gap-3 border-b border-border px-4 py-4 transition-colors duration-200 last:border-b-0 hover:bg-muted/50 sm:flex-nowrap sm:gap-4 sm:px-5"
+              className="flex flex-wrap items-center gap-x-3 gap-y-3 border-b border-border px-4 py-4 transition-colors duration-200 last:border-b-0 hover:bg-muted/50 sm:flex-nowrap sm:gap-4 sm:px-5"
             >
               <span className="w-8 shrink-0 font-mono text-[12px] tabular-nums text-muted-foreground">
                 {b.rank ? String(b.rank).padStart(2, "0") : "—"}
@@ -101,7 +101,7 @@ function BuilderDirectory() {
               <Link
                 to="/builders/$username"
                 params={{ username: b.username }}
-                className="flex min-w-0 flex-1 items-center gap-3"
+                className="flex min-w-0 flex-1 basis-[calc(100%-2.75rem)] items-center gap-3 sm:basis-auto"
               >
                 <UserAvatar
                   name={b.display_name}
@@ -118,11 +118,15 @@ function BuilderDirectory() {
                   </span>
                 </span>
               </Link>
-              <span className="shrink-0 text-right font-mono text-[12px] tabular-nums text-muted-foreground">
+              <span className="ml-11 shrink-0 font-mono text-[12px] tabular-nums text-muted-foreground sm:ml-0 sm:text-right">
                 <span className="text-foreground">{b.score.toLocaleString()}</span> XP
                 <span className="hidden sm:inline"> · {b.project_count} projects</span>
               </span>
-              <FollowButton targetId={b.id} username={b.username} className="shrink-0" />
+              <FollowButton
+                targetId={b.id}
+                username={b.username}
+                className="ml-auto shrink-0"
+              />
             </div>
           ))
         )}
