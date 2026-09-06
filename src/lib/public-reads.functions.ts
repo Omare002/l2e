@@ -157,17 +157,34 @@ export const getPublicCollaborators = createServerFn({ method: "GET" })
   });
 
 export const getPublicCommunityTotals = createServerFn({ method: "GET" }).handler(async () => {
-  const db = await admin();
-  const res = await db.from("community_totals").select("*").maybeSingle();
-  if (res.error) fail("Could not load community totals", res.error.message);
-  return {
-    builders: res.data?.builders ?? 0,
-    projects_published: res.data?.projects_published ?? 0,
-    upvotes: res.data?.upvotes ?? 0,
-    upvotes_week: res.data?.upvotes_week ?? 0,
-    projects_week: res.data?.projects_week ?? 0,
+  const zero = {
+    builders: 0,
+    projects_published: 0,
+    upvotes: 0,
+    upvotes_week: 0,
+    projects_week: 0,
   };
+  try {
+    const db = await admin();
+    const res = await db.from("community_totals").select("*").maybeSingle();
+    if (res.error) {
+      // Totals are decorative: never let a hiccup here blank out the page.
+      console.error("[public-reads] community totals:", res.error.message);
+      return zero;
+    }
+    return {
+      builders: res.data?.builders ?? 0,
+      projects_published: res.data?.projects_published ?? 0,
+      upvotes: res.data?.upvotes ?? 0,
+      upvotes_week: res.data?.upvotes_week ?? 0,
+      projects_week: res.data?.projects_week ?? 0,
+    };
+  } catch (error) {
+    console.error("[public-reads] community totals threw:", error);
+    return zero;
+  }
 });
+
 
 export type WeeklyStanding = {
   id: string;
