@@ -193,7 +193,7 @@ function QuestDetailPage() {
             </label>
             <select
               id="quest-project"
-              value={me.project_id ?? ""}
+              value={me.project_id ?? ""} defaultValue={undefined}
               onChange={(e) => e.target.value && enter.mutate(e.target.value)}
               className="min-h-11 max-w-sm rounded-lg border border-border bg-transparent px-3 text-[13px] outline-none focus-visible:border-neon"
             >
