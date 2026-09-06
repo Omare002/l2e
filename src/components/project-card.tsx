@@ -47,8 +47,8 @@ export function ProjectCard({ project, rank }: { project: ProjectStats; rank?: n
         </div>
         {rank ? (
           <span
-            className={`glass-pill shrink-0 px-3 py-1.5 font-mono text-[10px] tabular-nums ${
-              rank <= 3 ? "text-neon" : "text-on-dark-muted"
+            className={`glass-pill-dark shrink-0 px-3 py-1.5 font-mono text-[10px] tabular-nums ${
+              rank <= 3 ? "text-neon" : "text-on-dark"
             }`}
           >
             #{rank}
