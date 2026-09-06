@@ -79,8 +79,25 @@ function ProjectsPage() {
         </div>
       </div>
 
-      <div className="-mx-4 mt-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-        <div className="flex min-w-max gap-2 font-mono text-[11px]">
+      <div className="mt-4 sm:hidden">
+        <label className="block font-mono text-[11px] text-muted-foreground">
+          Track
+          <select
+            value={cat}
+            onChange={(e) => setCat(e.target.value)}
+            className="mt-2 min-h-11 w-full rounded-full border border-border bg-background px-4 font-mono text-[12px] text-foreground outline-none focus:border-neon"
+          >
+            {(["All", ...CATEGORIES] as const).map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
+      <div className="-mx-4 mt-4 hidden overflow-x-auto px-4 sm:mx-0 sm:block sm:px-0">
+        <div className="flex flex-wrap gap-2 font-mono text-[11px]">
           {(["All", ...CATEGORIES] as const).map((c) => (
             <button
               key={c}
