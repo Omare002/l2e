@@ -16,13 +16,17 @@ export type PushEvent =
   | { kind: "new_follower"; actorName: string; url: string }
   | { kind: "project_upvoted"; actorName: string; url: string }
   | { kind: "message_received"; actorName: string; url: string }
-  | { kind: "collaborator_invited"; actorName: string; url: string };
+  | { kind: "collaborator_invited"; actorName: string; url: string }
+  | { kind: "quest_invited"; actorName: string; url: string }
+  | { kind: "quest_won"; actorName: string; url: string };
 
 const TITLES: Record<PushEvent["kind"], (actor: string) => string> = {
   new_follower: (a) => `${a} started following you`,
   project_upvoted: (a) => `${a} upvoted your project`,
   message_received: (a) => `New message from ${a}`,
-  collaborator_invited: (a) => `${a} invited you to a quest`,
+  collaborator_invited: (a) => `${a} invited you to collaborate`,
+  quest_invited: (a) => `${a} invited you to a quest`,
+  quest_won: () => "You won the quest",
 };
 
 const BODIES: Record<PushEvent["kind"], string> = {
@@ -31,6 +35,8 @@ const BODIES: Record<PushEvent["kind"], string> = {
   // Never include message contents in a push payload.
   message_received: "Open Leaderboard to read it.",
   collaborator_invited: "Open Leaderboard to accept or decline.",
+  quest_invited: "Open Leaderboard to accept or decline.",
+  quest_won: "Your project took the most upvotes this round.",
 };
 
 /**

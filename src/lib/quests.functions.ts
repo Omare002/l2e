@@ -14,6 +14,14 @@ async function admin() {
   return supabaseAdmin;
 }
 
+async function closeFinished(db: { rpc: (n: "close_finished_quests") => PromiseLike<unknown> }) {
+  try {
+    await db.rpc("close_finished_quests");
+  } catch (e) {
+    console.error("[quests] close_finished_quests", e);
+  }
+}
+
 const idSchema = z.object({ questId: z.string().uuid() });
 
 export const QUEST_KINDS = ["shared_task", "challenge", "group"] as const;
@@ -45,7 +53,7 @@ export const getWeeklyTasks = createServerFn({ method: "GET" }).handler(async ()
 /** Every quest, newest first. Finished quests get their winner recorded first. */
 export const getPublicQuests = createServerFn({ method: "GET" }).handler(async () => {
   const db = await admin();
-  await db.rpc("close_finished_quests").catch(() => undefined);
+  await closeFinished(db);
   const res = await db
     .from("quests")
     .select(
@@ -65,7 +73,7 @@ export const getPublicQuest = createServerFn({ method: "GET" })
   .inputValidator((input: unknown) => idSchema.parse(input))
   .handler(async ({ data }) => {
     const db = await admin();
-    await db.rpc("close_finished_quests").catch(() => undefined);
+    await closeFinished(db);
 
     const quest = await db
       .from("quests")
