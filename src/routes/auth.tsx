@@ -291,8 +291,9 @@ function AuthPage() {
           </button>
         )}
       </div>
+      </div>
 
-      <p className="mt-10 text-[12px] leading-relaxed text-muted-foreground">
+      <p className="mt-8 text-center text-[12px] leading-relaxed text-muted-foreground">
         You can browse projects and the leaderboard without an account —{" "}
         <Link to="/projects" className="underline underline-offset-4 hover:text-neon">
           keep exploring
