@@ -207,6 +207,27 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  /* Layer 0: an almost-invisible green ambience so the dark page reads as lit,
+   * not flat. Two wide radial pools, no visible gradient edge. */
+  .dark body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(
+        70rem 45rem at 18% -10%,
+        color-mix(in oklab, var(--neon) 5%, transparent),
+        transparent 60%
+      ),
+      radial-gradient(
+        55rem 40rem at 92% 12%,
+        color-mix(in oklab, var(--neon) 3%, transparent),
+        transparent 62%
+      );
+  }
+
   h1,
   h2,
   h3,
@@ -229,6 +250,7 @@
     outline-offset: 2px;
   }
 }
+
 
 /* A whisper of a finish line: fine dashes, no checkerboard. */
 @utility finish-line {
