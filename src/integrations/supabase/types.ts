@@ -1267,22 +1267,6 @@ export type Database = {
       }
     }
     Functions: {
-      get_public_profile: {
-        Args: { _username: string }
-        Returns: {
-          accent_color: string
-          avatar_url: string
-          bio: string
-          created_at: string
-          display_name: string
-          github_url: string
-          id: string
-          is_demo: boolean
-          portfolio_url: string
-          updated_at: string
-          username: string
-        }[]
-      }
       my_unread_counts: {
         Args: never
         Returns: {
