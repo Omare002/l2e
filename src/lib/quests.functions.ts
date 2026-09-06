@@ -268,3 +268,46 @@ async function inviteMany(context: Ctx, questId: string, title: string, userIds:
   );
   void title;
 }
+
+/** Builders you can invite: people you follow or who follow you, plus search. */
+export const getInvitableBuilders = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z.object({ term: z.string().trim().max(60).default("") }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const term = data.term.replace(/[%_,()."\\]/g, (c) => `\\${c}`);
+
+    if (term.length >= 2) {
+      const found = await context.supabase
+        .from("profiles")
+        .select("id, username, display_name, avatar_url, accent_color")
+        .or(`username.ilike.%${term}%,display_name.ilike.%${term}%`)
+        .neq("id", context.userId)
+        .limit(12);
+      if (found.error) {
+        console.error("[getInvitableBuilders]", found.error.message);
+        return [];
+      }
+      return found.data ?? [];
+    }
+
+    const rels = await context.supabase
+      .from("follows")
+      .select("follower_id, following_id")
+      .or(`follower_id.eq.${context.userId},following_id.eq.${context.userId}`)
+      .limit(200);
+    const ids = new Set<string>();
+    for (const r of rels.data ?? []) {
+      if (r.follower_id !== context.userId) ids.add(r.follower_id);
+      if (r.following_id !== context.userId) ids.add(r.following_id);
+    }
+    if (ids.size === 0) return [];
+
+    const people = await context.supabase
+      .from("profiles")
+      .select("id, username, display_name, avatar_url, accent_color")
+      .in("id", [...ids])
+      .limit(24);
+    return people.data ?? [];
+  });
