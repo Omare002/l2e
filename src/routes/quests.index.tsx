@@ -10,6 +10,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { createQuest, getInvitableBuilders } from "@/lib/quests.functions";
 import {
   QUEST_KIND_LABEL,
+  type QuestListRow,
   type QuestKind,
   questKeys,
   questsQuery,
@@ -144,10 +145,8 @@ function QuestsIndex() {
   );
 }
 
-function QuestCard({ quest }: { quest: ReturnType<typeof questsQuery> extends never ? never : any }) {
-  const accepted = (quest.participants ?? []).filter(
-    (p: { status: string }) => p.status === "accepted",
-  ).length;
+function QuestCard({ quest }: { quest: QuestListRow }) {
+  const accepted = (quest.participants ?? []).filter((p) => p.status === "accepted").length;
 
   return (
     <Link
