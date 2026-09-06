@@ -149,10 +149,11 @@
   --secondary: oklch(0.23 0.008 153.252);
   --secondary-foreground: oklch(0.962 0.006 128.527);
 
-  /* Muted backgrounds sit at card level; muted TEXT is the A5AAA5 tier */
+  /* Muted backgrounds sit at card level; muted TEXT is the A8A8A8 tier */
   --muted: oklch(0.208 0.008 153.167);
-  /* #A5AAA5 — secondary text */
-  --muted-foreground: oklch(0.732 0.009 145.482);
+  /* #A8A8A8 — secondary text */
+  --muted-foreground: oklch(0.717 0 0);
+
 
   /* #20251F — hover surfaces (menu items, list rows, nav hover) */
   --accent: oklch(0.257 0.013 140.453);
