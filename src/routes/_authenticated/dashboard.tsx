@@ -43,9 +43,9 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
 });
 
-const CARD = "rounded-xl border border-border bg-background/60";
+const CARD = "surface-card";
 const FIELD =
-  "mt-2 w-full rounded-lg border border-border bg-background px-3.5 py-3 text-[14px] outline-none transition-colors duration-200 focus:border-neon";
+  "mt-2 w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-3 text-[14px] outline-none transition-colors duration-200 focus:border-neon";
 
 function RankSparkline({ points }: { points: number[] }) {
   if (points.length < 2) return <div className="h-16" />;
@@ -141,7 +141,7 @@ function Dashboard() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-14 sm:px-6 sm:py-20">
-      <header className="grid gap-6 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
+      <header className="glass-panel grid gap-6 p-6 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start sm:p-8">
         <div className="flex min-w-0 items-start gap-4 sm:gap-5">
           <UserAvatar
             name={profile?.display_name}
@@ -174,7 +174,7 @@ function Dashboard() {
           ["Total upvotes", votes.toLocaleString()],
           ["Feedback received", String(comments)],
         ].map(([label, value]) => (
-          <div key={label} className={`${CARD} px-5 py-5 sm:px-6 sm:py-6`}>
+          <div key={label} className={`${CARD} lift-hover px-5 py-5 sm:px-6 sm:py-6`}>
             <div className="text-2xl font-semibold tracking-tight tabular-nums">{value}</div>
             <div className="mt-2 text-[12px] text-muted-foreground">{label}</div>
           </div>
@@ -182,7 +182,7 @@ function Dashboard() {
       </div>
 
       <section className="mt-6">
-        <div className={`${CARD} px-5 py-5 sm:px-6 sm:py-6`}>
+        <div className={`${CARD} lift-hover px-5 py-5 sm:px-6 sm:py-6`}>
           <div className="flex flex-wrap items-baseline justify-between gap-3">
             <h2 className="text-[15px] font-semibold tracking-tight">Ranking trend</h2>
             <span className="font-mono text-[11px] text-muted-foreground">Last 7 days</span>
@@ -204,7 +204,7 @@ function Dashboard() {
         <h2 className="text-[15px] font-semibold tracking-tight">Submitted projects</h2>
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
           {mine.map((p) => (
-            <div key={p.id} className={`${CARD} px-5 py-5`}>
+            <div key={p.id} className={`${CARD} lift-hover px-5 py-5`}>
               <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
                 <Link
                   to="/projects/$slug"
@@ -213,7 +213,7 @@ function Dashboard() {
                 >
                   {p.title}
                 </Link>
-                <span className="shrink-0 rounded-full border border-border px-2.5 py-0.5 font-mono text-[10px] text-muted-foreground">
+                <span className="glass-pill shrink-0 px-2.5 py-0.5 font-mono text-[10px] text-on-dark-muted">
                   {p.published ? "Published" : "Draft"}
                 </span>
               </div>
