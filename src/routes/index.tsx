@@ -47,8 +47,7 @@ function Index() {
           <TypingHeadline />
         </h1>
         <p className="mt-6 max-w-xl text-balance text-[14px] leading-relaxed text-muted-foreground sm:mt-7 sm:text-[15px]">
-          A quiet, well-made home for what the LearnToEarn community is building. Showcase your
-          work, gather real feedback, and follow the weekly race as it unfolds.
+          Showcase your work, gather real feedback, and follow the weekly race as it unfolds.
         </p>
         <div className="mt-9 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:justify-center">
           <Link
