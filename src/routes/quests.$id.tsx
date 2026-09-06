@@ -174,7 +174,6 @@ function QuestDetailPage() {
                   Join quest
                 </button>
               )
-            )
             ) : me.status === "invited" ? (
               <>
                 <button
