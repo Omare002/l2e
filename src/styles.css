@@ -98,10 +98,10 @@
   --muted: oklch(0.94 0.002 106.42);
   /* #A5A5A5 */
   --muted-foreground: oklch(0.71 0 0);
-  /* #7CFC00 neon green */
-  --accent: oklch(0.876 0.284 137.5);
+  /* #9BE564 — soft premium green accent */
+  --accent: oklch(0.871 0.205 131.6);
   --accent-foreground: oklch(0.178 0 0);
-  --neon: oklch(0.876 0.284 137.5);
+  --neon: oklch(0.871 0.205 131.6);
   --neon-dim: oklch(0.876 0.284 137.5 / 25%);
   --ink: oklch(0.178 0 0);
   --surface-dark: oklch(0.205 0 0);
