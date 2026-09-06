@@ -1,0 +1,3 @@
+- [ ] Decouple home-page project feed from secondary feature failures and show distinct loading, empty, and error states.
+- [ ] Preserve real project rows, upvotes, and existing UI while handling auth/week/quest/task/notification failures gracefully.
+- [ ] Verify refresh and public home rendering with focused browser/build checks.
