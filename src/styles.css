@@ -130,8 +130,9 @@
 
   /* #0D0F0E — page background, the darkest surface */
   --background: oklch(0.166 0.004 164.52);
-  /* #F1F3EF — primary text */
-  --foreground: oklch(0.962 0.006 128.527);
+  /* #F2F2F2 — primary text: soft white, never pure white */
+  --foreground: oklch(0.958 0 0);
+
 
   /* #151916 — cards (project cards, race track, hall of fame) */
   --card: oklch(0.208 0.008 153.167);
