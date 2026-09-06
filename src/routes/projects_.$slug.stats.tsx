@@ -53,7 +53,7 @@ function StatsPage() {
 
       {isLoading ? (
         <div className="mt-8">
-          <SkeletonLines lines={6} />
+          <SkeletonLines rows={6} />
         </div>
       ) : isError ? (
         <div className="mt-8">
