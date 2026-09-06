@@ -196,7 +196,7 @@ function ProjectPage() {
           </a>
         ) : null}
         <Link
-          to="/projects_/$slug/stats"
+          to="/projects/$slug/stats"
           params={{ slug: project.slug ?? slug }}
           className="flex min-h-11 items-center gap-2 rounded-full border border-border px-4 text-[13px] transition-colors duration-200 hover:border-neon"
         >
