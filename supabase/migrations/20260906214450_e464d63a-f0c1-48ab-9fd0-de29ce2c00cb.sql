@@ -1,0 +1,1 @@
+ALTER TABLE public.projects ALTER COLUMN category SET DEFAULT 'Web & Apps';
