@@ -1,0 +1,1 @@
+ALTER TABLE public.projects DROP CONSTRAINT IF EXISTS projects_category_check;
