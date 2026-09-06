@@ -41,6 +41,8 @@ function AuthPage() {
   const [remember, setRemember] = useState(true);
   const [busy, setBusy] = useState(false);
   const [sent, setSent] = useState<"confirm" | "reset" | null>(null);
+  const [problem, setProblem] = useState<string | null>(null);
+  const [needsConfirm, setNeedsConfirm] = useState(false);
   const { isAuthenticated, loading } = useAuth();
   const router = useRouter();
 
@@ -51,6 +53,8 @@ function AuthPage() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
+    setProblem(null);
+    setNeedsConfirm(false);
     try {
       if (mode === "forgot") {
         const parsed = credentialsSchema.shape.email.safeParse(email);
@@ -88,6 +92,29 @@ function AuthPage() {
       });
       if (error) throw error;
       toast.success("Signed in");
+    } catch (error) {
+      const message = friendlyAuthError(error);
+      const raw = error instanceof Error ? error.message.toLowerCase() : "";
+      if (raw.includes("not confirmed")) setNeedsConfirm(true);
+      setProblem(message);
+      toast.error(message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function resendConfirmation() {
+    setBusy(true);
+    try {
+      const { error } = await supabase.auth.resend({
+        type: "signup",
+        email,
+        options: { emailRedirectTo: window.location.origin },
+      });
+      if (error) throw error;
+      setProblem(null);
+      setNeedsConfirm(false);
+      setSent("confirm");
     } catch (error) {
       toast.error(friendlyAuthError(error));
     } finally {
@@ -178,6 +205,32 @@ function AuthPage() {
               required
             />
           </label>
+        ) : null}
+
+        {mode === "signup" ? (
+          <p className="mt-2 text-[12px] leading-relaxed text-muted-foreground">
+            At least 8 characters. Common or previously breached passwords are refused, so mix in
+            capitals, numbers and a symbol.
+          </p>
+        ) : null}
+
+        {problem ? (
+          <div
+            role="alert"
+            className="mt-5 rounded-lg border border-border bg-muted/40 px-4 py-3 text-[13px] leading-relaxed text-foreground"
+          >
+            {problem}
+            {needsConfirm ? (
+              <button
+                type="button"
+                onClick={resendConfirmation}
+                disabled={busy}
+                className="mt-2 block text-[13px] text-neon underline underline-offset-4 disabled:opacity-60"
+              >
+                Resend the confirmation email
+              </button>
+            ) : null}
+          </div>
         ) : null}
 
         {mode !== "forgot" ? (

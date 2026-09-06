@@ -9,9 +9,18 @@ export function friendlyAuthError(error: unknown, fallback = "Something went wro
     return "An account already uses that email. Try signing in instead.";
   }
   if (raw.includes("password") && raw.includes("least")) return "Use a longer password — at least 8 characters.";
-  if (raw.includes("pwned") || raw.includes("compromised")) {
-    return "That password has appeared in a data breach. Please pick another.";
+  // The backend rejects breached/guessable passwords. Without these cases the
+  // real reason a sign-up failed was hidden behind the generic fallback.
+  if (raw.includes("pwned") || raw.includes("compromised") || raw.includes("breach")) {
+    return "That password has appeared in a data breach. Please pick another one.";
   }
+  if (raw.includes("weak") || raw.includes("easy to guess")) {
+    return "That password is too easy to guess. Mix in capitals, numbers and a symbol, and avoid common words.";
+  }
+  if (raw.includes("signups not allowed") || raw.includes("signup is disabled")) {
+    return "New accounts are paused right now. Please try again later.";
+  }
+
   if (raw.includes("rate limit") || raw.includes("too many")) {
     return "Too many attempts. Please wait a minute and try again.";
   }
