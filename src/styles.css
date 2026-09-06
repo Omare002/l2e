@@ -107,6 +107,11 @@
   --surface-dark: oklch(0.205 0 0);
   --surface-darker: oklch(0.16 0 0);
   --navbar: var(--background);
+  /* Glass accents — light-mode defaults; .dark overrides below */
+  --glass-bg: rgb(255 255 255 / 45%);
+  --glass-bg-strong: rgb(255 255 255 / 60%);
+  --glass-border: rgb(0 0 0 / 8%);
+  --glass-blur: 12px;
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.984 0.003 247.858);
   --border: oklch(0.915 0.002 106.42);
@@ -211,8 +216,8 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Layer 0: an almost-invisible green ambience so the dark page reads as lit,
-   * not flat. Two wide radial pools, no visible gradient edge. */
+  /* Layer 0: a barely-there warm ambience so the dark page reads as lit,
+   * not flat. Two wide tonal pools, no visible gradient edge, no neon glow. */
   .dark body::before {
     content: "";
     position: fixed;
@@ -222,12 +227,12 @@
     background:
       radial-gradient(
         70rem 45rem at 18% -10%,
-        color-mix(in oklab, var(--neon) 5%, transparent),
+        rgb(255 255 255 / 2.5%),
         transparent 60%
       ),
       radial-gradient(
         55rem 40rem at 92% 12%,
-        color-mix(in oklab, var(--neon) 3%, transparent),
+        color-mix(in oklab, var(--neon) 2%, transparent),
         transparent 62%
       );
   }
