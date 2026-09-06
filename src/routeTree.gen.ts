@@ -16,8 +16,10 @@ import { Route as HallOfFameRouteImport } from './routes/hall-of-fame'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as QuestsIndexRouteImport } from './routes/quests.index'
 import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
 import { Route as ForumIndexRouteImport } from './routes/forum.index'
+import { Route as QuestsIdRouteImport } from './routes/quests.$id'
 import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
 import { Route as ForumIdRouteImport } from './routes/forum.$id'
 import { Route as BuildersUsernameRouteImport } from './routes/builders.$username'
@@ -59,6 +61,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const QuestsIndexRoute = QuestsIndexRouteImport.update({
+  id: '/quests/',
+  path: '/quests/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProjectsIndexRoute = ProjectsIndexRouteImport.update({
   id: '/projects/',
   path: '/projects/',
@@ -67,6 +74,11 @@ const ProjectsIndexRoute = ProjectsIndexRouteImport.update({
 const ForumIndexRoute = ForumIndexRouteImport.update({
   id: '/forum/',
   path: '/forum/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const QuestsIdRoute = QuestsIdRouteImport.update({
+  id: '/quests/$id',
+  path: '/quests/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProjectsSlugRoute = ProjectsSlugRouteImport.update({
@@ -113,8 +125,10 @@ export interface FileRoutesByFullPath {
   '/builders/$username': typeof BuildersUsernameRoute
   '/forum/$id': typeof ForumIdRoute
   '/projects/$slug': typeof ProjectsSlugRoute
+  '/quests/$id': typeof QuestsIdRoute
   '/forum/': typeof ForumIndexRoute
   '/projects/': typeof ProjectsIndexRoute
+  '/quests/': typeof QuestsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -129,8 +143,10 @@ export interface FileRoutesByTo {
   '/builders/$username': typeof BuildersUsernameRoute
   '/forum/$id': typeof ForumIdRoute
   '/projects/$slug': typeof ProjectsSlugRoute
+  '/quests/$id': typeof QuestsIdRoute
   '/forum': typeof ForumIndexRoute
   '/projects': typeof ProjectsIndexRoute
+  '/quests': typeof QuestsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -147,8 +163,10 @@ export interface FileRoutesById {
   '/builders/$username': typeof BuildersUsernameRoute
   '/forum/$id': typeof ForumIdRoute
   '/projects/$slug': typeof ProjectsSlugRoute
+  '/quests/$id': typeof QuestsIdRoute
   '/forum/': typeof ForumIndexRoute
   '/projects/': typeof ProjectsIndexRoute
+  '/quests/': typeof QuestsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -165,8 +183,10 @@ export interface FileRouteTypes {
     | '/builders/$username'
     | '/forum/$id'
     | '/projects/$slug'
+    | '/quests/$id'
     | '/forum/'
     | '/projects/'
+    | '/quests/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -181,8 +201,10 @@ export interface FileRouteTypes {
     | '/builders/$username'
     | '/forum/$id'
     | '/projects/$slug'
+    | '/quests/$id'
     | '/forum'
     | '/projects'
+    | '/quests'
   id:
     | '__root__'
     | '/'
@@ -198,8 +220,10 @@ export interface FileRouteTypes {
     | '/builders/$username'
     | '/forum/$id'
     | '/projects/$slug'
+    | '/quests/$id'
     | '/forum/'
     | '/projects/'
+    | '/quests/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -213,8 +237,10 @@ export interface RootRouteChildren {
   BuildersUsernameRoute: typeof BuildersUsernameRoute
   ForumIdRoute: typeof ForumIdRoute
   ProjectsSlugRoute: typeof ProjectsSlugRoute
+  QuestsIdRoute: typeof QuestsIdRoute
   ForumIndexRoute: typeof ForumIndexRoute
   ProjectsIndexRoute: typeof ProjectsIndexRoute
+  QuestsIndexRoute: typeof QuestsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -268,6 +294,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/quests/': {
+      id: '/quests/'
+      path: '/quests'
+      fullPath: '/quests/'
+      preLoaderRoute: typeof QuestsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/projects/': {
       id: '/projects/'
       path: '/projects'
@@ -280,6 +313,13 @@ declare module '@tanstack/react-router' {
       path: '/forum'
       fullPath: '/forum/'
       preLoaderRoute: typeof ForumIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/quests/$id': {
+      id: '/quests/$id'
+      path: '/quests/$id'
+      fullPath: '/quests/$id'
+      preLoaderRoute: typeof QuestsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/projects/$slug': {
@@ -353,8 +393,10 @@ const rootRouteChildren: RootRouteChildren = {
   BuildersUsernameRoute: BuildersUsernameRoute,
   ForumIdRoute: ForumIdRoute,
   ProjectsSlugRoute: ProjectsSlugRoute,
+  QuestsIdRoute: QuestsIdRoute,
   ForumIndexRoute: ForumIndexRoute,
   ProjectsIndexRoute: ProjectsIndexRoute,
+  QuestsIndexRoute: QuestsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
