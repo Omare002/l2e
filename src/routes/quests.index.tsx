@@ -90,7 +90,7 @@ function QuestsIndex() {
           <button
             type="button"
             onClick={() => setOpen((o) => !o)}
-            className="min-h-12 rounded-full bg-foreground px-5 text-[14px] font-medium text-background transition-colors duration-200 hover:bg-foreground/90"
+            className="min-h-12 w-full rounded-full bg-foreground px-5 text-[14px] font-medium text-background transition-colors duration-200 hover:bg-foreground/90 sm:w-auto"
           >
             {open ? "Cancel" : "Start a quest"}
           </button>
@@ -171,11 +171,13 @@ function QuestCard({ quest }: { quest: QuestListRow }) {
       params={{ id: quest.id }}
       className="surface-card lift-hover block p-5 sm:p-6"
     >
-      <div className="flex items-center justify-between gap-3">
-        <span className="glass-pill px-2.5 py-1 font-mono text-[10px] text-on-dark-muted">
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
+        <span className="glass-pill min-w-0 truncate px-2.5 py-1 font-mono text-[10px] text-on-dark-muted">
           {QUEST_KIND_LABEL[quest.kind as QuestKind] ?? "Quest"}
         </span>
-        <span className="font-mono text-[10px] text-on-dark-muted">{timeLeft(quest.ends_at)}</span>
+        <span className="shrink-0 font-mono text-[10px] text-on-dark-muted">
+          {timeLeft(quest.ends_at)}
+        </span>
       </div>
       <h3 className="mt-4 text-[15px] font-semibold tracking-tight text-on-dark">{quest.title}</h3>
       {quest.task ? (
@@ -358,7 +360,7 @@ function QuestForm({
       <button
         type="submit"
         disabled={create.isPending || title.trim().length < 3}
-        className="min-h-12 justify-self-start rounded-full bg-foreground px-5 text-[14px] font-medium text-background transition-colors duration-200 hover:bg-foreground/90 disabled:opacity-50"
+        className="min-h-12 w-full rounded-full sm:w-auto sm:justify-self-start bg-foreground px-5 text-[14px] font-medium text-background transition-colors duration-200 hover:bg-foreground/90 disabled:opacity-50"
       >
         {create.isPending ? "Creating…" : "Create quest"}
       </button>
