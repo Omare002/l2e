@@ -131,6 +131,49 @@ function LeaderboardPage() {
           </div>
         ) : null}
       </div>
+
+      <div className="mt-14 sm:mt-16">
+        <SectionHeading
+          title="All-time board"
+          subtitle="Every upvote a builder has ever received. Weekly races never reset this."
+        />
+        <div className="overflow-hidden rounded-lg border border-border">
+          {allTime.isLoading && allTime.all.length === 0 ? (
+            <SkeletonLines rows={5} className="p-4 sm:p-5" />
+          ) : allTime.isError && allTime.all.length === 0 ? (
+            <LoadFailure
+              message="The all-time board couldn't load just now."
+              onRetry={() => allTime.refetch()}
+            />
+          ) : allTime.all.length === 0 ? (
+            <div className="px-5 py-8 text-[13px] text-muted-foreground">
+              No builders on the board yet.
+            </div>
+          ) : (
+            allTime.all.slice(0, 10).map((r, i) => (
+              <div
+                key={r.id}
+                className="grid grid-cols-[44px_minmax(0,1fr)_72px] items-center gap-3 border-b border-border px-4 py-3.5 text-[13px] last:border-b-0 sm:px-5"
+              >
+                <span className="font-mono tabular-nums text-muted-foreground">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <Link
+                  to="/builders/$username"
+                  params={{ username: r.username ?? "" }}
+                  className="min-w-0 truncate transition-colors duration-200 hover:text-neon"
+                >
+                  <span className="font-medium">{r.display_name}</span>
+                  <span className="text-muted-foreground"> @{r.username}</span>
+                </Link>
+                <span className="text-right font-mono tabular-nums">
+                  {(r.score ?? 0).toLocaleString()}
+                </span>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
     </div>
   );
 }
