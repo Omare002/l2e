@@ -65,6 +65,11 @@
   --color-surface-dark: var(--surface-dark);
   --color-surface-darker: var(--surface-darker);
   --color-navbar: var(--navbar);
+  /* Text that always sits on a dark surface (cards, race track), in both
+   * themes: soft white primary, muted gray secondary. Never pure white. */
+  --color-on-dark: #f2f2f2;
+  --color-on-dark-muted: #a8a8a8;
+
   --font-mono: "JetBrains Mono", "IBM Plex Mono", "Space Mono", ui-monospace, monospace;
   --font-sans: "IBM Plex Mono", "JetBrains Mono", ui-monospace, monospace;
   --shadow-xs: 0 1px 2px -1px oklch(0 0 0 / 6%);
@@ -130,8 +135,9 @@
 
   /* #0D0F0E — page background, the darkest surface */
   --background: oklch(0.166 0.004 164.52);
-  /* #F1F3EF — primary text */
-  --foreground: oklch(0.962 0.006 128.527);
+  /* #F2F2F2 — primary text: soft white, never pure white */
+  --foreground: oklch(0.958 0 0);
+
 
   /* #151916 — cards (project cards, race track, hall of fame) */
   --card: oklch(0.208 0.008 153.167);
@@ -148,10 +154,11 @@
   --secondary: oklch(0.23 0.008 153.252);
   --secondary-foreground: oklch(0.962 0.006 128.527);
 
-  /* Muted backgrounds sit at card level; muted TEXT is the A5AAA5 tier */
+  /* Muted backgrounds sit at card level; muted TEXT is the A8A8A8 tier */
   --muted: oklch(0.208 0.008 153.167);
-  /* #A5AAA5 — secondary text */
-  --muted-foreground: oklch(0.732 0.009 145.482);
+  /* #A8A8A8 — secondary text */
+  --muted-foreground: oklch(0.717 0 0);
+
 
   /* #20251F — hover surfaces (menu items, list rows, nav hover) */
   --accent: oklch(0.257 0.013 140.453);
@@ -205,6 +212,27 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  /* Layer 0: an almost-invisible green ambience so the dark page reads as lit,
+   * not flat. Two wide radial pools, no visible gradient edge. */
+  .dark body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(
+        70rem 45rem at 18% -10%,
+        color-mix(in oklab, var(--neon) 5%, transparent),
+        transparent 60%
+      ),
+      radial-gradient(
+        55rem 40rem at 92% 12%,
+        color-mix(in oklab, var(--neon) 3%, transparent),
+        transparent 62%
+      );
+  }
+
   h1,
   h2,
   h3,
@@ -228,6 +256,7 @@
   }
 }
 
+
 /* A whisper of a finish line: fine dashes, no checkerboard. */
 @utility finish-line {
   background-image: repeating-linear-gradient(
@@ -237,11 +266,16 @@
   );
 }
 
+/* Layer 2: the card surface. Translucent tone + a light 12px blur so cards
+ * float above the ambient background instead of sitting flat on it. */
 @utility surface-card {
-  background-color: var(--surface-dark);
-  border: 1px solid oklch(1 0 0 / 8%);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
+  background-color: color-mix(in oklab, var(--surface-dark) 76%, transparent);
+  backdrop-filter: blur(12px) saturate(120%);
+  border: 1px solid oklch(1 0 0 / 7%);
+  border-radius: calc(var(--radius) + 6px);
+  box-shadow:
+    0 1px 0 0 oklch(1 0 0 / 4%) inset,
+    0 18px 40px -28px oklch(0 0 0 / 65%);
   transition:
     border-color 200ms var(--ease-out-soft),
     background-color 200ms var(--ease-out-soft),
@@ -249,7 +283,33 @@
     transform 200ms var(--ease-out-soft);
 }
 
-/* Restrained hover: 2px lift, slightly deeper shadow, neutral -> neon border. */
+/* Layer 1: a wider, quieter glass section that groups content (profile
+ * headers, hero panels). Less contrast than a card on purpose. */
+@utility glass-panel {
+  background-color: oklch(1 0 0 / 3.5%);
+  backdrop-filter: blur(12px) saturate(120%);
+  border: 1px solid oklch(1 0 0 / 6%);
+  border-radius: calc(var(--radius) + 14px);
+  box-shadow: 0 24px 60px -40px oklch(0 0 0 / 70%);
+}
+
+/* Layer 4: small floating controls and badges. */
+@utility glass-pill {
+  background-color: oklch(1 0 0 / 6%);
+  backdrop-filter: blur(12px) saturate(120%);
+  border: 1px solid oklch(1 0 0 / 8%);
+  border-radius: 999px;
+}
+
+/* Layer 3: project imagery, lifted a touch above its own card. */
+@utility elevated-media {
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 22px 45px -30px oklch(0 0 0 / 80%);
+  transform: translateY(-2px);
+}
+
+/* Restrained hover: 3px lift, slightly deeper shadow, neutral -> neon border. */
 @utility lift-hover {
   transition:
     border-color 200ms var(--ease-out-soft),
@@ -258,11 +318,14 @@
     transform 200ms var(--ease-out-soft);
 
   &:hover {
-    transform: translateY(-2px);
-    border-color: color-mix(in oklab, var(--neon) 45%, transparent);
-    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
+    border-color: color-mix(in oklab, var(--neon) 30%, transparent);
+    box-shadow:
+      0 1px 0 0 oklch(1 0 0 / 5%) inset,
+      0 26px 55px -30px oklch(0 0 0 / 75%);
   }
 }
+
 
 @keyframes caret-blink {
   0%,

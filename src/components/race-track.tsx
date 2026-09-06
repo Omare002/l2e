@@ -44,7 +44,7 @@ export function RaceTrack({
 
   if (racers.length === 0) {
     return (
-      <div className="surface-card px-6 py-10 text-center text-[13px] text-white/55">
+      <div className="surface-card px-6 py-10 text-center text-[13px] text-on-dark-muted">
         No racers yet — the first published project starts the race.
       </div>
     );
@@ -71,7 +71,7 @@ export function RaceTrack({
                 <div className="flex w-[52%] shrink-0 items-center gap-2.5 sm:w-[26%] sm:gap-3">
                   <span
                     className={`w-4 shrink-0 text-right font-mono text-[11px] tabular-nums ${
-                      isLeader ? "text-neon" : "text-white/35"
+                      isLeader ? "text-neon" : "text-on-dark-muted"
                     }`}
                   >
                     {i + 1}
@@ -87,11 +87,11 @@ export function RaceTrack({
                     params={{ username: r.row.username ?? "" }}
                     className="min-w-0"
                   >
-                    <div className="truncate text-[13px] font-medium text-white transition-colors duration-200 group-hover:text-neon">
+                    <div className="truncate text-[13px] font-medium text-on-dark transition-colors duration-200 group-hover:text-neon">
                       {r.row.display_name}
                       {isMe ? <span className="ml-2 font-mono text-[10px] text-neon">you</span> : null}
                     </div>
-                    <div className="mt-0.5 truncate font-mono text-[11px] text-white/40">
+                    <div className="mt-0.5 truncate font-mono text-[11px] text-on-dark-muted">
                       {r.row.top_project_title ?? `@${r.row.username}`}
                     </div>
                   </Link>
@@ -114,14 +114,14 @@ export function RaceTrack({
                 </div>
 
                 <div className="hidden w-28 shrink-0 pr-4 text-right sm:block">
-                  <div className="font-mono text-[12px] tabular-nums text-white/85">
+                  <div className="font-mono text-[12px] tabular-nums text-on-dark/85">
                     {r.votes.toLocaleString()}
                   </div>
-                  <div className="mt-0.5 font-mono text-[11px] text-white/30">
+                  <div className="mt-0.5 font-mono text-[11px] text-on-dark-muted/70">
                     {Math.max(0, target - r.votes)} to go
                   </div>
                 </div>
-                <div className="shrink-0 font-mono text-[12px] tabular-nums text-white/70 sm:hidden">
+                <div className="shrink-0 font-mono text-[12px] tabular-nums text-on-dark/80 sm:hidden">
                   {r.votes.toLocaleString()}
                 </div>
               </motion.div>

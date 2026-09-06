@@ -18,7 +18,7 @@ export function ProjectCard({ project, rank }: { project: ProjectStats; rank?: n
 
   return (
     <article className="surface-card lift-hover group flex flex-col p-5 sm:p-6">
-      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
         <div className="flex min-w-0 items-center gap-3">
           <UserAvatar
             name={project.owner_display_name}
@@ -31,28 +31,32 @@ export function ProjectCard({ project, rank }: { project: ProjectStats; rank?: n
               <Link
                 to="/builders/$username"
                 params={{ username: project.owner_username }}
-                className="block truncate text-[13px] font-medium text-white transition-colors duration-200 hover:text-neon"
+                className="block truncate text-[13px] font-medium text-on-dark transition-colors duration-200 hover:text-neon"
               >
                 {project.owner_display_name ?? "Builder"}
               </Link>
             ) : (
-              <span className="block truncate text-[13px] font-medium text-white">
+              <span className="block truncate text-[13px] font-medium text-on-dark">
                 {project.owner_display_name ?? "Builder"}
               </span>
             )}
-            <div className="mt-0.5 truncate font-mono text-[11px] text-white/40">
+            <div className="mt-0.5 truncate font-mono text-[11px] text-on-dark-muted">
               {project.owner_username ? `@${project.owner_username}` : "Builder"}
             </div>
           </div>
         </div>
         {rank ? (
-          <span className="shrink-0 rounded-full border border-white/10 px-2.5 py-1 font-mono text-[10px] tabular-nums text-white/50">
+          <span
+            className={`glass-pill shrink-0 px-3 py-1.5 font-mono text-[10px] tabular-nums ${
+              rank <= 3 ? "text-neon" : "text-on-dark-muted"
+            }`}
+          >
             #{rank}
           </span>
         ) : null}
       </div>
 
-      <div className="mt-5 aspect-[16/7] w-full overflow-hidden rounded-md border border-white/[0.06] bg-white/[0.03]">
+      <div className="elevated-media mt-6 aspect-[16/7] w-full bg-white/[0.03]">
         {thumb ? (
           <img
             src={thumb}
@@ -66,31 +70,33 @@ export function ProjectCard({ project, rank }: { project: ProjectStats; rank?: n
       <Link
         to="/projects/$slug"
         params={{ slug: project.slug ?? "" }}
-        className="mt-5 text-[15px] font-semibold tracking-tight text-white transition-colors duration-200 group-hover:text-neon sm:text-base"
+        className="mt-5 text-[15px] font-semibold tracking-tight text-on-dark transition-colors duration-200 group-hover:text-neon sm:text-base"
       >
         {project.title}
       </Link>
-      <p className="mt-2 text-[13px] leading-relaxed text-white/55">{project.tagline}</p>
+      <p className="mt-2 text-[13px] leading-relaxed text-on-dark-muted">{project.tagline}</p>
 
-      <div className="mt-4 flex flex-wrap gap-2">
-        <span className="rounded-full border border-neon/40 bg-neon-dim/30 px-2.5 py-1 font-mono text-[10px] text-neon">
+
+      <div className="mt-5 flex flex-wrap gap-2">
+        <span className="glass-pill border-neon/25 bg-neon-dim/20 px-2.5 py-1 font-mono text-[10px] text-neon">
           {normalizeCategory(project.category)}
         </span>
-        <span className="rounded-full bg-white/[0.06] px-2.5 py-1 font-mono text-[10px] text-white/55">
+        <span className="glass-pill px-2.5 py-1 font-mono text-[10px] text-on-dark-muted">
           {statusLabel(project.status ?? "shipped")}
         </span>
         {(project.tech ?? []).slice(0, 4).map((t) => (
           <span
             key={t}
-            className="rounded-full bg-white/[0.06] px-2.5 py-1 font-mono text-[10px] text-white/55"
+            className="glass-pill px-2.5 py-1 font-mono text-[10px] text-on-dark-muted"
           >
             {t}
           </span>
         ))}
       </div>
 
-      <div className="mt-6 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-t border-white/[0.07] pt-4">
-        <div className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[11px] text-white/45">
+      <div className="mt-7 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-t border-white/[0.05] pt-4">
+        <div className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[11px] text-on-dark-muted">
+
           {project.demo_url ? (
             <a
               href={project.demo_url}
@@ -122,11 +128,12 @@ export function ProjectCard({ project, rank }: { project: ProjectStats; rank?: n
           disabled={pending || own}
           onClick={() => vote(projectId, ownerId)}
           title={own ? "You can't upvote your own project" : undefined}
-          className={`flex min-h-9 shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 font-mono text-[11px] tabular-nums transition-colors duration-200 disabled:opacity-50 ${
+          className={`glass-pill flex min-h-9 shrink-0 items-center gap-1.5 px-3 py-1.5 font-mono text-[11px] tabular-nums transition-colors duration-200 disabled:opacity-50 ${
             voted
-              ? "border-neon/50 bg-neon/10 text-neon"
-              : "border-white/10 text-white/70 hover:border-neon/50 hover:text-neon"
+              ? "border-neon/45 bg-neon/10 text-neon"
+              : "text-on-dark/80 hover:border-neon/40 hover:text-neon"
           }`}
+
         >
           <ChevronUp className={`size-3.5 ${pending ? "animate-pulse" : ""}`} />{" "}
           {project.vote_count ?? 0}
