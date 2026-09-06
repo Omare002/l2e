@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ChevronUp, Trophy } from "lucide-react";
+import { ChevronUp, Clock, Trophy } from "lucide-react";
 import { toast } from "sonner";
+import { QuestChat } from "@/components/quest-chat";
 import { LoadFailure, SkeletonLines } from "@/components/skeleton-block";
 import { UserAvatar } from "@/components/user-avatar";
 import { useAuth } from "@/hooks/use-auth";
@@ -15,6 +16,7 @@ import {
   myQuestEntryQuery,
   questKeys,
   questQuery,
+  sinceLabel,
   timeLeft,
 } from "@/lib/quests";
 
@@ -109,7 +111,7 @@ function QuestDetailPage() {
       </Link>
 
       <div className="glass-panel mt-5 p-6 sm:p-9">
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
           <span className="glass-pill px-2.5 py-1 font-mono text-[10px] text-muted-foreground">
             {QUEST_KIND_LABEL[quest.kind as QuestKind] ?? "Quest"}
           </span>
@@ -162,7 +164,7 @@ function QuestDetailPage() {
               <button
                 type="button"
                 onClick={() => respond.mutate("join")}
-                className="min-h-11 rounded-full bg-foreground px-5 text-[13px] font-medium text-background hover:bg-foreground/90"
+                className="min-h-11 w-full rounded-full bg-foreground px-5 text-[13px] font-medium text-background transition-colors duration-200 hover:bg-foreground/90 sm:w-auto"
               >
                 Join quest
               </button>
@@ -171,14 +173,14 @@ function QuestDetailPage() {
                 <button
                   type="button"
                   onClick={() => respond.mutate("accept")}
-                  className="min-h-11 rounded-full bg-foreground px-5 text-[13px] font-medium text-background hover:bg-foreground/90"
+                  className="min-h-11 w-full rounded-full bg-foreground px-5 text-[13px] font-medium text-background transition-colors duration-200 hover:bg-foreground/90 sm:w-auto"
                 >
                   Accept invitation
                 </button>
                 <button
                   type="button"
                   onClick={() => respond.mutate("decline")}
-                  className="glass-pill min-h-11 px-5 text-[13px] text-muted-foreground hover:text-foreground"
+                  className="glass-pill min-h-11 w-full px-5 text-[13px] text-muted-foreground transition-colors duration-200 hover:text-foreground sm:w-auto"
                 >
                   Decline
                 </button>
@@ -187,7 +189,7 @@ function QuestDetailPage() {
               <button
                 type="button"
                 onClick={() => respond.mutate("accept")}
-                className="glass-pill min-h-11 px-5 text-[13px] text-muted-foreground hover:text-neon"
+                className="glass-pill min-h-11 w-full px-5 text-[13px] text-muted-foreground transition-colors duration-200 hover:text-neon sm:w-auto"
               >
                 Change your mind — join
               </button>
@@ -204,7 +206,7 @@ function QuestDetailPage() {
               id="quest-project"
               value={me.project_id ?? ""}
               onChange={(e) => e.target.value && enter.mutate(e.target.value)}
-              className="min-h-11 max-w-sm rounded-lg border border-border bg-transparent px-3 text-[13px] outline-none focus-visible:border-neon"
+              className="min-h-11 w-full max-w-sm rounded-lg border border-border bg-transparent px-3 text-[13px] outline-none focus-visible:border-neon"
             >
               <option value="">Choose a project…</option>
               {(mine.data ?? []).map((p) => (
@@ -226,51 +228,70 @@ function QuestDetailPage() {
         ) : (
           <ol className="surface-card mt-4 divide-y divide-white/[0.05]">
             {accepted.map((s, i) => (
-              <li key={s.username} className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-5 py-4">
-                <span
-                  className={`font-mono text-[12px] tabular-nums ${
-                    i === 0 ? "text-neon" : "text-on-dark-muted"
-                  }`}
-                >
-                  {i + 1}
-                </span>
-                <div className="flex min-w-0 items-center gap-3">
-                  <UserAvatar
-                    name={s.display_name}
-                    path={s.avatar_url}
-                    accent={s.accent_color}
-                    size={28}
-                  />
-                  <div className="min-w-0 leading-tight">
-                    <Link
-                      to="/builders/$username"
-                      params={{ username: s.username }}
-                      className="block truncate text-[13px] font-medium text-on-dark hover:text-neon"
-                    >
-                      {s.display_name}
-                    </Link>
-                    {s.project_slug ? (
+              <li key={s.username} className="px-4 py-4 sm:px-5">
+                <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3">
+                  <span
+                    className={`font-mono text-[12px] tabular-nums ${
+                      i === 0 ? "text-neon" : "text-on-dark-muted"
+                    }`}
+                  >
+                    {i + 1}
+                  </span>
+                  <div className="flex min-w-0 items-center gap-3">
+                    <UserAvatar
+                      name={s.display_name}
+                      path={s.avatar_url}
+                      accent={s.accent_color}
+                      size={28}
+                    />
+                    <div className="min-w-0 leading-tight">
                       <Link
-                        to="/projects/$slug"
-                        params={{ slug: s.project_slug }}
-                        className="block truncate font-mono text-[11px] text-on-dark-muted hover:text-neon"
+                        to="/builders/$username"
+                        params={{ username: s.username }}
+                        className="block truncate text-[13px] font-medium text-on-dark hover:text-neon"
                       >
-                        {s.project_title}
+                        {s.display_name}
                       </Link>
-                    ) : (
-                      <span className="block font-mono text-[11px] text-on-dark-muted">
-                        No entry yet
-                      </span>
-                    )}
+                      {s.project_slug ? (
+                        <Link
+                          to="/projects/$slug"
+                          params={{ slug: s.project_slug }}
+                          className="block truncate font-mono text-[11px] text-on-dark-muted hover:text-neon"
+                        >
+                          {s.project_title}
+                        </Link>
+                      ) : (
+                        <span className="block font-mono text-[11px] text-on-dark-muted">
+                          No entry yet
+                        </span>
+                      )}
+                    </div>
                   </div>
+                  <span className="glass-pill flex shrink-0 items-center gap-1 px-2.5 py-1.5 font-mono text-[11px] tabular-nums text-on-dark-muted">
+                    <ChevronUp className="size-3.5" /> {s.votes}
+                  </span>
                 </div>
-                <span className="glass-pill flex items-center gap-1.5 px-3 py-1.5 font-mono text-[11px] tabular-nums text-on-dark-muted">
-                  <ChevronUp className="size-3.5" /> {s.votes}
-                </span>
+
+                <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 pl-[1.6rem] font-mono text-[10px] text-on-dark-muted">
+                  <span className="flex items-center gap-1">
+                    <Clock className="size-3" /> joined {sinceLabel(s.joined_at)}
+                  </span>
+                  <span>
+                    {!s.project_slug
+                      ? "no project entered"
+                      : s.project_published === false
+                        ? "entry is a draft"
+                        : `entry live${s.project_status ? ` · ${s.project_status}` : ""}`}
+                  </span>
+                  <span>
+                    {s.votes === 1 ? "1 upvote earned" : `${s.votes} upvotes earned`}
+                  </span>
+                </div>
               </li>
             ))}
           </ol>
         )}
+
 
         {invited.length > 0 ? (
           <div className="mt-6">
@@ -294,6 +315,8 @@ function QuestDetailPage() {
           </div>
         ) : null}
       </section>
+
+      {isAuthenticated && me ? <QuestChat questId={id} canPost={me.status === "accepted"} /> : null}
     </div>
   );
 }

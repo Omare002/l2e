@@ -5,8 +5,10 @@ import {
   getMyQuests,
   getPublicQuest,
   getPublicQuests,
+  getQuestMessages,
   getWeeklyTasks,
 } from "@/lib/quests.functions";
+
 
 export type QuestKind = "shared_task" | "challenge" | "group";
 
@@ -36,9 +38,25 @@ export type QuestStanding = {
   avatar_url: string | null;
   accent_color: string;
   status: string;
+  joined_at: string;
   project_title: string | null;
   project_slug: string | null;
+  project_published: boolean | null;
+  project_status: string | null;
   votes: number;
+};
+
+export type QuestMessage = {
+  id: string;
+  body: string;
+  created_at: string;
+  author: {
+    username: string;
+    display_name: string;
+    avatar_url: string | null;
+    accent_color: string;
+  } | null;
+  mine: boolean;
 };
 
 export type QuestEntry = { status: string; project_id: string | null } | null;
@@ -73,6 +91,7 @@ export const questKeys = {
   history: (userId: string) => ["my-quest-history", userId] as const,
   entry: (questId: string, userId: string) => ["my-quest-entry", questId, userId] as const,
   tasks: ["weekly-tasks"] as const,
+  chat: (questId: string) => ["quest-chat", questId] as const,
 };
 
 export function questsQuery() {
@@ -129,6 +148,27 @@ export function myQuestEntryQuery(questId: string, userId: string | null) {
       (await getMyQuestEntry({ data: { questId } })) as unknown as QuestEntry,
     staleTime: 5_000,
   });
+}
+
+export function questChatQuery(questId: string, enabled: boolean) {
+  return queryOptions({
+    queryKey: questKeys.chat(questId),
+    enabled,
+    queryFn: async () =>
+      (await getQuestMessages({ data: { questId } })) as unknown as QuestMessage[],
+    staleTime: 5_000,
+  });
+}
+
+/** Short "joined 3d ago" style label. */
+export function sinceLabel(iso: string) {
+  const diff = Date.now() - new Date(iso).getTime();
+  if (diff < 60_000) return "just now";
+  const m = Math.floor(diff / 60_000);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h / 24)}d ago`;
 }
 
 /** Human countdown to a quest deadline. */

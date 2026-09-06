@@ -47,11 +47,11 @@ export function QuestHistory() {
                 params={{ id: q.id }}
                 className="surface-card lift-hover block p-5"
               >
-                <div className="flex items-center justify-between gap-3">
-                  <span className="glass-pill px-2.5 py-1 font-mono text-[10px] text-on-dark-muted">
+                <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
+                  <span className="glass-pill min-w-0 truncate px-2.5 py-1 font-mono text-[10px] text-on-dark-muted">
                     {QUEST_KIND_LABEL[q.kind as QuestKind] ?? "Quest"}
                   </span>
-                  <span className="font-mono text-[10px] text-on-dark-muted">
+                  <span className="shrink-0 text-right font-mono text-[10px] text-on-dark-muted">
                     {finished
                       ? `Ended ${new Date(q.ends_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}`
                       : `${timeLeft(q.ends_at)} · ${new Date(q.ends_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}`}
@@ -65,7 +65,7 @@ export function QuestHistory() {
                     Task: {q.task.title}
                   </p>
                 ) : null}
-                <div className="mt-4 flex flex-wrap items-center gap-4 font-mono text-[11px] text-on-dark-muted">
+                <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1.5 font-mono text-[11px] text-on-dark-muted">
                   <span className="flex items-center gap-1.5">
                     <Users className="size-3.5" /> {accepted} racing
                   </span>

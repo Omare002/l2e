@@ -1038,6 +1038,62 @@ export type Database = {
           },
         ]
       }
+      quest_messages: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          id: string
+          quest_id: string
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          id?: string
+          quest_id: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          id?: string
+          quest_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quest_messages_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "follow_counts"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "quest_messages_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quest_messages_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quest_messages_quest_id_fkey"
+            columns: ["quest_id"]
+            isOneToOne: false
+            referencedRelation: "quests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quest_participants: {
         Row: {
           created_at: string
@@ -1556,6 +1612,10 @@ export type Database = {
     }
     Functions: {
       close_finished_quests: { Args: never; Returns: number }
+      is_quest_member: {
+        Args: { _quest_id: string; _user_id: string }
+        Returns: boolean
+      }
       my_unread_counts: {
         Args: never
         Returns: {
@@ -1569,8 +1629,11 @@ export type Database = {
           accent_color: string
           avatar_url: string
           display_name: string
+          joined_at: string
           project_id: string
+          project_published: boolean
           project_slug: string
+          project_status: string
           project_title: string
           status: string
           user_id: string

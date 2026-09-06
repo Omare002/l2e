@@ -104,8 +104,11 @@ export const getPublicQuest = createServerFn({ method: "GET" })
         avatar_url: string | null;
         accent_color: string;
         status: string;
+        joined_at: string;
         project_title: string | null;
         project_slug: string | null;
+        project_published: boolean | null;
+        project_status: string | null;
         votes: number;
       }) => ({
         username: s.username,
@@ -113,11 +116,15 @@ export const getPublicQuest = createServerFn({ method: "GET" })
         avatar_url: s.avatar_url,
         accent_color: s.accent_color,
         status: s.status,
+        joined_at: s.joined_at,
         project_title: s.project_title,
         project_slug: s.project_slug,
+        project_published: s.project_published,
+        project_status: s.project_status,
         votes: s.votes,
       }),
     );
+
 
     return { quest: quest.data, standings: safe };
   });
@@ -405,4 +412,65 @@ export const getInvitableBuilders = createServerFn({ method: "POST" })
       .in("id", [...ids])
       .limit(24);
     return people.data ?? [];
+  });
+
+/* ---------------------------------------------------------------------------
+ * Quest chat — a small room per quest so members can talk about the task,
+ * share links and plan submissions before the deadline. Members only: RLS
+ * limits reads and posts to the creator and the people invited or joined.
+ * ------------------------------------------------------------------------- */
+
+const CHAT_SELECT =
+  "id, body, created_at, author_id, author:profiles!quest_messages_author_id_fkey(username, display_name, avatar_url, accent_color)";
+
+/** Messages in a quest room, oldest first. */
+export const getQuestMessages = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => idSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    const res = await context.supabase
+      .from("quest_messages")
+      .select(CHAT_SELECT)
+      .eq("quest_id", data.questId)
+      .order("created_at", { ascending: true })
+      .limit(200);
+    if (res.error) {
+      console.error("[getQuestMessages]", res.error.message);
+      return [];
+    }
+    return (res.data ?? []).map((m) => ({ ...m, mine: m.author_id === context.userId }));
+  });
+
+/** Post a message into a quest room. */
+export const postQuestMessage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    idSchema.extend({ body: z.string().trim().min(1, "Write something").max(2000) }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
+      .from("quest_messages")
+      .insert({ quest_id: data.questId, author_id: context.userId, body: data.body });
+    if (error) {
+      console.error("[postQuestMessage]", error.message);
+      throw new Error("Only builders in this quest can post here");
+    }
+    return { ok: true };
+  });
+
+/** Remove one of your own messages. */
+export const deleteQuestMessage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ messageId: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
+      .from("quest_messages")
+      .delete()
+      .eq("id", data.messageId)
+      .eq("author_id", context.userId);
+    if (error) {
+      console.error("[deleteQuestMessage]", error.message);
+      throw new Error("Could not delete this message");
+    }
+    return { ok: true };
   });
