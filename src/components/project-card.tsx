@@ -27,15 +27,22 @@ export function ProjectCard({ project, rank }: { project: ProjectStats; rank?: n
             size={32}
           />
           <div className="min-w-0 leading-tight">
-            <Link
-              to="/builders/$username"
-              params={{ username: project.owner_username ?? "" }}
-              className="block truncate text-[13px] font-medium text-white transition-colors duration-200 hover:text-neon"
-            >
-              {project.owner_display_name}
-            </Link>
+            {project.owner_username ? (
+              <Link
+                to="/builders/$username"
+                params={{ username: project.owner_username }}
+                className="block truncate text-[13px] font-medium text-white transition-colors duration-200 hover:text-neon"
+              >
+                {project.owner_display_name ?? "Builder"}
+              </Link>
+            ) : (
+              <span className="block truncate text-[13px] font-medium text-white">
+                {project.owner_display_name ?? "Builder"}
+              </span>
+            )}
             <div className="mt-0.5 truncate font-mono text-[11px] text-white/40">
-              @{project.owner_username} · {project.category}
+              {project.owner_username ? `@${project.owner_username} · ` : ""}
+              {project.category}
             </div>
           </div>
         </div>

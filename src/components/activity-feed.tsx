@@ -4,9 +4,10 @@ import { AnimatePresence, motion } from "motion/react";
 import { activityQuery } from "@/lib/db";
 import { ACTIVITY_LABELS, relativeTime } from "@/lib/display";
 import { UserAvatar } from "@/components/user-avatar";
+import { LoadFailure } from "@/components/skeleton-block";
 
 export function ActivityFeed({ limit = 8 }: { limit?: number }) {
-  const { data, isLoading } = useQuery(activityQuery(limit));
+  const { data, isLoading, isError, refetch } = useQuery(activityQuery(limit));
   const items = data ?? [];
 
   if (isLoading) {
@@ -18,6 +19,14 @@ export function ActivityFeed({ limit = 8 }: { limit?: number }) {
           </li>
         ))}
       </ul>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="rounded-lg border border-border">
+        <LoadFailure message="The community feed is unavailable right now." onRetry={() => refetch()} />
+      </div>
     );
   }
 

@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { CATEGORIES } from "@/data/community";
 import { ProjectCard } from "@/components/project-card";
 import { SectionHeading } from "@/components/section-heading";
+import { LoadFailure } from "@/components/skeleton-block";
 import { PROJECT_SORTS, projectsQuery, type ProjectSort } from "@/lib/db";
 
 export const Route = createFileRoute("/projects/")({
@@ -31,7 +32,7 @@ function ProjectsPage() {
   const [sort, setSort] = useState<ProjectSort>("Trending");
   const [cat, setCat] = useState<string>("All");
   const [search, setSearch] = useState("");
-  const { data, isLoading } = useQuery(projectsQuery(sort, cat, 48));
+  const { data, isLoading, isError, refetch } = useQuery(projectsQuery(sort, cat, 48));
 
   const list = (data ?? []).filter((p) => {
     if (!search.trim()) return true;
@@ -101,6 +102,10 @@ function ProjectsPage() {
             {Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="h-64 animate-pulse rounded-lg bg-muted" />
             ))}
+          </div>
+        ) : isError ? (
+          <div className="rounded-lg border border-border">
+            <LoadFailure message="Projects couldn't load just now." onRetry={() => refetch()} />
           </div>
         ) : list.length === 0 ? (
           <div className="rounded-lg border border-border px-5 py-10 text-center text-[13px] text-muted-foreground">

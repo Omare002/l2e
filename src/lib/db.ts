@@ -1,6 +1,7 @@
 import { keepPreviousData, queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
+import { getPublicProjects } from "@/lib/public-projects.functions";
 
 export type ProfileRow = Tables<"profiles">;
 export type PublicProfileRow = Omit<ProfileRow, "id"> & { id: string | null };
@@ -96,12 +97,7 @@ function applySort(query: any, sort: ProjectSort) {
 export function projectsQuery(sort: ProjectSort, category: string, limit = PROJECT_PAGE_SIZE) {
   return queryOptions({
     queryKey: [...qk.projects(sort, category), limit],
-    queryFn: async (): Promise<ProjectStats[]> => {
-      let q = supabase.from("project_stats").select("*").eq("published", true);
-      if (category !== "All") q = q.eq("category", category);
-      const res = await applySort(q, sort).limit(limit);
-      return unwrap(res, "Could not load projects") ?? [];
-    },
+    queryFn: () => getPublicProjects({ data: { sort, category, limit } }),
     staleTime: 15_000,
   });
 }
