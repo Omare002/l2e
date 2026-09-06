@@ -161,13 +161,20 @@ function QuestDetailPage() {
         {isAuthenticated && !finished ? (
           <div className="mt-6 flex flex-wrap gap-2.5">
             {!me ? (
-              <button
-                type="button"
-                onClick={() => respond.mutate("join")}
-                className="min-h-11 w-full rounded-full bg-foreground px-5 text-[13px] font-medium text-background transition-colors duration-200 hover:bg-foreground/90 sm:w-auto"
-              >
-                Join quest
-              </button>
+              quest.kind === "challenge" ? (
+                <p className="text-[13px] text-muted-foreground">
+                  This is a direct challenge — you need an invitation to join.
+                </p>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => respond.mutate("join")}
+                  className="min-h-11 w-full rounded-full bg-foreground px-5 text-[13px] font-medium text-background transition-colors duration-200 hover:bg-foreground/90 sm:w-auto"
+                >
+                  Join quest
+                </button>
+              )
+            )
             ) : me.status === "invited" ? (
               <>
                 <button
