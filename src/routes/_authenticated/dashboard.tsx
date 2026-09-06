@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { AchievementTiles } from "@/components/achievement-tiles";
+import { QuestHistory } from "@/components/quest-history";
 import { AvatarPicker } from "@/components/avatar-picker";
 import { UserAvatar } from "@/components/user-avatar";
 import { earnedAchievements } from "@/data/community";
@@ -271,6 +272,8 @@ function Dashboard() {
           )}
         </ol>
       </section>
+
+      <QuestHistory />
 
       <section className="mt-14 sm:mt-16">
         <h2 className="text-[15px] font-semibold tracking-tight">Achievements</h2>
