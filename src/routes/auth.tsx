@@ -30,7 +30,7 @@ export const Route = createFileRoute("/auth")({
 });
 
 const FIELD =
-  "mt-2 w-full rounded-lg border border-border bg-background px-3.5 py-3 text-[14px] text-foreground outline-none transition-colors duration-200 focus:border-neon";
+  "mt-2 w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-3 text-[14px] text-foreground outline-none transition-colors duration-200 focus:border-neon";
 
 type Mode = "signin" | "signup" | "forgot";
 
@@ -132,7 +132,8 @@ function AuthPage() {
 
   if (sent) {
     return (
-      <div className="mx-auto max-w-md px-4 py-24 text-center sm:px-6">
+      <div className="mx-auto max-w-md px-4 py-24 sm:px-6">
+        <div className="glass-panel p-8 text-center sm:p-10">
         <h1 className="text-2xl font-semibold tracking-tight">Check your inbox</h1>
         <p className="mt-4 text-[14px] leading-relaxed text-muted-foreground">
           {sent === "confirm"
@@ -149,12 +150,14 @@ function AuthPage() {
         >
           Back to sign in
         </button>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="mx-auto max-w-md px-4 py-16 sm:px-6 sm:py-24">
+      <div className="glass-panel p-7 sm:p-10">
       <h1 className="text-3xl font-semibold tracking-tight">
         {mode === "signup" ? "Create your account" : mode === "forgot" ? "Reset password" : "Welcome back"}
       </h1>
