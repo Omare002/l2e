@@ -1,6 +1,7 @@
 import { keepPreviousData, queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
+import { getPublicProjects } from "@/lib/public-projects.functions";
 
 export type ProfileRow = Tables<"profiles">;
 export type PublicProfileRow = Omit<ProfileRow, "id"> & { id: string | null };
@@ -96,33 +97,7 @@ function applySort(query: any, sort: ProjectSort) {
 export function projectsQuery(sort: ProjectSort, category: string, limit = PROJECT_PAGE_SIZE) {
   return queryOptions({
     queryKey: [...qk.projects(sort, category), limit],
-    queryFn: async (): Promise<ProjectStats[]> => {
-      let q = supabase.from("project_stats").select("*").eq("published", true);
-      if (category !== "All") q = q.eq("category", category);
-      const res = await applySort(q, sort).limit(limit);
-      if (!res.error) return res.data ?? [];
-
-      // Public profile permissions can temporarily make the enriched view
-      // unavailable. Keep the project feed independent by falling back to
-      // the published project rows themselves; never replace them with mocks.
-      console.error("[db] Could not load enriched projects:", res.error.message);
-      let fallback = supabase.from("projects").select("*").eq("published", true);
-      if (category !== "All") fallback = fallback.eq("category", category);
-      const fallbackRes = await fallback
-        .order(sort === "Recently Updated" ? "updated_at" : "created_at", { ascending: false })
-        .limit(limit);
-      const projects = unwrap(fallbackRes, "Could not load projects") ?? [];
-      return projects.map((project) => ({
-        ...project,
-        vote_count: 0,
-        comment_count: 0,
-        owner_username: null,
-        owner_display_name: null,
-        owner_avatar_url: null,
-        owner_accent_color: null,
-        owner_is_demo: null,
-      }));
-    },
+    queryFn: () => getPublicProjects({ data: { sort, category, limit } }),
     staleTime: 15_000,
   });
 }
