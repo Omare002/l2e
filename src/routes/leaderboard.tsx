@@ -41,7 +41,7 @@ function LeaderboardPage() {
   const [view, setView] = useState<"all" | "following">("all");
   const { data: followingIds } = useQuery(myFollowingQuery(userId));
   const followSet = new Set(followingIds ?? []);
-  const visible = view === "following" ? all.filter((r) => followSet.has(r.id)) : all;
+  const visible = view === "following" ? all.filter((r) => followSet.has(r.id ?? "")) : all;
   const me = all.find((r) => r.id === userId);
   const inTop = visible.slice(0, 20).some((r) => r.id === userId);
 
