@@ -31,16 +31,16 @@ export function ProjectCard({ project, rank }: { project: ProjectStats; rank?: n
               <Link
                 to="/builders/$username"
                 params={{ username: project.owner_username }}
-                className="block truncate text-[13px] font-medium text-foreground transition-colors duration-200 hover:text-neon"
+                className="block truncate text-[13px] font-medium text-on-dark transition-colors duration-200 hover:text-neon"
               >
                 {project.owner_display_name ?? "Builder"}
               </Link>
             ) : (
-              <span className="block truncate text-[13px] font-medium text-foreground">
+              <span className="block truncate text-[13px] font-medium text-on-dark">
                 {project.owner_display_name ?? "Builder"}
               </span>
             )}
-            <div className="mt-0.5 truncate font-mono text-[11px] text-muted-foreground">
+            <div className="mt-0.5 truncate font-mono text-[11px] text-on-dark-muted">
               {project.owner_username ? `@${project.owner_username}` : "Builder"}
             </div>
           </div>
@@ -48,7 +48,7 @@ export function ProjectCard({ project, rank }: { project: ProjectStats; rank?: n
         {rank ? (
           <span
             className={`glass-pill shrink-0 px-3 py-1.5 font-mono text-[10px] tabular-nums ${
-              rank <= 3 ? "text-neon" : "text-muted-foreground"
+              rank <= 3 ? "text-neon" : "text-on-dark-muted"
             }`}
           >
             #{rank}
@@ -70,24 +70,24 @@ export function ProjectCard({ project, rank }: { project: ProjectStats; rank?: n
       <Link
         to="/projects/$slug"
         params={{ slug: project.slug ?? "" }}
-        className="mt-5 text-[15px] font-semibold tracking-tight text-foreground transition-colors duration-200 group-hover:text-neon sm:text-base"
+        className="mt-5 text-[15px] font-semibold tracking-tight text-on-dark transition-colors duration-200 group-hover:text-neon sm:text-base"
       >
         {project.title}
       </Link>
-      <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">{project.tagline}</p>
+      <p className="mt-2 text-[13px] leading-relaxed text-on-dark-muted">{project.tagline}</p>
 
 
       <div className="mt-5 flex flex-wrap gap-2">
         <span className="glass-pill border-neon/25 bg-neon-dim/20 px-2.5 py-1 font-mono text-[10px] text-neon">
           {normalizeCategory(project.category)}
         </span>
-        <span className="glass-pill px-2.5 py-1 font-mono text-[10px] text-muted-foreground">
+        <span className="glass-pill px-2.5 py-1 font-mono text-[10px] text-on-dark-muted">
           {statusLabel(project.status ?? "shipped")}
         </span>
         {(project.tech ?? []).slice(0, 4).map((t) => (
           <span
             key={t}
-            className="glass-pill px-2.5 py-1 font-mono text-[10px] text-muted-foreground"
+            className="glass-pill px-2.5 py-1 font-mono text-[10px] text-on-dark-muted"
           >
             {t}
           </span>
@@ -95,7 +95,7 @@ export function ProjectCard({ project, rank }: { project: ProjectStats; rank?: n
       </div>
 
       <div className="mt-7 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-t border-white/[0.05] pt-4">
-        <div className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[11px] text-muted-foreground">
+        <div className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[11px] text-on-dark-muted">
 
           {project.demo_url ? (
             <a
@@ -131,7 +131,7 @@ export function ProjectCard({ project, rank }: { project: ProjectStats; rank?: n
           className={`glass-pill flex min-h-9 shrink-0 items-center gap-1.5 px-3 py-1.5 font-mono text-[11px] tabular-nums transition-colors duration-200 disabled:opacity-50 ${
             voted
               ? "border-neon/45 bg-neon/10 text-neon"
-              : "text-foreground/75 hover:border-neon/40 hover:text-neon"
+              : "text-on-dark/80 hover:border-neon/40 hover:text-neon"
           }`}
 
         >
