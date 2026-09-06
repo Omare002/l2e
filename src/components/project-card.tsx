@@ -130,7 +130,7 @@ export function ProjectCard({ project, rank }: { project: ProjectStats; rank?: n
           title={own ? "You can't upvote your own project" : undefined}
           className={`glass-pill flex min-h-9 shrink-0 items-center gap-1.5 px-3.5 py-1.5 font-mono text-[13px] font-semibold tabular-nums transition-all duration-200 disabled:opacity-50 ${
             voted
-              ? "border-neon/60 bg-neon/15 text-neon shadow-[0_0_0_1px_var(--color-neon-ring),0_6px_18px_-8px_var(--color-neon-ring)]"
+              ? "border-neon/60 bg-neon/15 text-neon shadow-[0_6px_18px_-10px_color-mix(in_oklab,var(--neon)_45%,transparent)]"
               : "border-white/15 text-on-dark hover:border-neon/60 hover:bg-neon/10 hover:text-neon"
           }`}
 
