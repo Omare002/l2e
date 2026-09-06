@@ -45,7 +45,7 @@ export function QuestBoard({ limit = 6 }: { limit?: number }) {
                 className="surface-card lift-hover block p-5"
               >
                 <div className="flex items-center justify-between gap-3">
-                  <span className="glass-pill px-2.5 py-1 font-mono text-[10px] text-on-dark-muted">
+                  <span className="glass-pill-dark px-2.5 py-1 font-mono text-[10px] text-on-dark">
                     {QUEST_KIND_LABEL[q.kind as QuestKind] ?? "Quest"}
                   </span>
                   <span className="font-mono text-[10px] text-on-dark-muted">
