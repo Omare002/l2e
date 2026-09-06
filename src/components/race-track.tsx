@@ -8,8 +8,14 @@ import { UserAvatar } from "@/components/user-avatar";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-export function RaceTrack({ compact = false }: { compact?: boolean }) {
-  const { racers, target, isLoading, isError, refetch } = useRace(compact ? 6 : 10);
+export function RaceTrack({
+  compact = false,
+  scope = "all",
+}: {
+  compact?: boolean;
+  scope?: "week" | "all";
+}) {
+  const { racers, target, isLoading, isError, refetch } = useRace(compact ? 6 : 10, scope);
   const { userId } = useAuth();
 
   if (isLoading && racers.length === 0) {
