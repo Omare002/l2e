@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import type { ProjectStats, ProjectSort } from "@/lib/db";
+import { normalizeCategory } from "@/data/community";
 
 const inputSchema = z.object({
   sort: z.enum(["Trending", "Newest", "Most Voted", "Most Commented", "Recently Updated"]),
@@ -44,9 +45,11 @@ export const getPublicProjects = createServerFn({ method: "GET" })
       throw new Error("Could not load projects");
     }
 
-    const projects = (projectResult.data ?? []).filter(
-      (project) => data.category === "All" || project.category === data.category,
-    );
+    // Every row keeps a valid track, so filtering can never drop a project
+    // because its stored category is missing or unrecognised.
+    const projects = (projectResult.data ?? [])
+      .map((project) => ({ ...project, category: normalizeCategory(project.category) as string }))
+      .filter((project) => data.category === "All" || project.category === data.category);
     const ownerIds = [...new Set(projects.map((project) => project.owner_id))];
     const projectIds = projects.map((project) => project.id);
 
