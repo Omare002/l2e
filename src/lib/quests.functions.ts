@@ -104,8 +104,11 @@ export const getPublicQuest = createServerFn({ method: "GET" })
         avatar_url: string | null;
         accent_color: string;
         status: string;
+        joined_at: string;
         project_title: string | null;
         project_slug: string | null;
+        project_published: boolean | null;
+        project_status: string | null;
         votes: number;
       }) => ({
         username: s.username,
@@ -113,11 +116,15 @@ export const getPublicQuest = createServerFn({ method: "GET" })
         avatar_url: s.avatar_url,
         accent_color: s.accent_color,
         status: s.status,
+        joined_at: s.joined_at,
         project_title: s.project_title,
         project_slug: s.project_slug,
+        project_published: s.project_published,
+        project_status: s.project_status,
         votes: s.votes,
       }),
     );
+
 
     return { quest: quest.data, standings: safe };
   });
