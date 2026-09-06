@@ -16,6 +16,7 @@ import { Route as HallOfFameRouteImport } from './routes/hall-of-fame'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as QuestsIndexRouteImport } from './routes/quests.index'
 import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
 import { Route as ForumIndexRouteImport } from './routes/forum.index'
 import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
@@ -57,6 +58,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const QuestsIndexRoute = QuestsIndexRouteImport.update({
+  id: '/quests/',
+  path: '/quests/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProjectsIndexRoute = ProjectsIndexRouteImport.update({
@@ -115,6 +121,7 @@ export interface FileRoutesByFullPath {
   '/projects/$slug': typeof ProjectsSlugRoute
   '/forum/': typeof ForumIndexRoute
   '/projects/': typeof ProjectsIndexRoute
+  '/quests/': typeof QuestsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -131,6 +138,7 @@ export interface FileRoutesByTo {
   '/projects/$slug': typeof ProjectsSlugRoute
   '/forum': typeof ForumIndexRoute
   '/projects': typeof ProjectsIndexRoute
+  '/quests': typeof QuestsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -149,6 +157,7 @@ export interface FileRoutesById {
   '/projects/$slug': typeof ProjectsSlugRoute
   '/forum/': typeof ForumIndexRoute
   '/projects/': typeof ProjectsIndexRoute
+  '/quests/': typeof QuestsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -167,6 +176,7 @@ export interface FileRouteTypes {
     | '/projects/$slug'
     | '/forum/'
     | '/projects/'
+    | '/quests/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -183,6 +193,7 @@ export interface FileRouteTypes {
     | '/projects/$slug'
     | '/forum'
     | '/projects'
+    | '/quests'
   id:
     | '__root__'
     | '/'
@@ -200,6 +211,7 @@ export interface FileRouteTypes {
     | '/projects/$slug'
     | '/forum/'
     | '/projects/'
+    | '/quests/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -215,6 +227,7 @@ export interface RootRouteChildren {
   ProjectsSlugRoute: typeof ProjectsSlugRoute
   ForumIndexRoute: typeof ForumIndexRoute
   ProjectsIndexRoute: typeof ProjectsIndexRoute
+  QuestsIndexRoute: typeof QuestsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -266,6 +279,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/quests/': {
+      id: '/quests/'
+      path: '/quests'
+      fullPath: '/quests/'
+      preLoaderRoute: typeof QuestsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/projects/': {
@@ -355,6 +375,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProjectsSlugRoute: ProjectsSlugRoute,
   ForumIndexRoute: ForumIndexRoute,
   ProjectsIndexRoute: ProjectsIndexRoute,
+  QuestsIndexRoute: QuestsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
