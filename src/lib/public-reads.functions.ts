@@ -155,3 +155,16 @@ export const getPublicCollaborators = createServerFn({ method: "GET" })
     if (res.error) fail("Could not load collaborators", res.error.message);
     return res.data ?? [];
   });
+
+export const getPublicCommunityTotals = createServerFn({ method: "GET" }).handler(async () => {
+  const db = await admin();
+  const res = await db.from("community_totals").select("*").maybeSingle();
+  if (res.error) fail("Could not load community totals", res.error.message);
+  return {
+    builders: res.data?.builders ?? 0,
+    projects_published: res.data?.projects_published ?? 0,
+    upvotes: res.data?.upvotes ?? 0,
+    upvotes_week: res.data?.upvotes_week ?? 0,
+    projects_week: res.data?.projects_week ?? 0,
+  };
+});
