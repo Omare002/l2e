@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { motion } from "motion/react";
 import { RaceTrack } from "@/components/race-track";
 import { SeasonBanner } from "@/components/season-banner";
@@ -9,6 +11,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { UserAvatar } from "@/components/user-avatar";
 import { MessageButton } from "@/components/messages/message-button";
 import { QuestBoard } from "@/components/quest-board";
+import { myFollowingQuery } from "@/lib/discovery";
 
 export const Route = createFileRoute("/leaderboard")({
   head: () => ({
@@ -34,9 +37,13 @@ export const Route = createFileRoute("/leaderboard")({
 function LeaderboardPage() {
   const { all, isLoading, isError, refetch, season } = useRace(10, "week");
   const allTime = useRace(20, "all");
-  const { userId } = useAuth();
+  const { userId, isAuthenticated } = useAuth();
+  const [view, setView] = useState<"all" | "following">("all");
+  const { data: followingIds } = useQuery(myFollowingQuery(userId));
+  const followSet = new Set(followingIds ?? []);
+  const visible = view === "following" ? all.filter((r) => followSet.has(r.id ?? "")) : all;
   const me = all.find((r) => r.id === userId);
-  const inTop = all.slice(0, 20).some((r) => r.id === userId);
+  const inTop = visible.slice(0, 20).some((r) => r.id === userId);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
@@ -59,6 +66,25 @@ function LeaderboardPage() {
           title={`Week ${season.week} standings`}
           subtitle={`${new Date(season.startsAt).toLocaleDateString(undefined, { month: "short", day: "numeric" })} – ${new Date(new Date(season.endsAt).getTime() - 1).toLocaleDateString(undefined, { month: "short", day: "numeric" })} · upvotes this week, updated live.`}
         />
+        {isAuthenticated ? (
+          <div className="mb-4 inline-flex rounded-full border border-border p-1 text-[12px]">
+            {(["all", "following"] as const).map((key) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setView(key)}
+                aria-pressed={view === key}
+                className={`min-h-9 rounded-full px-4 transition-colors duration-200 ${
+                  view === key
+                    ? "bg-neon/12 text-neon"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {key === "all" ? "Everyone" : `Following${followSet.size ? ` (${followSet.size})` : ""}`}
+              </button>
+            ))}
+          </div>
+        ) : null}
         <div className="overflow-hidden rounded-lg border border-border">
           <div className="grid grid-cols-[44px_minmax(0,1fr)_72px] gap-3 border-b border-border px-4 py-3 text-[12px] text-muted-foreground sm:grid-cols-[56px_minmax(0,1fr)_90px_110px] sm:gap-4 sm:px-5">
             <span>Rank</span>
@@ -67,19 +93,21 @@ function LeaderboardPage() {
             <span className="hidden text-right sm:block">Projects</span>
           </div>
 
-          {isLoading && all.length === 0 ? (
+          {isLoading && visible.length === 0 ? (
             <SkeletonLines rows={6} className="p-4 sm:p-5" />
-          ) : isError && all.length === 0 ? (
+          ) : isError && visible.length === 0 ? (
             <LoadFailure
               message="The standings couldn't load just now."
               onRetry={() => refetch()}
             />
-          ) : all.length === 0 ? (
+          ) : visible.length === 0 ? (
             <div className="px-5 py-8 text-[13px] text-muted-foreground">
-              No builders on the board yet.
+              {view === "following"
+                ? "None of the builders you follow are racing this week yet."
+                : "No builders on the board yet."}
             </div>
           ) : (
-            all.slice(0, 20).map((r) => (
+            visible.slice(0, 20).map((r) => (
               <motion.div
                 key={r.id}
                 layout
