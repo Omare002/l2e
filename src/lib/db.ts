@@ -30,7 +30,10 @@ export type ActivityItem = Tables<"activity_events"> & {
 };
 
 /** Any Supabase error becomes a friendly, non-leaking Error. */
-function unwrap<T>(result: { data: T | null; error: { message: string } | null }, fallback: string): T {
+function unwrap<T>(
+  result: { data: T | null; error: { message: string } | null },
+  fallback: string,
+): T {
   if (result.error) {
     console.error(`[db] ${fallback}:`, result.error.message);
     throw new Error(fallback);
@@ -68,17 +71,18 @@ export const qk = {
 
 export const PROJECT_PAGE_SIZE = 12;
 
-function applySort(
-  query: any,
-  sort: ProjectSort,
-) {
+function applySort(query: any, sort: ProjectSort) {
   switch (sort) {
     case "Newest":
       return query.order("created_at", { ascending: false });
     case "Most Voted":
-      return query.order("vote_count", { ascending: false }).order("created_at", { ascending: false });
+      return query
+        .order("vote_count", { ascending: false })
+        .order("created_at", { ascending: false });
     case "Most Commented":
-      return query.order("comment_count", { ascending: false }).order("created_at", { ascending: false });
+      return query
+        .order("comment_count", { ascending: false })
+        .order("created_at", { ascending: false });
     case "Recently Updated":
       return query.order("updated_at", { ascending: false });
     default:
@@ -232,12 +236,11 @@ export function discussionQuery(id: string) {
   return queryOptions({
     queryKey: qk.discussion(id),
     queryFn: async (): Promise<DiscussionWithAuthor | null> => {
-      const res = await supabase
-        .from("discussions_public")
-        .select("*")
-        .eq("id", id)
-        .maybeSingle();
-      return unwrap(res, "Could not load this discussion") as unknown as DiscussionWithAuthor | null;
+      const res = await supabase.from("discussions_public").select("*").eq("id", id).maybeSingle();
+      return unwrap(
+        res,
+        "Could not load this discussion",
+      ) as unknown as DiscussionWithAuthor | null;
     },
     placeholderData: keepPreviousData,
   });
