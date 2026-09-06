@@ -43,7 +43,7 @@ function Index() {
         <span className="font-mono text-[11px] tracking-[0.18em] text-muted-foreground">
           THE LEARNTOEARN SHOWCASE
         </span>
-        <h1 className="mt-6 text-[2.15rem] font-semibold leading-[1.1] tracking-tight sm:text-6xl">
+        <h1 className="mt-6 text-center text-[2.15rem] font-semibold leading-[1.1] tracking-tight sm:text-6xl">
           <TypingHeadline />
         </h1>
         <p className="mt-6 max-w-xl text-balance text-[14px] leading-relaxed text-muted-foreground sm:mt-7 sm:text-[15px]">
