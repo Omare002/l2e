@@ -17,7 +17,7 @@ export function ProjectCard({ project, rank }: { project: ProjectStats; rank?: n
   const own = isOwn(ownerId);
 
   return (
-    <article className="surface-card lift-hover group flex flex-col p-5 sm:p-6">
+    <article className="surface-card lift-hover group flex flex-col p-4 sm:p-5">
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
         <div className="flex min-w-0 items-center gap-3">
           <UserAvatar
@@ -56,7 +56,7 @@ export function ProjectCard({ project, rank }: { project: ProjectStats; rank?: n
         ) : null}
       </div>
 
-      <div className="elevated-media mt-6 aspect-[16/7] w-full bg-white/[0.03]">
+      <div className="elevated-media mt-4 aspect-[16/8] w-full bg-white/[0.03]">
         {thumb ? (
           <img
             src={thumb}
@@ -70,21 +70,21 @@ export function ProjectCard({ project, rank }: { project: ProjectStats; rank?: n
       <Link
         to="/projects/$slug"
         params={{ slug: project.slug ?? "" }}
-        className="mt-5 text-[15px] font-semibold tracking-tight text-on-dark transition-colors duration-200 group-hover:text-neon sm:text-base"
+        className="mt-4 text-[15px] font-semibold tracking-tight text-on-dark transition-colors duration-200 group-hover:text-neon sm:text-base"
       >
         {project.title}
       </Link>
-      <p className="mt-2 text-[13px] leading-relaxed text-on-dark-muted">{project.tagline}</p>
+      <p className="mt-1.5 line-clamp-2 text-[13px] leading-relaxed text-on-dark-muted">{project.tagline}</p>
 
 
-      <div className="mt-5 flex flex-wrap gap-2">
+      <div className="mt-3.5 flex flex-wrap gap-1.5 pb-5">
         <span className="glass-pill border-neon/25 bg-neon-dim/20 px-2.5 py-1 font-mono text-[10px] text-neon">
           {normalizeCategory(project.category)}
         </span>
         <span className="glass-pill px-2.5 py-1 font-mono text-[10px] text-on-dark-muted">
           {statusLabel(project.status ?? "shipped")}
         </span>
-        {(project.tech ?? []).slice(0, 4).map((t) => (
+        {(project.tech ?? []).slice(0, 3).map((t) => (
           <span
             key={t}
             className="glass-pill px-2.5 py-1 font-mono text-[10px] text-on-dark-muted"
@@ -94,7 +94,7 @@ export function ProjectCard({ project, rank }: { project: ProjectStats; rank?: n
         ))}
       </div>
 
-      <div className="mt-7 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-t border-white/[0.05] pt-4">
+      <div className="mt-auto grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-t border-white/[0.05] pt-3.5">
         <div className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[11px] text-on-dark-muted">
 
           {project.demo_url ? (
@@ -128,14 +128,14 @@ export function ProjectCard({ project, rank }: { project: ProjectStats; rank?: n
           disabled={pending || own}
           onClick={() => vote(projectId, ownerId)}
           title={own ? "You can't upvote your own project" : undefined}
-          className={`glass-pill flex min-h-9 shrink-0 items-center gap-1.5 px-3 py-1.5 font-mono text-[11px] tabular-nums transition-colors duration-200 disabled:opacity-50 ${
+          className={`glass-pill flex min-h-9 shrink-0 items-center gap-1.5 px-3.5 py-1.5 font-mono text-[13px] font-semibold tabular-nums transition-all duration-200 disabled:opacity-50 ${
             voted
-              ? "border-neon/45 bg-neon/10 text-neon"
-              : "text-on-dark/80 hover:border-neon/40 hover:text-neon"
+              ? "border-neon/60 bg-neon/15 text-neon shadow-[0_6px_18px_-10px_color-mix(in_oklab,var(--neon)_45%,transparent)]"
+              : "border-white/15 text-on-dark hover:border-neon/60 hover:bg-neon/10 hover:text-neon"
           }`}
 
         >
-          <ChevronUp className={`size-3.5 ${pending ? "animate-pulse" : ""}`} />{" "}
+          <ChevronUp className={`size-4 ${pending ? "animate-pulse" : ""}`} />{" "}
           {project.vote_count ?? 0}
         </button>
       </div>

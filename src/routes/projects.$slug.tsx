@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ChevronUp, ExternalLink, Github } from "lucide-react";
+import { BarChart3, ChevronUp, ExternalLink, Github } from "lucide-react";
 import { toast } from "sonner";
 import { commentsQuery, projectQuery } from "@/lib/db";
 import { addComment, deleteComment, editComment } from "@/lib/app.functions";
@@ -16,6 +16,7 @@ import { MessageButton } from "@/components/messages/message-button";
 import { FollowButton } from "@/components/follow-button";
 import { BuiltBy } from "@/components/projects/built-by";
 import { statusLabel } from "@/data/community";
+import { recordProjectView } from "@/lib/project-stats.functions";
 
 export const Route = createFileRoute("/projects/$slug")({
   head: ({ params }) => ({
@@ -49,6 +50,22 @@ function ProjectPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editDraft, setEditDraft] = useState("");
   const thumb = useStoredImage("thumbnails", project?.thumbnail_url);
+  const viewed = useRef<string | null>(null);
+
+  // One view per project per browser session, recorded quietly.
+  useEffect(() => {
+    const id = project?.id;
+    if (!id || viewed.current === id) return;
+    viewed.current = id;
+    const key = `viewed:${id}`;
+    try {
+      if (sessionStorage.getItem(key)) return;
+      sessionStorage.setItem(key, "1");
+    } catch {
+      /* private mode: still count the view */
+    }
+    void recordProjectView({ data: { projectId: id, viewerId: userId ?? null } }).catch(() => {});
+  }, [project?.id, userId]);
 
   function refreshComments() {
     queryClient.invalidateQueries({ queryKey: ["comments"] });
@@ -178,6 +195,13 @@ function ProjectPage() {
             <Github className="size-3.5" /> Source
           </a>
         ) : null}
+        <Link
+          to="/projects/$slug/stats"
+          params={{ slug: project.slug ?? slug }}
+          className="flex min-h-11 items-center gap-2 rounded-full border border-border px-4 text-[13px] transition-colors duration-200 hover:border-neon"
+        >
+          <BarChart3 className="size-3.5" /> Stats
+        </Link>
         <FollowButton targetId={project.owner_id} username={project.owner_username ?? undefined} />
         <MessageButton recipientId={project.owner_id} projectId={project.id} />
       </div>
