@@ -87,7 +87,7 @@ export function RaceTrack({
                     params={{ username: r.row.username ?? "" }}
                     className="min-w-0"
                   >
-                    <div className="truncate text-[13px] font-medium text-white transition-colors duration-200 group-hover:text-neon">
+                    <div className="truncate text-[13px] font-medium text-foreground transition-colors duration-200 group-hover:text-neon">
                       {r.row.display_name}
                       {isMe ? <span className="ml-2 font-mono text-[10px] text-neon">you</span> : null}
                     </div>
