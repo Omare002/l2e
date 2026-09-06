@@ -33,6 +33,7 @@ export function FollowButton({ targetId, username, className = "" }: Props) {
       queryClient.setQueryData(sqk.followState(userId ?? "none", targetId ?? "none"), action === "follow");
       queryClient.invalidateQueries({ queryKey: ["follow-counts"] });
       queryClient.invalidateQueries({ queryKey: ["follow-state"] });
+      queryClient.invalidateQueries({ queryKey: ["my-following"] });
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : "Could not update that follow"),
