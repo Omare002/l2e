@@ -1,0 +1,1 @@
+REVOKE ALL ON FUNCTION public.quest_standings(uuid) FROM authenticated;
