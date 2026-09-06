@@ -13,6 +13,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as HallOfFameRouteImport } from './routes/hall-of-fame'
+import { Route as CommunityRouteImport } from './routes/community'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -47,6 +48,11 @@ const HowItWorksRoute = HowItWorksRouteImport.update({
 const HallOfFameRoute = HallOfFameRouteImport.update({
   id: '/hall-of-fame',
   path: '/hall-of-fame',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunityRoute = CommunityRouteImport.update({
+  id: '/community',
+  path: '/community',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -127,6 +133,7 @@ const ProjectsSlugStatsRoute = ProjectsSlugStatsRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/community': typeof CommunityRoute
   '/hall-of-fame': typeof HallOfFameRoute
   '/how-it-works': typeof HowItWorksRoute
   '/leaderboard': typeof LeaderboardRoute
@@ -147,6 +154,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/community': typeof CommunityRoute
   '/hall-of-fame': typeof HallOfFameRoute
   '/how-it-works': typeof HowItWorksRoute
   '/leaderboard': typeof LeaderboardRoute
@@ -169,6 +177,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/community': typeof CommunityRoute
   '/hall-of-fame': typeof HallOfFameRoute
   '/how-it-works': typeof HowItWorksRoute
   '/leaderboard': typeof LeaderboardRoute
@@ -191,6 +200,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/community'
     | '/hall-of-fame'
     | '/how-it-works'
     | '/leaderboard'
@@ -211,6 +221,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/community'
     | '/hall-of-fame'
     | '/how-it-works'
     | '/leaderboard'
@@ -232,6 +243,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/community'
     | '/hall-of-fame'
     | '/how-it-works'
     | '/leaderboard'
@@ -254,6 +266,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  CommunityRoute: typeof CommunityRoute
   HallOfFameRoute: typeof HallOfFameRoute
   HowItWorksRoute: typeof HowItWorksRoute
   LeaderboardRoute: typeof LeaderboardRoute
@@ -297,6 +310,13 @@ declare module '@tanstack/react-router' {
       path: '/hall-of-fame'
       fullPath: '/hall-of-fame'
       preLoaderRoute: typeof HallOfFameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/community': {
+      id: '/community'
+      path: '/community'
+      fullPath: '/community'
+      preLoaderRoute: typeof CommunityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -426,6 +446,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  CommunityRoute: CommunityRoute,
   HallOfFameRoute: HallOfFameRoute,
   HowItWorksRoute: HowItWorksRoute,
   LeaderboardRoute: LeaderboardRoute,
