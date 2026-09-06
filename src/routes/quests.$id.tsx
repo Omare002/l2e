@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ChevronUp, Trophy } from "lucide-react";
+import { ChevronUp, Clock, Trophy } from "lucide-react";
 import { toast } from "sonner";
+import { QuestChat } from "@/components/quest-chat";
 import { LoadFailure, SkeletonLines } from "@/components/skeleton-block";
 import { UserAvatar } from "@/components/user-avatar";
 import { useAuth } from "@/hooks/use-auth";
@@ -15,6 +16,7 @@ import {
   myQuestEntryQuery,
   questKeys,
   questQuery,
+  sinceLabel,
   timeLeft,
 } from "@/lib/quests";
 
@@ -109,7 +111,7 @@ function QuestDetailPage() {
       </Link>
 
       <div className="glass-panel mt-5 p-6 sm:p-9">
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
           <span className="glass-pill px-2.5 py-1 font-mono text-[10px] text-muted-foreground">
             {QUEST_KIND_LABEL[quest.kind as QuestKind] ?? "Quest"}
           </span>
@@ -162,7 +164,7 @@ function QuestDetailPage() {
               <button
                 type="button"
                 onClick={() => respond.mutate("join")}
-                className="min-h-11 rounded-full bg-foreground px-5 text-[13px] font-medium text-background hover:bg-foreground/90"
+                className="min-h-11 w-full rounded-full bg-foreground px-5 text-[13px] font-medium text-background transition-colors duration-200 hover:bg-foreground/90 sm:w-auto"
               >
                 Join quest
               </button>
@@ -171,14 +173,14 @@ function QuestDetailPage() {
                 <button
                   type="button"
                   onClick={() => respond.mutate("accept")}
-                  className="min-h-11 rounded-full bg-foreground px-5 text-[13px] font-medium text-background hover:bg-foreground/90"
+                  className="min-h-11 w-full rounded-full bg-foreground px-5 text-[13px] font-medium text-background transition-colors duration-200 hover:bg-foreground/90 sm:w-auto"
                 >
                   Accept invitation
                 </button>
                 <button
                   type="button"
                   onClick={() => respond.mutate("decline")}
-                  className="glass-pill min-h-11 px-5 text-[13px] text-muted-foreground hover:text-foreground"
+                  className="glass-pill min-h-11 w-full px-5 text-[13px] text-muted-foreground transition-colors duration-200 hover:text-foreground sm:w-auto"
                 >
                   Decline
                 </button>
@@ -187,7 +189,7 @@ function QuestDetailPage() {
               <button
                 type="button"
                 onClick={() => respond.mutate("accept")}
-                className="glass-pill min-h-11 px-5 text-[13px] text-muted-foreground hover:text-neon"
+                className="glass-pill min-h-11 w-full px-5 text-[13px] text-muted-foreground transition-colors duration-200 hover:text-neon sm:w-auto"
               >
                 Change your mind — join
               </button>
@@ -204,7 +206,7 @@ function QuestDetailPage() {
               id="quest-project"
               value={me.project_id ?? ""}
               onChange={(e) => e.target.value && enter.mutate(e.target.value)}
-              className="min-h-11 max-w-sm rounded-lg border border-border bg-transparent px-3 text-[13px] outline-none focus-visible:border-neon"
+              className="min-h-11 w-full max-w-sm rounded-lg border border-border bg-transparent px-3 text-[13px] outline-none focus-visible:border-neon"
             >
               <option value="">Choose a project…</option>
               {(mine.data ?? []).map((p) => (
@@ -313,6 +315,8 @@ function QuestDetailPage() {
           </div>
         ) : null}
       </section>
+
+      {isAuthenticated && me ? <QuestChat questId={id} canPost={me.status === "accepted"} /> : null}
     </div>
   );
 }
