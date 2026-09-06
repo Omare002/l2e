@@ -77,25 +77,26 @@ export function ProjectCard({ project, rank }: { project: ProjectStats; rank?: n
       <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">{project.tagline}</p>
 
 
-      <div className="mt-4 flex flex-wrap gap-2">
-        <span className="rounded-full border border-neon/40 bg-neon-dim/30 px-2.5 py-1 font-mono text-[10px] text-neon">
+      <div className="mt-5 flex flex-wrap gap-2">
+        <span className="glass-pill border-neon/25 bg-neon-dim/20 px-2.5 py-1 font-mono text-[10px] text-neon">
           {normalizeCategory(project.category)}
         </span>
-        <span className="rounded-full bg-white/[0.06] px-2.5 py-1 font-mono text-[10px] text-white/55">
+        <span className="glass-pill px-2.5 py-1 font-mono text-[10px] text-muted-foreground">
           {statusLabel(project.status ?? "shipped")}
         </span>
         {(project.tech ?? []).slice(0, 4).map((t) => (
           <span
             key={t}
-            className="rounded-full bg-white/[0.06] px-2.5 py-1 font-mono text-[10px] text-white/55"
+            className="glass-pill px-2.5 py-1 font-mono text-[10px] text-muted-foreground"
           >
             {t}
           </span>
         ))}
       </div>
 
-      <div className="mt-6 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-t border-white/[0.07] pt-4">
-        <div className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[11px] text-white/45">
+      <div className="mt-7 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-t border-white/[0.05] pt-4">
+        <div className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[11px] text-muted-foreground">
+
           {project.demo_url ? (
             <a
               href={project.demo_url}
