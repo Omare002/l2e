@@ -5,6 +5,7 @@ import { getPublicProjects } from "@/lib/public-projects.functions";
 import {
   getPublicActivity,
   getPublicComments,
+  getPublicCommunityTotals,
   getPublicDiscussion,
   getPublicDiscussions,
   getPublicLeaderboard,
@@ -279,7 +280,10 @@ export function communityStatsQuery() {
   return queryOptions({
     queryKey: qk.stats,
     queryFn: async () => {
-      const { data } = await supabase.from("community_totals").select("*").maybeSingle();
+      // Vote rows aren't readable by anonymous visitors, so totals come from a
+      // server-side projection. Only "this week" is time-scoped; the total is
+      // all-time and must never reset.
+      const data = await getPublicCommunityTotals();
 
       return [
         { label: "Builders", value: data?.builders ?? 0 },
