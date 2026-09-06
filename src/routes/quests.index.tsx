@@ -116,7 +116,7 @@ function QuestsIndex() {
         {quests.isLoading ? (
           <SkeletonLines rows={3} />
         ) : quests.isError ? (
-          <LoadFailure onRetry={() => void quests.refetch()} label="Could not load quests" />
+          <LoadFailure onRetry={() => void quests.refetch()} message="Could not load quests" />
         ) : live.length === 0 ? (
           <p className="mt-4 text-[13px] text-muted-foreground">
             No live quests yet. Start the first one.
