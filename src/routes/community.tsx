@@ -135,7 +135,11 @@ function CommunityPage() {
                       <span className="flex items-center gap-1.5 font-mono text-[11px] text-on-dark-muted">
                         <Users className="size-3.5" /> {joined} racing
                       </span>
-                      {isAuthenticated ? (
+                      {q.kind === "challenge" ? (
+                        <span className="font-mono text-[10px] text-on-dark-muted">
+                          Invite only
+                        </span>
+                      ) : isAuthenticated ? (
                         <button
                           type="button"
                           disabled={join.isPending}
