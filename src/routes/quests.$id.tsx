@@ -193,13 +193,13 @@ function QuestDetailPage() {
             </label>
             <select
               id="quest-project"
-              value={me.project_id ?? ""} defaultValue={undefined}
+              value={me.project_id ?? ""}
               onChange={(e) => e.target.value && enter.mutate(e.target.value)}
               className="min-h-11 max-w-sm rounded-lg border border-border bg-transparent px-3 text-[13px] outline-none focus-visible:border-neon"
             >
               <option value="">Choose a project…</option>
               {(mine.data ?? []).map((p) => (
-                <option key={p.id} value={p.id}>
+                <option key={p.id ?? p.title} value={p.id ?? ""}>
                   {p.title}
                 </option>
               ))}
