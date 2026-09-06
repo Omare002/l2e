@@ -12,6 +12,8 @@ import {
   getPublicProfile,
   getPublicProject,
   getPublicReplies,
+  getPublicWeeklyLeaderboard,
+  type WeeklyStanding,
 } from "@/lib/public-reads.functions";
 
 export type ProfileRow = Tables<"profiles">;
@@ -64,6 +66,7 @@ export type ProjectSort = (typeof PROJECT_SORTS)[number];
 
 export const qk = {
   leaderboard: ["leaderboard"] as const,
+  weeklyLeaderboard: (startsAt: string) => ["weekly-leaderboard", startsAt] as const,
   projects: (sort: ProjectSort, category: string) => ["projects", sort, category] as const,
   project: (slug: string) => ["project", slug] as const,
   myProjects: (userId: string) => ["my-projects", userId] as const,
@@ -148,6 +151,19 @@ export function leaderboardQuery() {
     queryKey: qk.leaderboard,
     queryFn: async (): Promise<LeaderboardRow[]> =>
       (await getPublicLeaderboard()) as LeaderboardRow[],
+    staleTime: 10_000,
+    placeholderData: keepPreviousData,
+  });
+}
+
+export type { WeeklyStanding };
+
+/** Standings for the running race week; all-time totals are unaffected. */
+export function weeklyLeaderboardQuery(startsAt: string, endsAt: string) {
+  return queryOptions({
+    queryKey: qk.weeklyLeaderboard(startsAt),
+    queryFn: async (): Promise<WeeklyStanding[]> =>
+      await getPublicWeeklyLeaderboard({ data: { startsAt, endsAt } }),
     staleTime: 10_000,
     placeholderData: keepPreviousData,
   });
