@@ -58,7 +58,7 @@ function BuilderProfile() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
-      <div className="grid gap-6 border-b border-border pb-10 sm:grid-cols-[auto_minmax(0,1fr)]">
+      <div className="glass-panel grid gap-6 p-6 sm:grid-cols-[auto_minmax(0,1fr)] sm:p-9">
         <UserAvatar
           name={profile.display_name}
           path={profile.avatar_url}
@@ -67,8 +67,21 @@ function BuilderProfile() {
           eager
         />
         <div className="min-w-0">
-          <h1 className="text-2xl font-semibold tracking-tight sm:text-4xl">{profile.display_name}</h1>
-          <div className="mt-1 font-mono text-[12px] text-muted-foreground">
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="text-2xl font-semibold tracking-tight sm:text-4xl">
+              {profile.display_name}
+            </h1>
+            {row?.rank ? (
+              <span
+                className={`glass-pill px-3 py-1.5 font-mono text-[11px] tabular-nums ${
+                  row.rank <= 3 ? "text-neon" : "text-muted-foreground"
+                }`}
+              >
+                Rank #{row.rank}
+              </span>
+            ) : null}
+          </div>
+          <div className="mt-1.5 font-mono text-[12px] text-muted-foreground">
             @{profile.username} · joined {new Date(profile.created_at).toDateString()}
           </div>
           {profile.bio ? (
@@ -76,7 +89,7 @@ function BuilderProfile() {
               {profile.bio}
             </p>
           ) : null}
-          <div className="mt-5 flex flex-wrap gap-2.5">
+          <div className="mt-6 flex flex-wrap gap-2.5">
             <FollowButton targetId={profile.id} username={profile.username} />
             <MessageButton recipientId={profile.id} label={`Message ${profile.display_name}`} />
           </div>
@@ -95,7 +108,7 @@ function BuilderProfile() {
         </div>
       </div>
 
-      <div className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-5">
+      <div className="surface-card mt-8 grid grid-cols-2 overflow-hidden sm:grid-cols-5">
         {[
           ["Rank", row?.rank ? `#${row.rank}` : "—"],
           ["Upvotes received", votes.toLocaleString()],
@@ -103,12 +116,16 @@ function BuilderProfile() {
           ["Followers", (counts?.followers ?? 0).toLocaleString()],
           ["Following", (counts?.following ?? 0).toLocaleString()],
         ].map(([label, value]) => (
-          <div key={label} className="bg-background px-5 py-5">
+          <div
+            key={label}
+            className="border-b border-white/[0.05] px-5 py-6 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0"
+          >
             <div className="text-xl font-semibold tabular-nums">{value}</div>
-            <div className="mt-1 text-[12px] text-muted-foreground">{label}</div>
+            <div className="mt-1.5 text-[12px] text-muted-foreground">{label}</div>
           </div>
         ))}
       </div>
+
 
       <section className="mt-12">
         <h2 className="text-[15px] font-semibold tracking-tight">Achievements</h2>
