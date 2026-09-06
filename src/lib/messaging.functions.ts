@@ -117,8 +117,7 @@ export const sendMessage = createServerFn({ method: "POST" })
 
     // Push notice only — the message text itself stays out of the payload.
     const { sendPushToUser, actorName } = await import("@/lib/push.server");
-    const recipient =
-      conv.data.user_a === context.userId ? conv.data.user_b : conv.data.user_a;
+    const recipient = conv.data.user_a === context.userId ? conv.data.user_b : conv.data.user_a;
     await sendPushToUser(recipient, {
       kind: "message_received",
       actorName: await actorName(context.supabase as never, context.userId),

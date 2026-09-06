@@ -17,10 +17,7 @@ import {
   isPushSupported,
 } from "@/lib/push-notifications";
 import { getPushPublicKey } from "@/lib/push-config.functions";
-import {
-  removePushSubscription,
-  savePushSubscription,
-} from "@/lib/push-subscriptions.functions";
+import { removePushSubscription, savePushSubscription } from "@/lib/push-subscriptions.functions";
 
 const LABELS: Record<string, string> = {
   message_received: "sent you a message",
@@ -64,7 +61,9 @@ export function NotificationBell() {
     try {
       if (isPushSupported()) {
         setPushPermission(Notification.permission);
-        void hasPushSubscription().then(setPushOn).catch(() => setPushOn(false));
+        void hasPushSubscription()
+          .then(setPushOn)
+          .catch(() => setPushOn(false));
       }
     } catch {
       // Some embedded/preview contexts expose serviceWorker + PushManager
