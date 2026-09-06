@@ -77,7 +77,7 @@ export function ProjectCard({ project, rank }: { project: ProjectStats; rank?: n
       <p className="mt-1.5 line-clamp-2 text-[13px] leading-relaxed text-on-dark-muted">{project.tagline}</p>
 
 
-      <div className="mt-3.5 flex flex-wrap gap-1.5">
+      <div className="mt-3.5 flex flex-wrap gap-1.5 pb-5">
         <span className="glass-pill border-neon/25 bg-neon-dim/20 px-2.5 py-1 font-mono text-[10px] text-neon">
           {normalizeCategory(project.category)}
         </span>
@@ -94,7 +94,7 @@ export function ProjectCard({ project, rank }: { project: ProjectStats; rank?: n
         ))}
       </div>
 
-      <div className="mt-5 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-t border-white/[0.05] pt-3.5">
+      <div className="mt-auto grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-t border-white/[0.05] pt-3.5">
         <div className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[11px] text-on-dark-muted">
 
           {project.demo_url ? (
