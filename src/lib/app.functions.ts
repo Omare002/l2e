@@ -59,7 +59,12 @@ export const saveProfile = createServerFn({ method: "POST" })
     }
 
     if (current.avatar_url && current.avatar_url !== updated.avatar_url) {
-      await removeStoredImage(context.supabase as never, "avatars", current.avatar_url, context.userId);
+      await removeStoredImage(
+        context.supabase as never,
+        "avatars",
+        current.avatar_url,
+        context.userId,
+      );
     }
     return updated;
   });
@@ -263,7 +268,12 @@ export const addComment = createServerFn({ method: "POST" })
 
     const { data: created, error } = await context.supabase
       .from("comments")
-      .insert({ project_id: data.projectId, body: data.body, kind: data.kind, author_id: context.userId })
+      .insert({
+        project_id: data.projectId,
+        body: data.body,
+        kind: data.kind,
+        author_id: context.userId,
+      })
       .select("*")
       .single();
     if (error) {
