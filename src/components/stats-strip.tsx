@@ -1,10 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
 import { communityStatsQuery } from "@/lib/db";
 import { CountUp } from "./count-up";
+import { LoadFailure } from "./skeleton-block";
 
 export function StatsStrip() {
-  const { data, isLoading } = useQuery(communityStatsQuery());
+  const { data, isLoading, isError, refetch } = useQuery(communityStatsQuery());
   const stats = data ?? [];
+
+  if (isError) {
+    return (
+      <div className="rounded-lg border border-border">
+        <LoadFailure message="Community stats are unavailable right now." onRetry={() => refetch()} />
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-3 lg:grid-cols-5">

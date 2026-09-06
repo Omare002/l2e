@@ -7,6 +7,7 @@ import { ProjectCard } from "@/components/project-card";
 import { SectionHeading } from "@/components/section-heading";
 import { ActivityFeed } from "@/components/activity-feed";
 import { TypingHeadline } from "@/components/typing-headline";
+import { LoadFailure } from "@/components/skeleton-block";
 import { projectsQuery } from "@/lib/db";
 
 export const Route = createFileRoute("/")({
@@ -33,7 +34,7 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const [tab, setTab] = useState<"Trending" | "Newest">("Trending");
-  const { data, isLoading } = useQuery(projectsQuery(tab, "All", 4));
+  const { data, isLoading, isError, refetch } = useQuery(projectsQuery(tab, "All", 4));
   const list = data ?? [];
 
   return (
@@ -116,6 +117,10 @@ function Index() {
             {Array.from({ length: 2 }).map((_, i) => (
               <div key={i} className="h-64 animate-pulse rounded-lg bg-muted" />
             ))}
+          </div>
+        ) : isError ? (
+          <div className="rounded-lg border border-border">
+            <LoadFailure message="Projects couldn't load just now." onRetry={() => refetch()} />
           </div>
         ) : list.length === 0 ? (
           <div className="rounded-lg border border-border px-5 py-10 text-center text-[13px] text-muted-foreground">
