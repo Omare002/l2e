@@ -273,13 +273,13 @@
 /* Layer 2: the card surface. Translucent tone + a light 12px blur so cards
  * float above the ambient background instead of sitting flat on it. */
 @utility surface-card {
-  background-color: color-mix(in oklab, var(--surface-dark) 76%, transparent);
-  backdrop-filter: blur(12px) saturate(120%);
-  border: 1px solid oklch(1 0 0 / 7%);
+  background-color: color-mix(in oklab, var(--surface-dark) 88%, transparent);
+  backdrop-filter: blur(var(--glass-blur)) saturate(115%);
+  border: 1px solid var(--glass-border);
   border-radius: calc(var(--radius) + 6px);
   box-shadow:
-    0 1px 0 0 oklch(1 0 0 / 4%) inset,
-    0 18px 40px -28px oklch(0 0 0 / 65%);
+    0 1px 0 0 rgb(255 255 255 / 3%) inset,
+    0 12px 28px -20px rgb(0 0 0 / 45%);
   transition:
     border-color 200ms var(--ease-out-soft),
     background-color 200ms var(--ease-out-soft),
@@ -290,19 +290,20 @@
 /* Layer 1: a wider, quieter glass section that groups content (profile
  * headers, hero panels). Less contrast than a card on purpose. */
 @utility glass-panel {
-  background-color: oklch(1 0 0 / 3.5%);
-  backdrop-filter: blur(12px) saturate(120%);
-  border: 1px solid oklch(1 0 0 / 6%);
+  background-color: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur)) saturate(115%);
+  border: 1px solid var(--glass-border);
   border-radius: calc(var(--radius) + 14px);
-  box-shadow: 0 24px 60px -40px oklch(0 0 0 / 70%);
+  box-shadow: 0 16px 40px -32px rgb(0 0 0 / 50%);
 }
 
 /* Layer 4: small floating controls and badges. */
 @utility glass-pill {
-  background-color: oklch(1 0 0 / 6%);
-  backdrop-filter: blur(12px) saturate(120%);
-  border: 1px solid oklch(1 0 0 / 8%);
+  background-color: var(--glass-bg-strong);
+  backdrop-filter: blur(var(--glass-blur)) saturate(115%);
+  border: 1px solid var(--glass-border);
   border-radius: 999px;
+  box-shadow: 0 6px 18px -12px rgb(0 0 0 / 45%);
 }
 
 /* Layer 3: project imagery, lifted a touch above its own card. */
