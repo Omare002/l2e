@@ -223,6 +223,18 @@ export const submitQuestProject = createServerFn({ method: "POST" })
         .eq("owner_id", context.userId)
         .maybeSingle();
       if (!owns.data) throw new Error("You can only enter your own project");
+
+      // One project counts once per quest: two people can never race the same entry.
+      const taken = await context.supabase
+        .from("quest_participants")
+        .select("user_id")
+        .eq("quest_id", data.questId)
+        .eq("project_id", data.projectId)
+        .neq("user_id", context.userId)
+        .maybeSingle();
+      if (taken.data) {
+        throw new Error("That project is already entered in this quest by another builder");
+      }
     }
 
     const { error } = await context.supabase

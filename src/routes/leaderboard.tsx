@@ -8,6 +8,7 @@ import { useRace } from "@/hooks/use-race";
 import { useAuth } from "@/hooks/use-auth";
 import { UserAvatar } from "@/components/user-avatar";
 import { MessageButton } from "@/components/messages/message-button";
+import { QuestBoard } from "@/components/quest-board";
 
 export const Route = createFileRoute("/leaderboard")({
   head: () => ({
@@ -131,6 +132,8 @@ function LeaderboardPage() {
           </div>
         ) : null}
       </div>
+
+      <QuestBoard />
 
       <div className="mt-14 sm:mt-16">
         <SectionHeading

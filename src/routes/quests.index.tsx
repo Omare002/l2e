@@ -113,6 +113,23 @@ function QuestsIndex() {
       ) : null}
 
       <section className="mt-12">
+        <h2 className="text-[13px] font-medium">How a quest is won</h2>
+        <ul className="mt-4 grid gap-2.5 text-[13px] leading-relaxed text-muted-foreground">
+          <li>Only upvotes landing between the quest start and its deadline count.</li>
+          <li>You cannot upvote your own project — self-votes are refused everywhere on the site.</li>
+          <li>One upvote per person per project, so nobody can stack votes.</li>
+          <li>
+            A project can only be entered by its owner, and only once per quest — two builders can
+            never race the same entry.
+          </li>
+          <li>
+            At the deadline the highest upvote count wins and is stored permanently. Lifetime
+            project likes are never reset.
+          </li>
+        </ul>
+      </section>
+
+      <section className="mt-12">
         <h2 className="text-[13px] font-medium">Live quests</h2>
         {quests.isLoading ? (
           <SkeletonLines rows={3} />
