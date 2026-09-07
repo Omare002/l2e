@@ -7,11 +7,13 @@ import { toast } from "sonner";
 import { LoadFailure, SkeletonLines } from "@/components/skeleton-block";
 import { UserAvatar } from "@/components/user-avatar";
 import { useAuth } from "@/hooks/use-auth";
-import { createQuest, getInvitableBuilders } from "@/lib/quests.functions";
+import { createQuest, getInvitableBuilders, respondToQuest } from "@/lib/quests.functions";
 import {
   QUEST_KIND_LABEL,
   type QuestListRow,
   type QuestKind,
+  isOpenQuest,
+  questAccessLabel,
   questKeys,
   questsQuery,
   timeLeft,
@@ -164,18 +166,36 @@ function QuestsIndex() {
 
 function QuestCard({ quest }: { quest: QuestListRow }) {
   const accepted = (quest.participants ?? []).filter((p) => p.status === "accepted").length;
+  const { isAuthenticated } = useAuth();
+  const queryClient = useQueryClient();
+  const runRespond = useServerFn(respondToQuest);
+  const openToAll = isOpenQuest(quest);
+  const live = !quest.closed_at && new Date(quest.ends_at) > new Date();
+
+  const join = useMutation({
+    mutationFn: () => runRespond({ data: { questId: quest.id, action: "join" } }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: questKeys.all });
+      toast.success("You're in — pick your entry on the quest page");
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Could not enter this quest"),
+  });
 
   return (
-    <Link
-      to="/quests/$id"
-      params={{ id: quest.id }}
-      className="surface-card lift-hover block p-5 sm:p-6"
-    >
-      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
+    <div className="surface-card lift-hover p-5 sm:p-6">
+      <Link to="/quests/$id" params={{ id: quest.id }} className="block">
+      <div className="flex flex-wrap items-center gap-2">
         <span className="glass-pill min-w-0 truncate px-2.5 py-1 font-mono text-[10px] text-on-dark-muted">
           {QUEST_KIND_LABEL[quest.kind as QuestKind] ?? "Quest"}
         </span>
-        <span className="shrink-0 font-mono text-[10px] text-on-dark-muted">
+        <span
+          className={`glass-pill shrink-0 px-2.5 py-1 font-mono text-[10px] ${
+            openToAll ? "border-neon/35 text-neon" : "text-on-dark-muted"
+          }`}
+        >
+          {questAccessLabel(quest)}
+        </span>
+        <span className="ml-auto shrink-0 font-mono text-[10px] text-on-dark-muted">
           {timeLeft(quest.ends_at)}
         </span>
       </div>
@@ -198,7 +218,33 @@ function QuestCard({ quest }: { quest: QuestListRow }) {
           </span>
         ) : null}
       </div>
-    </Link>
+      </Link>
+      {live ? (
+        <div className="mt-4">
+          {!isAuthenticated ? (
+            <Link
+              to="/auth"
+              className="flex min-h-10 items-center justify-center rounded-full border border-border px-4 text-[12px] text-on-dark-muted transition-colors duration-200 hover:border-neon hover:text-neon"
+            >
+              Sign in to enter
+            </Link>
+          ) : openToAll ? (
+            <button
+              type="button"
+              disabled={join.isPending}
+              onClick={() => join.mutate()}
+              className="flex min-h-10 w-full items-center justify-center rounded-full bg-foreground px-4 text-[12px] font-medium text-background transition-colors duration-200 hover:bg-foreground/90 disabled:opacity-60 sm:w-auto"
+            >
+              {join.isPending ? "Entering…" : "Enter quest"}
+            </button>
+          ) : (
+            <span className="font-mono text-[11px] text-on-dark-muted">
+              Private — invitation only
+            </span>
+          )}
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -220,6 +266,7 @@ function QuestForm({
   const [kind, setKind] = useState<QuestKind>("shared_task");
   const [term, setTerm] = useState("");
   const [invite, setInvite] = useState<string[]>([]);
+  const [visibility, setVisibility] = useState<"public" | "private">("public");
   const [endsAt, setEndsAt] = useState(() => new Date(defaultEndsAt).toISOString().slice(0, 16));
 
   const people = useQuery({
@@ -235,6 +282,7 @@ function QuestForm({
           title,
           description,
           kind,
+          visibility,
           taskId: kind === "shared_task" ? defaultTaskId : null,
           endsAt: new Date(endsAt).toISOString(),
           invite,
@@ -312,6 +360,32 @@ function QuestForm({
             className="min-h-12 rounded-lg border border-border bg-transparent px-4 text-[14px] outline-none focus-visible:border-neon"
           />
         </div>
+      </div>
+
+      <div className="grid gap-2">
+        <span className="text-[12px] text-muted-foreground">Who can enter</span>
+        <div className="flex flex-wrap gap-2">
+          {([
+            ["public", "Open — anyone can enter"],
+            ["private", "Private — invite only"],
+          ] as const).map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setVisibility(value)}
+              className={`glass-pill px-3 py-1.5 font-mono text-[11px] transition-colors duration-200 ${
+                visibility === value ? "border-neon/45 text-neon" : "text-muted-foreground"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <p className="text-[12px] text-muted-foreground">
+          {visibility === "public"
+            ? "Listed publicly and any signed-in builder can enter."
+            : "Only the builders you invite can enter."}
+        </p>
       </div>
 
       <div className="grid gap-2">
