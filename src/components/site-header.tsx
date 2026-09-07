@@ -95,12 +95,12 @@ export function SiteHeader() {
           )}
         </Link>
 
-        <nav className="hidden items-center gap-6 md:flex">
+        <nav className="hidden items-center gap-5 lg:flex">
           {NAV.map((item) => (
             <Link
               key={item.to}
               to={item.to}
-              className="relative whitespace-nowrap py-1 text-[14px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
+              className="relative whitespace-nowrap py-1 text-[13.5px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
               activeProps={{
                 className:
                   "text-foreground after:absolute after:inset-x-0 after:-bottom-[9px] after:h-px after:bg-neon",
@@ -112,7 +112,7 @@ export function SiteHeader() {
           {isAuthenticated ? (
             <Link
               to="/messages"
-              className="relative whitespace-nowrap py-1 text-[14px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
+              className="relative whitespace-nowrap py-1 text-[13.5px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
               activeProps={{
                 className:
                   "text-foreground after:absolute after:inset-x-0 after:-bottom-[9px] after:h-px after:bg-neon",
