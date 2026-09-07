@@ -132,27 +132,66 @@ export function SiteHeader() {
 
         <nav className="hidden items-center gap-4 xl:flex">
           {NAV.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              className="relative whitespace-nowrap py-1 text-[13.5px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
-              activeProps={{
-                className:
-                  "text-foreground after:absolute after:inset-x-0 after:-bottom-[9px] after:h-px after:bg-neon",
-              }}
-            >
+            <Link key={item.to} to={item.to} className={LINK} activeProps={LINK_ACTIVE}>
               {item.label}
             </Link>
           ))}
-          {isAuthenticated ? (
-            <Link
-              to="/messages"
-              className="relative whitespace-nowrap py-1 text-[13.5px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
-              activeProps={{
-                className:
-                  "text-foreground after:absolute after:inset-x-0 after:-bottom-[9px] after:h-px after:bg-neon",
-              }}
+
+          <div ref={communityRef} className="relative">
+            <button
+              type="button"
+              onClick={() => setCommunity((c) => !c)}
+              aria-expanded={community}
+              aria-haspopup="menu"
+              className={cn(
+                LINK,
+                "flex items-center gap-1",
+                COMMUNITY.some((c) => pathname.startsWith(c.to)) && "text-foreground",
+              )}
             >
+              Community
+              <ChevronDown
+                className={cn(
+                  "size-3.5 transition-transform duration-200",
+                  community && "rotate-180",
+                )}
+              />
+            </button>
+            <AnimatePresence initial={false}>
+              {community ? (
+                <motion.div
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  transition={{ duration: 0.18, ease: EASE }}
+                  role="menu"
+                  className="glass-panel absolute left-0 top-[calc(100%+14px)] z-50 w-48 overflow-hidden p-1.5"
+                >
+                  {COMMUNITY.map((item) => (
+                    <Link
+                      key={item.to}
+                      to={item.to}
+                      role="menuitem"
+                      onClick={() => setCommunity(false)}
+                      className="block rounded-lg px-3 py-2 text-[13px] text-foreground/75 transition-colors duration-200 hover:bg-muted/60 hover:text-foreground"
+                      activeProps={{ className: "text-foreground bg-muted/50" }}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </motion.div>
+              ) : null}
+            </AnimatePresence>
+          </div>
+
+          {NAV_TAIL.map((item) => (
+            <Link key={item.to} to={item.to} className={LINK} activeProps={LINK_ACTIVE}>
+              {item.label}
+            </Link>
+          ))}
+
+          {isAuthenticated ? (
+            <Link to="/messages" className={LINK} activeProps={LINK_ACTIVE}>
               Messages
               {unreadThreads > 0 ? (
                 <span className="absolute -right-3 top-0 size-1.5 rounded-full bg-neon" />
@@ -160,6 +199,7 @@ export function SiteHeader() {
             </Link>
           ) : null}
         </nav>
+
 
         <div className="flex shrink-0 items-center gap-2">
           <ThemeToggle />
