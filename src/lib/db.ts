@@ -30,6 +30,7 @@ type AuthorLite = Pick<ProfileRow, "username" | "display_name" | "avatar_url" | 
 export type DiscussionWithAuthor = DiscussionRow & {
   author: AuthorLite | null;
   reply_count?: number;
+  quest_title?: string | null;
 };
 
 export type ReplyWithAuthor = DiscussionReplyRow & { author: AuthorLite | null };

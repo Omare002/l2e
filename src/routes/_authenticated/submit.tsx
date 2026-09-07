@@ -5,6 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { CATEGORIES, STATUSES } from "@/data/community";
 import { saveProject } from "@/lib/app.functions";
+import { submitQuestProject } from "@/lib/quests.functions";
 import { myProjectsQuery } from "@/lib/db";
 import { projectInputSchema } from "@/lib/validation";
 import { uploadImage } from "@/lib/upload";
@@ -12,8 +13,10 @@ import { useStoredImage } from "@/lib/media";
 import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/_authenticated/submit")({
-  validateSearch: (search: Record<string, unknown>): { id?: string } =>
-    typeof search.id === "string" ? { id: search.id } : {},
+  validateSearch: (search: Record<string, unknown>): { id?: string; quest?: string } => ({
+    ...(typeof search.id === "string" ? { id: search.id } : {}),
+    ...(typeof search.quest === "string" ? { quest: search.quest } : {}),
+  }),
   head: () => ({
     meta: [
       { title: "Submit a project — Leaderboard" },
@@ -64,11 +67,12 @@ const EMPTY: FormState = {
 };
 
 function SubmitPage() {
-  const { id } = Route.useSearch();
+  const { id, quest } = Route.useSearch();
   const { userId } = useAuth();
   const router = useRouter();
   const queryClient = useQueryClient();
   const run = useServerFn(saveProject);
+  const runQuestEntry = useServerFn(submitQuestProject);
 
   const { data: mine } = useQuery({
     ...myProjectsQuery(userId ?? ""),
@@ -101,11 +105,28 @@ function SubmitPage() {
 
   const mutation = useMutation({
     mutationFn: (input: unknown) => run({ data: input as never }),
-    onSuccess: (project) => {
+    onSuccess: async (project) => {
       queryClient.invalidateQueries({ queryKey: ["my-projects"] });
       queryClient.invalidateQueries({ queryKey: ["projects"] });
       queryClient.invalidateQueries({ queryKey: ["activity"] });
       toast.success(id ? "Project updated" : "Project published");
+
+      const projectId = (project as { id?: string } | null)?.id;
+      if (quest && projectId) {
+        try {
+          await runQuestEntry({ data: { questId: quest, projectId } });
+          queryClient.invalidateQueries({ queryKey: ["my-quests"] });
+          queryClient.invalidateQueries({ queryKey: ["quest", quest] });
+          toast.success("Project submitted to the quest");
+        } catch (error) {
+          toast.error(
+            error instanceof Error ? error.message : "Saved, but could not enter the quest",
+          );
+        }
+        router.navigate({ to: "/quests/$id", params: { id: quest } });
+        return;
+      }
+
       const slug = (project as { slug?: string } | null)?.slug;
       if (slug && form.published) router.navigate({ to: "/projects/$slug", params: { slug } });
       else router.navigate({ to: "/dashboard" });
@@ -158,6 +179,11 @@ function SubmitPage() {
       <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
         {id ? "Edit project" : "Submit a project"}
       </h1>
+      {quest && !id ? (
+        <p className="mt-3 text-[13px] text-neon">
+          This project will be entered into your quest as soon as you publish it.
+        </p>
+      ) : null}
       <p className="mt-3 max-w-xl text-[14px] leading-relaxed text-muted-foreground">
         Tell the community what you built. Clear beats clever — one honest sentence goes further
         than a wall of adjectives.
