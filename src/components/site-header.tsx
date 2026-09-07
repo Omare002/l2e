@@ -70,7 +70,7 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/[0.05] bg-navbar/60 backdrop-blur-xl backdrop-saturate-150">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 2xl:max-w-[1400px]">
         <Link
           to="/"
           className="group flex shrink-0 items-center pr-2 sm:pr-3"
@@ -90,12 +90,12 @@ export function SiteHeader() {
               width={1266}
               height={210}
               onError={() => setLogoError(true)}
-              className="h-7 w-auto transition-opacity duration-200 group-hover:opacity-80 lg:h-8 dark:invert"
+              className="h-7 w-auto transition-opacity duration-200 group-hover:opacity-80 dark:invert"
             />
           )}
         </Link>
 
-        <nav className="hidden items-center gap-5 lg:flex">
+        <nav className="hidden items-center gap-4 xl:flex">
           {NAV.map((item) => (
             <Link
               key={item.to}
@@ -131,7 +131,10 @@ export function SiteHeader() {
           <NotificationBell />
           <Link
             to="/submit"
-            className="glass-pill hidden px-3.5 py-2 text-[13px] font-medium transition-colors duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-neon/40 hover:text-neon xl:inline-flex"
+            className={cn(
+              "glass-pill hidden px-3.5 py-2 text-[13px] font-medium transition-colors duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-neon/40 hover:text-neon",
+              isAuthenticated ? "2xl:inline-flex" : "xl:inline-flex",
+            )}
           >
             Submit project
           </Link>
