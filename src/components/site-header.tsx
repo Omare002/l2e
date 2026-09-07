@@ -90,7 +90,7 @@ export function SiteHeader() {
               width={1266}
               height={210}
               onError={() => setLogoError(true)}
-              className="h-7 w-auto transition-opacity duration-200 group-hover:opacity-80 sm:h-9 dark:invert"
+              className="h-7 w-auto transition-opacity duration-200 group-hover:opacity-80 lg:h-8 dark:invert"
             />
           )}
         </Link>
@@ -131,7 +131,7 @@ export function SiteHeader() {
           <NotificationBell />
           <Link
             to="/submit"
-            className="glass-pill hidden px-4 py-2 text-[13px] font-medium transition-colors duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-neon/40 hover:text-neon sm:inline-flex"
+            className="glass-pill hidden px-3.5 py-2 text-[13px] font-medium transition-colors duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-neon/40 hover:text-neon xl:inline-flex"
           >
             Submit project
           </Link>
