@@ -214,8 +214,12 @@ function Dashboard() {
                 >
                   {p.title}
                 </Link>
-                <span className="glass-pill shrink-0 px-2.5 py-0.5 font-mono text-[10px] text-on-dark-muted">
-                  {p.published ? "Published" : "Draft"}
+                <span
+                  className={`glass-pill shrink-0 px-2.5 py-0.5 font-mono text-[10px] ${
+                    p.published ? "border-neon/35 text-neon" : "text-on-dark-muted"
+                  }`}
+                >
+                  {p.published ? "Public" : "Private"}
                 </span>
               </div>
               <p className="mt-2 line-clamp-2 text-[13px] leading-relaxed text-muted-foreground">
@@ -225,7 +229,7 @@ function Dashboard() {
                 <span>{(p.vote_count ?? 0).toLocaleString()} upvotes</span>
                 <span>{p.comment_count ?? 0} comments</span>
               </div>
-              <div className="mt-4 flex gap-2">
+              <div className="mt-4 flex flex-wrap gap-2">
                 <Link
                   to="/submit"
                   search={{ id: p.id ?? undefined }}
@@ -235,12 +239,28 @@ function Dashboard() {
                 </Link>
                 <button
                   type="button"
-                  onClick={() => removeMutation.mutate(p.id!)}
+                  disabled={visibilityMutation.isPending}
+                  onClick={() =>
+                    visibilityMutation.mutate({ id: p.id!, published: !p.published })
+                  }
+                  className="flex min-h-10 items-center rounded-full border border-border px-4 text-[12px] transition-colors duration-200 hover:border-neon disabled:opacity-60"
+                >
+                  {p.published ? "Make private" : "Make public"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setConfirmDelete({ id: p.id!, title: p.title ?? "this project" })}
                   className="flex min-h-10 items-center rounded-full border border-border px-4 text-[12px] text-muted-foreground transition-colors duration-200 hover:border-destructive hover:text-destructive"
                 >
                   Delete
                 </button>
               </div>
+              {!p.published ? (
+                <p className="mt-3 text-[12px] text-muted-foreground">
+                  Hidden from the showcase, search and the leaderboard. Your upvotes are kept.
+                </p>
+              ) : null}
+
             </div>
           ))}
           {mine.length === 0 ? (
