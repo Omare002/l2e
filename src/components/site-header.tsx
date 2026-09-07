@@ -11,6 +11,7 @@ import { UserAvatar } from "@/components/user-avatar";
 import { NotificationBell } from "@/components/messages/notification-bell";
 import { conversationsQuery } from "@/lib/messaging";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { cn } from "@/lib/utils";
 
 const NAV = [
   { to: "/projects", label: "Projects" },
@@ -70,7 +71,7 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/[0.05] bg-navbar/60 backdrop-blur-xl backdrop-saturate-150">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 2xl:max-w-[1400px]">
         <Link
           to="/"
           className="group flex shrink-0 items-center pr-2 sm:pr-3"
@@ -90,17 +91,17 @@ export function SiteHeader() {
               width={1266}
               height={210}
               onError={() => setLogoError(true)}
-              className="h-7 w-auto transition-opacity duration-200 group-hover:opacity-80 sm:h-9 dark:invert"
+              className="h-7 w-auto transition-opacity duration-200 group-hover:opacity-80 dark:invert"
             />
           )}
         </Link>
 
-        <nav className="hidden items-center gap-6 md:flex">
+        <nav className="hidden items-center gap-4 xl:flex">
           {NAV.map((item) => (
             <Link
               key={item.to}
               to={item.to}
-              className="relative whitespace-nowrap py-1 text-[14px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
+              className="relative whitespace-nowrap py-1 text-[13.5px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
               activeProps={{
                 className:
                   "text-foreground after:absolute after:inset-x-0 after:-bottom-[9px] after:h-px after:bg-neon",
@@ -112,7 +113,7 @@ export function SiteHeader() {
           {isAuthenticated ? (
             <Link
               to="/messages"
-              className="relative whitespace-nowrap py-1 text-[14px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
+              className="relative whitespace-nowrap py-1 text-[13.5px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
               activeProps={{
                 className:
                   "text-foreground after:absolute after:inset-x-0 after:-bottom-[9px] after:h-px after:bg-neon",
@@ -131,7 +132,10 @@ export function SiteHeader() {
           <NotificationBell />
           <Link
             to="/submit"
-            className="glass-pill hidden px-4 py-2 text-[13px] font-medium transition-colors duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-neon/40 hover:text-neon sm:inline-flex"
+            className={cn(
+              "glass-pill hidden px-3.5 py-2 text-[13px] font-medium transition-colors duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-neon/40 hover:text-neon",
+              isAuthenticated ? "2xl:inline-flex" : "xl:inline-flex",
+            )}
           >
             Submit project
           </Link>
@@ -140,17 +144,17 @@ export function SiteHeader() {
           {isAuthenticated ? (
             <Link
               to="/dashboard"
-              className="hidden items-center gap-2.5 rounded-full border border-transparent py-1 pl-1 pr-3 text-[13px] transition-colors duration-200 hover:border-border md:inline-flex"
+              className="hidden items-center gap-2.5 rounded-full border border-transparent py-1 pl-1 pr-3 text-[13px] transition-colors duration-200 hover:border-border xl:inline-flex"
             >
               {monogram}
-              <span className="max-w-[9rem] truncate">
+              <span className="max-w-[7rem] truncate">
                 {profile?.display_name ?? "Dashboard"}
               </span>
             </Link>
           ) : (
             <Link
               to="/auth"
-              className="hidden rounded-full bg-foreground px-4 py-2 text-[13px] font-medium text-background transition-colors duration-200 hover:bg-foreground/90 md:inline-flex"
+              className="hidden rounded-full bg-foreground px-4 py-2 text-[13px] font-medium text-background transition-colors duration-200 hover:bg-foreground/90 xl:inline-flex"
             >
               Sign in
             </Link>
@@ -161,7 +165,7 @@ export function SiteHeader() {
             onClick={() => setOpen((o) => !o)}
             aria-expanded={open}
             aria-label={open ? "Close menu" : "Open menu"}
-            className="flex size-11 items-center justify-center rounded-full border border-border text-foreground transition-colors duration-200 hover:border-neon md:hidden"
+            className="flex size-11 items-center justify-center rounded-full border border-border text-foreground transition-colors duration-200 hover:border-neon xl:hidden"
           >
             {open ? <X className="size-4" /> : <Menu className="size-4" />}
           </button>
@@ -176,7 +180,7 @@ export function SiteHeader() {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.24, ease: EASE }}
-            className="overflow-hidden border-t border-border bg-navbar md:hidden"
+            className="overflow-hidden border-t border-border bg-navbar xl:hidden"
           >
             <nav className="mx-auto flex max-w-6xl flex-col px-4 py-2 sm:px-6">
               {NAV.map((item) => (
