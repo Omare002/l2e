@@ -19,6 +19,7 @@ import {
   questCreatorQuery,
   questKeys,
   questQuery,
+  questSubmissionsQuery,
   sinceLabel,
   timeLeft,
 } from "@/lib/quests";
@@ -52,6 +53,9 @@ function QuestDetailPage() {
   const mine = useQuery({ ...myProjectsQuery(userId ?? ""), enabled: Boolean(userId) });
   const entry = useQuery(myQuestEntryQuery(id, userId));
   const creator = useQuery(questCreatorQuery(id, userId));
+  const submissions = useQuery(
+    questSubmissionsQuery(id, Boolean(creator.data?.isCreator)),
+  );
 
   const runRespond = useServerFn(respondToQuest);
   const runSubmit = useServerFn(submitQuestProject);
@@ -67,6 +71,8 @@ function QuestDetailPage() {
     queryClient.invalidateQueries({ queryKey: questKeys.one(id) });
     queryClient.invalidateQueries({ queryKey: questKeys.all });
     queryClient.invalidateQueries({ queryKey: questKeys.entry(id, userId ?? "anon") });
+    queryClient.invalidateQueries({ queryKey: questKeys.mine(userId ?? "anon") });
+    queryClient.invalidateQueries({ queryKey: questKeys.submissions(id) });
   };
 
   const respond = useMutation({
@@ -97,7 +103,7 @@ function QuestDetailPage() {
     mutationFn: (projectId: string) => runSubmit({ data: { questId: id, projectId } }),
     onSuccess: () => {
       refresh();
-      toast.success("Project entered");
+      toast.success("Project submitted");
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : "Could not enter your project"),
   });
@@ -248,24 +254,59 @@ function QuestDetailPage() {
           </div>
         ) : null}
 
-        {isAuthenticated && me && me.status === "accepted" && !finished ? (
-          <div className="mt-6 grid gap-2">
-            <label className="text-[12px] text-muted-foreground" htmlFor="quest-project">
-              Your entry
-            </label>
-            <select
-              id="quest-project"
-              value={me.project_id ?? ""}
-              onChange={(e) => e.target.value && enter.mutate(e.target.value)}
-              className="min-h-11 w-full max-w-sm rounded-lg border border-border bg-transparent px-3 text-[13px] outline-none focus-visible:border-neon"
-            >
-              <option value="">Choose a project…</option>
-              {(mine.data ?? []).map((p) => (
-                <option key={p.id ?? p.title} value={p.id ?? ""}>
-                  {p.title}
-                </option>
-              ))}
-            </select>
+        {isAuthenticated && me && me.status === "accepted" ? (
+          <div className="mt-6 border-t border-border pt-6">
+            <div className="text-[13px] font-medium">Your submission</div>
+            {me.project_id ? (
+              <p className="mt-2 text-[13px] text-muted-foreground">
+                Entered
+                {me.submitted_at
+                  ? ` on ${new Date(me.submitted_at).toLocaleDateString(undefined, {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}`
+                  : ""}
+                .
+              </p>
+            ) : (
+              <p className="mt-2 text-[13px] text-muted-foreground">
+                No project submitted yet.
+              </p>
+            )}
+
+            {finished ? (
+              <p className="mt-3 font-mono text-[11px] text-muted-foreground">
+                Submissions are locked — the deadline has passed.
+              </p>
+            ) : (
+              <div className="mt-3 grid gap-2.5 sm:grid-cols-[minmax(0,22rem)_auto] sm:items-center">
+                <select
+                  id="quest-project"
+                  aria-label="Submit a project"
+                  value={me.project_id ?? ""}
+                  disabled={enter.isPending}
+                  onChange={(e) => e.target.value && enter.mutate(e.target.value)}
+                  className="min-h-11 w-full rounded-lg border border-border bg-transparent px-3 text-[13px] outline-none focus-visible:border-neon"
+                >
+                  <option value="">
+                    {me.project_id ? "Change your entry…" : "Submit an existing project…"}
+                  </option>
+                  {(mine.data ?? []).map((p) => (
+                    <option key={p.id ?? p.title} value={p.id ?? ""}>
+                      {p.title}
+                    </option>
+                  ))}
+                </select>
+                <Link
+                  to="/submit"
+                  search={{ quest: id }}
+                  className="glass-pill inline-flex min-h-11 items-center justify-center px-4 text-[12px] transition-colors duration-200 hover:text-neon"
+                >
+                  New project for this quest
+                </Link>
+              </div>
+            )}
           </div>
         ) : null}
       </div>
@@ -343,6 +384,57 @@ function QuestDetailPage() {
           </ol>
         )}
 
+
+        {creator.data?.isCreator ? (
+          <div className="mt-8">
+            <h3 className="text-[12px] text-muted-foreground">
+              Submissions <span className="text-muted-foreground/70">· creator view</span>
+            </h3>
+            {submissions.isLoading ? (
+              <SkeletonLines rows={2} className="mt-3 p-4" />
+            ) : (submissions.data ?? []).length === 0 ? (
+              <p className="mt-3 text-[13px] text-muted-foreground">No participants yet.</p>
+            ) : (
+              <ul className="surface-card mt-3 divide-y divide-white/[0.05]">
+                {(submissions.data ?? []).map((sub) => (
+                  <li
+                    key={sub.member?.username ?? sub.joined_at}
+                    className="flex flex-wrap items-center justify-between gap-3 px-4 py-3.5 sm:px-5"
+                  >
+                    <span className="min-w-0 text-[13px] text-on-dark">
+                      {sub.member?.display_name ?? "Builder"}
+                      <span className="ml-2 font-mono text-[10px] text-on-dark-muted">
+                        {sub.status}
+                      </span>
+                    </span>
+                    <span className="min-w-0 text-right font-mono text-[11px] text-on-dark-muted">
+                      {sub.project ? (
+                        <>
+                          <Link
+                            to="/projects/$slug"
+                            params={{ slug: sub.project.slug }}
+                            className="text-on-dark hover:text-neon"
+                          >
+                            {sub.project.title}
+                          </Link>
+                          {sub.project.published ? "" : " · draft"}
+                          {sub.submitted_at
+                            ? ` · ${new Date(sub.submitted_at).toLocaleDateString(undefined, {
+                                month: "short",
+                                day: "numeric",
+                              })}`
+                            : ""}
+                        </>
+                      ) : (
+                        "no submission"
+                      )}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        ) : null}
 
         {invited.length > 0 ? (
           <div className="mt-6">
