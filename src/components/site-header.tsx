@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useRouter, useRouterState } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "motion/react";
-import { LogOut, Menu, X } from "lucide-react";
+import { ChevronDown, LogOut, Menu, X } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -17,15 +17,28 @@ const NAV = [
   { to: "/projects", label: "Projects" },
   { to: "/leaderboard", label: "Leaderboard" },
   { to: "/quests", label: "Quests" },
-  { to: "/community", label: "Community" },
+] as const;
+
+const COMMUNITY = [
+  { to: "/community", label: "Community Feed" },
   { to: "/builders", label: "Builders" },
   { to: "/forum", label: "Forums" },
+] as const;
 
+const NAV_TAIL = [
   { to: "/hall-of-fame", label: "Hall of Fame" },
   { to: "/how-it-works", label: "How it works" },
 ] as const;
 
+const LINK =
+  "relative whitespace-nowrap py-1 text-[13.5px] text-foreground/70 transition-colors duration-200 hover:text-foreground";
+const LINK_ACTIVE = {
+  className:
+    "text-foreground after:absolute after:inset-x-0 after:-bottom-[9px] after:h-px after:bg-neon",
+};
+
 const EASE = [0.22, 1, 0.36, 1] as const;
+
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
