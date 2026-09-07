@@ -9,7 +9,7 @@ import { QuestHistory } from "@/components/quest-history";
 import { AvatarPicker } from "@/components/avatar-picker";
 import { UserAvatar } from "@/components/user-avatar";
 import { earnedAchievements } from "@/data/community";
-import { deleteProject, saveProfile } from "@/lib/app.functions";
+import { deleteProject, saveProfile, setProjectVisibility } from "@/lib/app.functions";
 import {
   commentsWrittenQuery,
   leaderboardQuery,
@@ -85,6 +85,8 @@ function Dashboard() {
 
   const runSaveProfile = useServerFn(saveProfile);
   const runDelete = useServerFn(deleteProject);
+  const runVisibility = useServerFn(setProjectVisibility);
+  const [confirmDelete, setConfirmDelete] = useState<{ id: string; title: string } | null>(null);
 
   const [form, setForm] = useState({
     username: "",
@@ -123,11 +125,30 @@ function Dashboard() {
     onError: (e) => toast.error(e instanceof Error ? e.message : "Could not save your profile"),
   });
 
+  const visibilityMutation = useMutation({
+    mutationFn: (input: { id: string; published: boolean }) =>
+      runVisibility({ data: input as never }),
+    onSuccess: (r) => {
+      queryClient.invalidateQueries({ queryKey: ["my-projects"] });
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+      queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
+      toast.success(
+        (r as { published?: boolean })?.published
+          ? "Project is public again"
+          : "Project is private now",
+      );
+    },
+    onError: (e) =>
+      toast.error(e instanceof Error ? e.message : "Could not change this project's visibility"),
+  });
+
   const removeMutation = useMutation({
     mutationFn: (projectId: string) => runDelete({ data: { id: projectId } as never }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["my-projects"] });
       queryClient.invalidateQueries({ queryKey: ["projects"] });
+      queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
+      setConfirmDelete(null);
       toast.success("Project deleted");
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : "Could not delete this project"),
@@ -214,8 +235,12 @@ function Dashboard() {
                 >
                   {p.title}
                 </Link>
-                <span className="glass-pill shrink-0 px-2.5 py-0.5 font-mono text-[10px] text-on-dark-muted">
-                  {p.published ? "Published" : "Draft"}
+                <span
+                  className={`glass-pill shrink-0 px-2.5 py-0.5 font-mono text-[10px] ${
+                    p.published ? "border-neon/35 text-neon" : "text-on-dark-muted"
+                  }`}
+                >
+                  {p.published ? "Public" : "Private"}
                 </span>
               </div>
               <p className="mt-2 line-clamp-2 text-[13px] leading-relaxed text-muted-foreground">
@@ -225,7 +250,7 @@ function Dashboard() {
                 <span>{(p.vote_count ?? 0).toLocaleString()} upvotes</span>
                 <span>{p.comment_count ?? 0} comments</span>
               </div>
-              <div className="mt-4 flex gap-2">
+              <div className="mt-4 flex flex-wrap gap-2">
                 <Link
                   to="/submit"
                   search={{ id: p.id ?? undefined }}
@@ -235,12 +260,28 @@ function Dashboard() {
                 </Link>
                 <button
                   type="button"
-                  onClick={() => removeMutation.mutate(p.id!)}
+                  disabled={visibilityMutation.isPending}
+                  onClick={() =>
+                    visibilityMutation.mutate({ id: p.id!, published: !p.published })
+                  }
+                  className="flex min-h-10 items-center rounded-full border border-border px-4 text-[12px] transition-colors duration-200 hover:border-neon disabled:opacity-60"
+                >
+                  {p.published ? "Make private" : "Make public"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setConfirmDelete({ id: p.id!, title: p.title ?? "this project" })}
                   className="flex min-h-10 items-center rounded-full border border-border px-4 text-[12px] text-muted-foreground transition-colors duration-200 hover:border-destructive hover:text-destructive"
                 >
                   Delete
                 </button>
               </div>
+              {!p.published ? (
+                <p className="mt-3 text-[12px] text-muted-foreground">
+                  Hidden from the showcase, search and the leaderboard. Your upvotes are kept.
+                </p>
+              ) : null}
+
             </div>
           ))}
           {mine.length === 0 ? (
@@ -272,6 +313,44 @@ function Dashboard() {
           )}
         </ol>
       </section>
+
+      {confirmDelete ? (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Confirm project deletion"
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+          onClick={() => setConfirmDelete(null)}
+        >
+          <div
+            className="glass-panel w-full max-w-sm p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-[15px] font-semibold tracking-tight">Delete this project?</h3>
+            <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
+              “{confirmDelete.title}” and its comments and upvotes will be removed for good. This
+              cannot be undone — make it private instead if you only want to hide it.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-2">
+              <button
+                type="button"
+                disabled={removeMutation.isPending}
+                onClick={() => removeMutation.mutate(confirmDelete.id)}
+                className="min-h-11 rounded-full bg-destructive px-5 text-[13px] font-medium text-destructive-foreground transition-opacity duration-200 hover:opacity-90 disabled:opacity-60"
+              >
+                {removeMutation.isPending ? "Deleting…" : "Delete permanently"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setConfirmDelete(null)}
+                className="min-h-11 rounded-full border border-border px-5 text-[13px] transition-colors duration-200 hover:border-neon"
+              >
+                Keep it
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       <QuestHistory />
 

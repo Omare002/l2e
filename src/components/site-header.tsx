@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useRouter, useRouterState } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "motion/react";
-import { LogOut, Menu, X } from "lucide-react";
+import { ChevronDown, LogOut, Menu, X } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -17,19 +17,35 @@ const NAV = [
   { to: "/projects", label: "Projects" },
   { to: "/leaderboard", label: "Leaderboard" },
   { to: "/quests", label: "Quests" },
-  { to: "/community", label: "Community" },
+] as const;
+
+const COMMUNITY = [
+  { to: "/community", label: "Community Feed" },
   { to: "/builders", label: "Builders" },
   { to: "/forum", label: "Forums" },
+] as const;
 
+const NAV_TAIL = [
   { to: "/hall-of-fame", label: "Hall of Fame" },
   { to: "/how-it-works", label: "How it works" },
 ] as const;
 
+const LINK =
+  "relative whitespace-nowrap py-1 text-[13.5px] text-foreground/70 transition-colors duration-200 hover:text-foreground";
+const LINK_ACTIVE = {
+  className:
+    "text-foreground after:absolute after:inset-x-0 after:-bottom-[9px] after:h-px after:bg-neon",
+};
+
 const EASE = [0.22, 1, 0.36, 1] as const;
+
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const [community, setCommunity] = useState(false);
+  const communityRef = useRef<HTMLDivElement>(null);
   const [logoError, setLogoError] = useState(false);
+
   const { userId, isAuthenticated } = useAuth();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -49,7 +65,25 @@ export function SiteHeader() {
 
   useEffect(() => {
     setOpen(false);
+    setCommunity(false);
   }, [pathname]);
+
+  useEffect(() => {
+    if (!community) return;
+    function onDown(e: MouseEvent) {
+      if (!communityRef.current?.contains(e.target as Node)) setCommunity(false);
+    }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setCommunity(false);
+    }
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [community]);
+
 
   async function signOut() {
     setOpen(false);
@@ -98,27 +132,66 @@ export function SiteHeader() {
 
         <nav className="hidden items-center gap-4 xl:flex">
           {NAV.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              className="relative whitespace-nowrap py-1 text-[13.5px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
-              activeProps={{
-                className:
-                  "text-foreground after:absolute after:inset-x-0 after:-bottom-[9px] after:h-px after:bg-neon",
-              }}
-            >
+            <Link key={item.to} to={item.to} className={LINK} activeProps={LINK_ACTIVE}>
               {item.label}
             </Link>
           ))}
-          {isAuthenticated ? (
-            <Link
-              to="/messages"
-              className="relative whitespace-nowrap py-1 text-[13.5px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
-              activeProps={{
-                className:
-                  "text-foreground after:absolute after:inset-x-0 after:-bottom-[9px] after:h-px after:bg-neon",
-              }}
+
+          <div ref={communityRef} className="relative">
+            <button
+              type="button"
+              onClick={() => setCommunity((c) => !c)}
+              aria-expanded={community}
+              aria-haspopup="menu"
+              className={cn(
+                LINK,
+                "flex items-center gap-1",
+                COMMUNITY.some((c) => pathname.startsWith(c.to)) && "text-foreground",
+              )}
             >
+              Community
+              <ChevronDown
+                className={cn(
+                  "size-3.5 transition-transform duration-200",
+                  community && "rotate-180",
+                )}
+              />
+            </button>
+            <AnimatePresence initial={false}>
+              {community ? (
+                <motion.div
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  transition={{ duration: 0.18, ease: EASE }}
+                  role="menu"
+                  className="glass-panel absolute left-0 top-[calc(100%+14px)] z-50 w-48 overflow-hidden p-1.5"
+                >
+                  {COMMUNITY.map((item) => (
+                    <Link
+                      key={item.to}
+                      to={item.to}
+                      role="menuitem"
+                      onClick={() => setCommunity(false)}
+                      className="block rounded-lg px-3 py-2 text-[13px] text-foreground/75 transition-colors duration-200 hover:bg-muted/60 hover:text-foreground"
+                      activeProps={{ className: "text-foreground bg-muted/50" }}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </motion.div>
+              ) : null}
+            </AnimatePresence>
+          </div>
+
+          {NAV_TAIL.map((item) => (
+            <Link key={item.to} to={item.to} className={LINK} activeProps={LINK_ACTIVE}>
+              {item.label}
+            </Link>
+          ))}
+
+          {isAuthenticated ? (
+            <Link to="/messages" className={LINK} activeProps={LINK_ACTIVE}>
               Messages
               {unreadThreads > 0 ? (
                 <span className="absolute -right-3 top-0 size-1.5 rounded-full bg-neon" />
@@ -126,6 +199,7 @@ export function SiteHeader() {
             </Link>
           ) : null}
         </nav>
+
 
         <div className="flex shrink-0 items-center gap-2">
           <ThemeToggle />
@@ -193,6 +267,32 @@ export function SiteHeader() {
                   {item.label}
                 </Link>
               ))}
+              <div className="border-b border-border/70 py-2">
+                <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+                  Community
+                </div>
+                {COMMUNITY.map((item) => (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    className="flex min-h-11 items-center text-[14px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
+                    activeProps={{ className: "text-foreground" }}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+              {NAV_TAIL.map((item) => (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className="flex min-h-12 items-center border-b border-border/70 text-[14px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
+                  activeProps={{ className: "text-foreground" }}
+                >
+                  {item.label}
+                </Link>
+              ))}
+
               <Link
                 to="/submit"
                 className="flex min-h-12 items-center border-b border-border/70 text-[14px] text-foreground/70 transition-colors duration-200 hover:text-foreground"

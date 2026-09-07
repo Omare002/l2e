@@ -32,6 +32,7 @@ const createSchema = z.object({
   kind: z.enum(QUEST_KINDS).default("group"),
   taskId: z.string().uuid().nullable().optional(),
   endsAt: z.string().datetime(),
+  visibility: z.enum(["public", "private"]).default("public"),
   invite: z.array(z.string().uuid()).max(20).default([]),
 });
 
@@ -62,7 +63,7 @@ export const getPublicQuests = createServerFn({ method: "GET" }).handler(async (
   const res = await db
     .from("quests")
     .select(
-      "id, title, description, kind, starts_at, ends_at, closed_at, winner_votes, creator:profiles!quests_creator_id_fkey(username, display_name, avatar_url, accent_color), winner:profiles!quests_winner_id_fkey(username, display_name), task:weekly_tasks(title), participants:quest_participants(status)",
+      "id, title, description, kind, visibility, starts_at, ends_at, closed_at, winner_votes, creator:profiles!quests_creator_id_fkey(username, display_name, avatar_url, accent_color), winner:profiles!quests_winner_id_fkey(username, display_name), task:weekly_tasks(title), participants:quest_participants(status)",
     )
     .order("created_at", { ascending: false })
     .limit(60);
@@ -86,7 +87,7 @@ export const getPublicQuest = createServerFn({ method: "GET" })
     const quest = await db
       .from("quests")
       .select(
-        "id, title, description, kind, starts_at, ends_at, closed_at, winner_votes, creator:profiles!quests_creator_id_fkey(username, display_name, avatar_url, accent_color), winner:profiles!quests_winner_id_fkey(username, display_name), task:weekly_tasks(title, prompt)",
+        "id, title, description, kind, visibility, starts_at, ends_at, closed_at, winner_votes, creator:profiles!quests_creator_id_fkey(username, display_name, avatar_url, accent_color), winner:profiles!quests_winner_id_fkey(username, display_name), task:weekly_tasks(title, prompt)",
       )
       .eq("id", data.questId)
       .maybeSingle();
@@ -165,7 +166,7 @@ export const getMyQuestHistory = createServerFn({ method: "GET" })
     const quests = await context.supabase
       .from("quests")
       .select(
-        "id, title, kind, starts_at, ends_at, closed_at, winner_votes, winner:profiles!quests_winner_id_fkey(username, display_name), task:weekly_tasks(title), participants:quest_participants(status)",
+        "id, title, kind, visibility, starts_at, ends_at, closed_at, winner_votes, winner:profiles!quests_winner_id_fkey(username, display_name), task:weekly_tasks(title), participants:quest_participants(status)",
       )
       .in("id", ids)
       .order("ends_at", { ascending: false });
@@ -188,7 +189,7 @@ export const getMyQuests = createServerFn({ method: "GET" })
     const res = await context.supabase
       .from("quest_participants")
       .select(
-        "id, status, project_id, quest:quests(id, title, kind, ends_at, closed_at, winner_id, creator_id)",
+        "id, status, project_id, quest:quests(id, title, kind, visibility, ends_at, closed_at, winner_id, creator_id)",
       )
       .eq("user_id", context.userId)
       .order("created_at", { ascending: false });
@@ -216,6 +217,7 @@ export const createQuest = createServerFn({ method: "POST" })
         title: data.title,
         description: data.description,
         kind: data.kind,
+        visibility: data.visibility,
         task_id: data.taskId ?? null,
         ends_at: ends.toISOString(),
       })
@@ -270,6 +272,14 @@ export const respondToQuest = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const status = data.action === "decline" ? "declined" : "accepted";
+
+    const quest = await context.supabase
+      .from("quests")
+      .select("id, kind, visibility, closed_at, creator_id")
+      .eq("id", data.questId)
+      .maybeSingle();
+    if (!quest.data) throw new Error("That quest no longer exists");
+
     const existing = await context.supabase
       .from("quest_participants")
       .select("id")
@@ -287,6 +297,14 @@ export const respondToQuest = createServerFn({ method: "POST" })
         throw new Error("Could not update your answer");
       }
     } else {
+      // No invitation on file: only open quests can be entered directly.
+      const open =
+        !quest.data.closed_at &&
+        quest.data.visibility === "public" &&
+        (quest.data.kind === "group" || quest.data.kind === "shared_task");
+      if (!open && quest.data.creator_id !== context.userId) {
+        throw new Error("This quest is invite only — ask the creator for an invitation");
+      }
       const { error } = await context.supabase
         .from("quest_participants")
         .insert({ quest_id: data.questId, user_id: context.userId, status });
@@ -473,4 +491,40 @@ export const deleteQuestMessage = createServerFn({ method: "POST" })
       throw new Error("Could not delete this message");
     }
     return { ok: true };
+  });
+
+/** Creator-only: switch a quest between Open (anyone can enter) and Private. */
+export const setQuestVisibility = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    idSchema.extend({ visibility: z.enum(["public", "private"]) }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { data: updated, error } = await context.supabase
+      .from("quests")
+      .update({ visibility: data.visibility, updated_at: new Date().toISOString() })
+      .eq("id", data.questId)
+      .eq("creator_id", context.userId)
+      .select("id, visibility")
+      .maybeSingle();
+    if (error) {
+      console.error("[setQuestVisibility]", error.message);
+      throw new Error("Could not update who can enter this quest");
+    }
+    if (!updated) throw new Error("Only the quest creator can change this");
+    return updated;
+  });
+
+/** Is the signed-in member the creator of this quest? */
+export const amIQuestCreator = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => idSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    const res = await context.supabase
+      .from("quests")
+      .select("id")
+      .eq("id", data.questId)
+      .eq("creator_id", context.userId)
+      .maybeSingle();
+    return { isCreator: Boolean(res.data) };
   });

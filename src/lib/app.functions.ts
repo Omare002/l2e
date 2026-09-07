@@ -205,6 +205,33 @@ export const deleteProject = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+/**
+ * Owner-only visibility switch. Private projects stay out of every public feed,
+ * search result and leaderboard because those read `published = true` only.
+ * Likes and comments are untouched.
+ */
+export const setProjectVisibility = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { id: string; published: boolean }) => {
+    if (!input?.id) throw new Error("Missing project");
+    return { id: input.id, published: Boolean(input.published) };
+  })
+  .handler(async ({ data, context }) => {
+    const { data: updated, error } = await context.supabase
+      .from("projects")
+      .update({ published: data.published, updated_at: new Date().toISOString() })
+      .eq("id", data.id)
+      .eq("owner_id", context.userId)
+      .select("id, published")
+      .maybeSingle();
+    if (error) {
+      console.error("[setProjectVisibility]", error.message);
+      throw new Error("Could not change this project's visibility");
+    }
+    if (!updated) throw new Error("You can only change your own projects");
+    return updated;
+  });
+
 export const toggleVote = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { projectId: string }) => {
