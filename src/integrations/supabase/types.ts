@@ -1204,6 +1204,7 @@ export type Database = {
           task_id: string | null
           title: string
           updated_at: string
+          visibility: string
           winner_id: string | null
           winner_votes: number | null
         }
@@ -1219,6 +1220,7 @@ export type Database = {
           task_id?: string | null
           title: string
           updated_at?: string
+          visibility?: string
           winner_id?: string | null
           winner_votes?: number | null
         }
@@ -1234,6 +1236,7 @@ export type Database = {
           task_id?: string | null
           title?: string
           updated_at?: string
+          visibility?: string
           winner_id?: string | null
           winner_votes?: number | null
         }
