@@ -6,6 +6,7 @@ import {
   getPublicQuest,
   getPublicQuests,
   getQuestMessages,
+  getQuestSubmissions,
   getWeeklyTasks,
   amIQuestCreator,
 } from "@/lib/quests.functions";
@@ -61,7 +62,45 @@ export type QuestMessage = {
   mine: boolean;
 };
 
-export type QuestEntry = { status: string; project_id: string | null } | null;
+export type QuestEntry = {
+  status: string;
+  project_id: string | null;
+  submitted_at: string | null;
+} | null;
+
+export type MyQuestRow = {
+  id: string;
+  status: string;
+  project_id: string | null;
+  submitted_at: string | null;
+  project: { title: string; slug: string; published: boolean } | null;
+  quest: {
+    id: string;
+    title: string;
+    description: string;
+    kind: string;
+    visibility: string;
+    starts_at: string;
+    ends_at: string;
+    closed_at: string | null;
+    winner_id: string | null;
+    creator_id: string;
+    task: { title: string; prompt: string } | null;
+  } | null;
+};
+
+export type QuestSubmission = {
+  status: string;
+  submitted_at: string | null;
+  joined_at: string;
+  member: {
+    username: string;
+    display_name: string;
+    avatar_url: string | null;
+    accent_color: string;
+  } | null;
+  project: { title: string; slug: string; published: boolean } | null;
+};
 
 export type QuestHistoryRow = {
   id: string;
@@ -77,6 +116,7 @@ export type QuestHistoryRow = {
   participants: { status: string }[] | null;
   my_status: string;
   submitted: boolean;
+  submitted_at: string | null;
 };
 
 export type QuestDetail = {
@@ -96,6 +136,7 @@ export const questKeys = {
   tasks: ["weekly-tasks"] as const,
   chat: (questId: string) => ["quest-chat", questId] as const,
   owner: (questId: string, userId: string) => ["quest-owner", questId, userId] as const,
+  submissions: (questId: string) => ["quest-submissions", questId] as const,
 };
 
 export function isOpenQuest(quest: { kind: string; visibility?: string; closed_at?: string | null }) {
@@ -150,7 +191,7 @@ export function myQuestsQuery(userId: string | null) {
   return queryOptions({
     queryKey: questKeys.mine(userId ?? "anon"),
     enabled: Boolean(userId),
-    queryFn: () => getMyQuests(),
+    queryFn: async () => (await getMyQuests()) as unknown as MyQuestRow[],
     staleTime: 5_000,
   });
 }
@@ -161,6 +202,16 @@ export function myQuestHistoryQuery(userId: string | null) {
     enabled: Boolean(userId),
     queryFn: async () => (await getMyQuestHistory()) as unknown as QuestHistoryRow[],
     staleTime: 10_000,
+  });
+}
+
+export function questSubmissionsQuery(questId: string, enabled: boolean) {
+  return queryOptions({
+    queryKey: questKeys.submissions(questId),
+    enabled,
+    queryFn: async () =>
+      (await getQuestSubmissions({ data: { questId } })) as unknown as QuestSubmission[],
+    staleTime: 5_000,
   });
 }
 
