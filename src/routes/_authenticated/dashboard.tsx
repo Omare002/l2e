@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { AchievementTiles } from "@/components/achievement-tiles";
+import { ActiveQuests } from "@/components/active-quests";
 import { QuestHistory } from "@/components/quest-history";
 import { AvatarPicker } from "@/components/avatar-picker";
 import { UserAvatar } from "@/components/user-avatar";
@@ -352,6 +353,7 @@ function Dashboard() {
         </div>
       ) : null}
 
+      <ActiveQuests />
       <QuestHistory />
 
       <section className="mt-14 sm:mt-16">

@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CalendarClock, Trophy, Users } from "lucide-react";
 import { toast } from "sonner";
+import { CommunityFeed } from "@/components/community-feed";
 import { SectionHeading } from "@/components/section-heading";
 import { SkeletonLines } from "@/components/skeleton-block";
 import { UserAvatar } from "@/components/user-avatar";
@@ -83,6 +84,7 @@ function CommunityPage() {
       </header>
 
       <div className="mt-12 grid gap-10 lg:grid-cols-[1fr_320px] lg:gap-12">
+        <div className="space-y-12">
         {/* Active quests with inline join */}
         <section aria-label="Active quests">
           <SectionHeading
@@ -163,6 +165,9 @@ function CommunityPage() {
             </ul>
           )}
         </section>
+
+        <CommunityFeed />
+        </div>
 
         <div className="space-y-10">
           {/* Upcoming deadlines */}
