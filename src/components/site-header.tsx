@@ -147,7 +147,7 @@ export function SiteHeader() {
               className="hidden items-center gap-2.5 rounded-full border border-transparent py-1 pl-1 pr-3 text-[13px] transition-colors duration-200 hover:border-border xl:inline-flex"
             >
               {monogram}
-              <span className="max-w-[9rem] truncate">
+              <span className="max-w-[7rem] truncate">
                 {profile?.display_name ?? "Dashboard"}
               </span>
             </Link>
