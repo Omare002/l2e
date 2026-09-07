@@ -267,6 +267,32 @@ export function SiteHeader() {
                   {item.label}
                 </Link>
               ))}
+              <div className="border-b border-border/70 py-2">
+                <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+                  Community
+                </div>
+                {COMMUNITY.map((item) => (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    className="flex min-h-11 items-center text-[14px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
+                    activeProps={{ className: "text-foreground" }}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+              {NAV_TAIL.map((item) => (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className="flex min-h-12 items-center border-b border-border/70 text-[14px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
+                  activeProps={{ className: "text-foreground" }}
+                >
+                  {item.label}
+                </Link>
+              ))}
+
               <Link
                 to="/submit"
                 className="flex min-h-12 items-center border-b border-border/70 text-[14px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
