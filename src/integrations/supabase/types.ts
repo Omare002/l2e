@@ -452,6 +452,7 @@ export type Database = {
           id: string
           last_activity_at: string
           pinned: boolean
+          quest_id: string | null
           title: string
           updated_at: string
         }
@@ -463,6 +464,7 @@ export type Database = {
           id?: string
           last_activity_at?: string
           pinned?: boolean
+          quest_id?: string | null
           title: string
           updated_at?: string
         }
@@ -474,6 +476,7 @@ export type Database = {
           id?: string
           last_activity_at?: string
           pinned?: boolean
+          quest_id?: string | null
           title?: string
           updated_at?: string
         }
@@ -497,6 +500,13 @@ export type Database = {
             columns: ["author_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "discussions_quest_id_fkey"
+            columns: ["quest_id"]
+            isOneToOne: false
+            referencedRelation: "quests"
             referencedColumns: ["id"]
           },
         ]
@@ -1102,6 +1112,7 @@ export type Database = {
           project_id: string | null
           quest_id: string
           status: string
+          submitted_at: string | null
           updated_at: string
           user_id: string
         }
@@ -1112,6 +1123,7 @@ export type Database = {
           project_id?: string | null
           quest_id: string
           status?: string
+          submitted_at?: string | null
           updated_at?: string
           user_id: string
         }
@@ -1122,6 +1134,7 @@ export type Database = {
           project_id?: string | null
           quest_id?: string
           status?: string
+          submitted_at?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -1490,11 +1503,21 @@ export type Database = {
           id: string | null
           last_activity_at: string | null
           pinned: boolean | null
+          quest_id: string | null
+          quest_title: string | null
           reply_count: number | null
           title: string | null
           updated_at: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "discussions_quest_id_fkey"
+            columns: ["quest_id"]
+            isOneToOne: false
+            referencedRelation: "quests"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       follow_counts: {
         Row: {
