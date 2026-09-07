@@ -7,6 +7,7 @@ import {
   getPublicQuests,
   getQuestMessages,
   getWeeklyTasks,
+  amIQuestCreator,
 } from "@/lib/quests.functions";
 
 
@@ -23,6 +24,7 @@ export type QuestListRow = {
   title: string;
   description: string;
   kind: string;
+  visibility: string;
   ends_at: string;
   closed_at: string | null;
   winner_votes: number | null;
@@ -65,6 +67,7 @@ export type QuestHistoryRow = {
   id: string;
   title: string;
   kind: string;
+  visibility?: string;
   starts_at: string;
   ends_at: string;
   closed_at: string | null;
@@ -92,7 +95,28 @@ export const questKeys = {
   entry: (questId: string, userId: string) => ["my-quest-entry", questId, userId] as const,
   tasks: ["weekly-tasks"] as const,
   chat: (questId: string) => ["quest-chat", questId] as const,
+  owner: (questId: string, userId: string) => ["quest-owner", questId, userId] as const,
 };
+
+export function isOpenQuest(quest: { kind: string; visibility?: string; closed_at?: string | null }) {
+  return (
+    (quest.visibility ?? "public") === "public" &&
+    (quest.kind === "group" || quest.kind === "shared_task")
+  );
+}
+
+export function questAccessLabel(quest: { kind: string; visibility?: string }) {
+  return isOpenQuest(quest) ? "Open" : "Private";
+}
+
+export function questCreatorQuery(questId: string, userId: string | null) {
+  return queryOptions({
+    queryKey: questKeys.owner(questId, userId ?? "anon"),
+    enabled: Boolean(userId),
+    queryFn: () => amIQuestCreator({ data: { questId } }),
+    staleTime: 30_000,
+  });
+}
 
 export function questsQuery() {
   return queryOptions({
