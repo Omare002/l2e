@@ -137,7 +137,7 @@ export const getMyQuestEntry = createServerFn({ method: "GET" })
   .handler(async ({ data, context }) => {
     const res = await context.supabase
       .from("quest_participants")
-      .select("status, project_id")
+      .select("status, project_id, submitted_at")
       .eq("quest_id", data.questId)
       .eq("user_id", context.userId)
       .maybeSingle();
@@ -154,7 +154,7 @@ export const getMyQuestHistory = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const rows = await context.supabase
       .from("quest_participants")
-      .select("quest_id, status, project_id")
+      .select("quest_id, status, project_id, submitted_at")
       .eq("user_id", context.userId);
     if (rows.error) {
       console.error("[getMyQuestHistory]", rows.error.message);
@@ -179,6 +179,7 @@ export const getMyQuestHistory = createServerFn({ method: "GET" })
       ...q,
       my_status: mine.get(q.id)?.status ?? "invited",
       submitted: Boolean(mine.get(q.id)?.project_id),
+      submitted_at: mine.get(q.id)?.submitted_at ?? null,
     }));
   });
 
@@ -189,7 +190,7 @@ export const getMyQuests = createServerFn({ method: "GET" })
     const res = await context.supabase
       .from("quest_participants")
       .select(
-        "id, status, project_id, quest:quests(id, title, kind, visibility, ends_at, closed_at, winner_id, creator_id)",
+        "id, status, project_id, submitted_at, quest:quests(id, title, description, kind, visibility, starts_at, ends_at, closed_at, winner_id, creator_id, task:weekly_tasks(title, prompt))",
       )
       .eq("user_id", context.userId)
       .order("created_at", { ascending: false });
@@ -197,7 +198,81 @@ export const getMyQuests = createServerFn({ method: "GET" })
       console.error("[getMyQuests]", res.error.message);
       return [];
     }
-    return res.data ?? [];
+    const rows = res.data ?? [];
+
+    // Entered project titles, so "My quests" can show what was submitted.
+    const projectIds = rows.map((r) => r.project_id).filter((v): v is string => Boolean(v));
+    let projects: Record<string, { title: string; slug: string; published: boolean }> = {};
+    if (projectIds.length > 0) {
+      const pr = await context.supabase
+        .from("projects")
+        .select("id, title, slug, published")
+        .in("id", projectIds);
+      if (!pr.error) {
+        projects = Object.fromEntries(
+          (pr.data ?? []).map((p) => [
+            p.id,
+            { title: p.title, slug: p.slug, published: p.published },
+          ]),
+        );
+      }
+    }
+
+    return rows.map((r) => ({
+      ...r,
+      project: r.project_id ? (projects[r.project_id] ?? null) : null,
+    }));
+  });
+
+/**
+ * Every participant's submission for a quest — creator only.
+ * Names and project titles only; no raw account identifiers leave the server.
+ */
+export const getQuestSubmissions = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => idSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    const quest = await context.supabase
+      .from("quests")
+      .select("id, creator_id")
+      .eq("id", data.questId)
+      .maybeSingle();
+    if (!quest.data || quest.data.creator_id !== context.userId) return [];
+
+    const res = await context.supabase
+      .from("quest_participants")
+      .select(
+        "status, submitted_at, created_at, project_id, member:profiles!quest_participants_user_id_fkey(username, display_name, avatar_url, accent_color)",
+      )
+      .eq("quest_id", data.questId);
+    if (res.error) {
+      console.error("[getQuestSubmissions]", res.error.message);
+      return [];
+    }
+    const rows = res.data ?? [];
+    const ids = rows.map((r) => r.project_id).filter((v): v is string => Boolean(v));
+    let projects: Record<string, { title: string; slug: string; published: boolean }> = {};
+    if (ids.length > 0) {
+      const pr = await (await admin())
+        .from("projects")
+        .select("id, title, slug, published")
+        .in("id", ids);
+      if (!pr.error) {
+        projects = Object.fromEntries(
+          (pr.data ?? []).map((p) => [
+            p.id,
+            { title: p.title, slug: p.slug, published: p.published },
+          ]),
+        );
+      }
+    }
+    return rows.map((r) => ({
+      status: r.status,
+      submitted_at: r.submitted_at,
+      joined_at: r.created_at,
+      member: r.member,
+      project: r.project_id ? (projects[r.project_id] ?? null) : null,
+    }));
   });
 
 /** Create a quest; the creator joins automatically and invitees are notified. */
@@ -323,6 +398,24 @@ export const submitQuestProject = createServerFn({ method: "POST" })
     idSchema.extend({ projectId: z.string().uuid().nullable() }).parse(input),
   )
   .handler(async ({ data, context }) => {
+    const quest = await context.supabase
+      .from("quests")
+      .select("id, ends_at, closed_at")
+      .eq("id", data.questId)
+      .maybeSingle();
+    if (!quest.data) throw new Error("That quest no longer exists");
+    if (quest.data.closed_at || new Date(quest.data.ends_at) <= new Date()) {
+      throw new Error("Submissions are locked — this quest deadline has passed");
+    }
+
+    const membership = await context.supabase
+      .from("quest_participants")
+      .select("id, status")
+      .eq("quest_id", data.questId)
+      .eq("user_id", context.userId)
+      .maybeSingle();
+    if (!membership.data) throw new Error("Enter the quest before submitting a project");
+
     if (data.projectId) {
       const owns = await context.supabase
         .from("projects")
@@ -347,14 +440,22 @@ export const submitQuestProject = createServerFn({ method: "POST" })
 
     const { error } = await context.supabase
       .from("quest_participants")
-      .update({ project_id: data.projectId, status: "accepted" })
+      .update({
+        project_id: data.projectId,
+        status: "accepted",
+        submitted_at: data.projectId ? new Date().toISOString() : null,
+      })
       .eq("quest_id", data.questId)
       .eq("user_id", context.userId);
     if (error) {
       console.error("[submitQuestProject]", error.message);
-      throw new Error("Could not enter your project");
+      throw new Error(
+        error.message.includes("locked")
+          ? "Submissions are locked — this quest deadline has passed"
+          : "Could not enter your project",
+      );
     }
-    return { ok: true };
+    return { ok: true, submittedAt: data.projectId ? new Date().toISOString() : null };
   });
 
 type Ctx = { supabase: unknown; userId: string };
