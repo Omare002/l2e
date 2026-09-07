@@ -65,7 +65,25 @@ export function SiteHeader() {
 
   useEffect(() => {
     setOpen(false);
+    setCommunity(false);
   }, [pathname]);
+
+  useEffect(() => {
+    if (!community) return;
+    function onDown(e: MouseEvent) {
+      if (!communityRef.current?.contains(e.target as Node)) setCommunity(false);
+    }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setCommunity(false);
+    }
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [community]);
+
 
   async function signOut() {
     setOpen(false);
