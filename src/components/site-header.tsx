@@ -140,7 +140,7 @@ export function SiteHeader() {
           {isAuthenticated ? (
             <Link
               to="/dashboard"
-              className="hidden items-center gap-2.5 rounded-full border border-transparent py-1 pl-1 pr-3 text-[13px] transition-colors duration-200 hover:border-border md:inline-flex"
+              className="hidden items-center gap-2.5 rounded-full border border-transparent py-1 pl-1 pr-3 text-[13px] transition-colors duration-200 hover:border-border lg:inline-flex"
             >
               {monogram}
               <span className="max-w-[9rem] truncate">
@@ -150,7 +150,7 @@ export function SiteHeader() {
           ) : (
             <Link
               to="/auth"
-              className="hidden rounded-full bg-foreground px-4 py-2 text-[13px] font-medium text-background transition-colors duration-200 hover:bg-foreground/90 md:inline-flex"
+              className="hidden rounded-full bg-foreground px-4 py-2 text-[13px] font-medium text-background transition-colors duration-200 hover:bg-foreground/90 lg:inline-flex"
             >
               Sign in
             </Link>
@@ -161,7 +161,7 @@ export function SiteHeader() {
             onClick={() => setOpen((o) => !o)}
             aria-expanded={open}
             aria-label={open ? "Close menu" : "Open menu"}
-            className="flex size-11 items-center justify-center rounded-full border border-border text-foreground transition-colors duration-200 hover:border-neon md:hidden"
+            className="flex size-11 items-center justify-center rounded-full border border-border text-foreground transition-colors duration-200 hover:border-neon lg:hidden"
           >
             {open ? <X className="size-4" /> : <Menu className="size-4" />}
           </button>
@@ -176,7 +176,7 @@ export function SiteHeader() {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.24, ease: EASE }}
-            className="overflow-hidden border-t border-border bg-navbar md:hidden"
+            className="overflow-hidden border-t border-border bg-navbar lg:hidden"
           >
             <nav className="mx-auto flex max-w-6xl flex-col px-4 py-2 sm:px-6">
               {NAV.map((item) => (
