@@ -59,6 +59,7 @@ export const DISCUSSION_CATEGORIES = [
   "Show & Tell",
   "Ideas",
   "Resources",
+  "Updates",
 ] as const;
 
 export const discussionInputSchema = z.object({
@@ -68,6 +69,7 @@ export const discussionInputSchema = z.object({
   category: z
     .enum(DISCUSSION_CATEGORIES as unknown as [string, ...string[]])
     .default("General"),
+  questId: z.string().uuid().nullable().optional(),
 });
 
 export const replyInputSchema = z.object({

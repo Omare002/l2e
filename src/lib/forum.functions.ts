@@ -17,7 +17,12 @@ export const saveDiscussion = createServerFn({ method: "POST" })
     if (data.id) {
       const { data: updated, error } = await context.supabase
         .from("discussions")
-        .update({ title: data.title, body: data.body, category: data.category })
+        .update({
+          title: data.title,
+          body: data.body,
+          category: data.category,
+          quest_id: data.questId ?? null,
+        })
         .eq("id", data.id)
         .eq("author_id", context.userId)
         .select("*")
@@ -35,6 +40,7 @@ export const saveDiscussion = createServerFn({ method: "POST" })
         title: data.title,
         body: data.body,
         category: data.category,
+        quest_id: data.questId ?? null,
         author_id: context.userId,
       })
       .select("*")
