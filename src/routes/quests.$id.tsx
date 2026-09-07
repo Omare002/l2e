@@ -9,11 +9,14 @@ import { LoadFailure, SkeletonLines } from "@/components/skeleton-block";
 import { UserAvatar } from "@/components/user-avatar";
 import { useAuth } from "@/hooks/use-auth";
 import { myProjectsQuery } from "@/lib/db";
-import { respondToQuest, submitQuestProject } from "@/lib/quests.functions";
+import { respondToQuest, setQuestVisibility, submitQuestProject } from "@/lib/quests.functions";
 import {
   QUEST_KIND_LABEL,
   type QuestKind,
+  isOpenQuest,
   myQuestEntryQuery,
+  questAccessLabel,
+  questCreatorQuery,
   questKeys,
   questQuery,
   sinceLabel,
@@ -48,9 +51,11 @@ function QuestDetailPage() {
   const detail = useQuery(questQuery(id));
   const mine = useQuery({ ...myProjectsQuery(userId ?? ""), enabled: Boolean(userId) });
   const entry = useQuery(myQuestEntryQuery(id, userId));
+  const creator = useQuery(questCreatorQuery(id, userId));
 
   const runRespond = useServerFn(respondToQuest);
   const runSubmit = useServerFn(submitQuestProject);
+  const runVisibility = useServerFn(setQuestVisibility);
 
   const [, tick] = useState(0);
   useEffect(() => {
@@ -72,6 +77,20 @@ function QuestDetailPage() {
       toast.success(r.status === "declined" ? "Invitation declined" : "You're in");
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : "Could not update your answer"),
+  });
+
+  const visibility = useMutation({
+    mutationFn: (next: "public" | "private") =>
+      runVisibility({ data: { questId: id, visibility: next } }),
+    onSuccess: (r) => {
+      refresh();
+      toast.success(
+        (r as { visibility?: string })?.visibility === "private"
+          ? "Quest is private — invited builders only"
+          : "Quest is open — anyone can enter",
+      );
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Could not update this quest"),
   });
 
   const enter = useMutation({
@@ -114,6 +133,13 @@ function QuestDetailPage() {
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
           <span className="glass-pill px-2.5 py-1 font-mono text-[10px] text-muted-foreground">
             {QUEST_KIND_LABEL[quest.kind as QuestKind] ?? "Quest"}
+          </span>
+          <span
+            className={`glass-pill px-2.5 py-1 font-mono text-[10px] ${
+              isOpenQuest(quest) ? "border-neon/35 text-neon" : "text-muted-foreground"
+            }`}
+          >
+            {questAccessLabel(quest)}
           </span>
           <span className="font-mono text-[11px] text-muted-foreground">
             {finished ? "Finished" : timeLeft(quest.ends_at)}
@@ -161,17 +187,20 @@ function QuestDetailPage() {
         {isAuthenticated && !finished ? (
           <div className="mt-6 flex flex-wrap gap-2.5">
             {!me ? (
-              quest.kind === "challenge" ? (
+              !isOpenQuest(quest) ? (
                 <p className="text-[13px] text-muted-foreground">
-                  This is a direct challenge — you need an invitation to join.
+                  {quest.kind === "challenge"
+                    ? "This is a direct challenge — you need an invitation to enter."
+                    : "This quest is private — only builders the creator invites can enter."}
                 </p>
               ) : (
                 <button
                   type="button"
+                  disabled={respond.isPending}
                   onClick={() => respond.mutate("join")}
-                  className="min-h-11 w-full rounded-full bg-foreground px-5 text-[13px] font-medium text-background transition-colors duration-200 hover:bg-foreground/90 sm:w-auto"
+                  className="min-h-11 w-full rounded-full bg-foreground px-5 text-[13px] font-medium text-background transition-colors duration-200 hover:bg-foreground/90 disabled:opacity-60 sm:w-auto"
                 >
-                  Join quest
+                  {respond.isPending ? "Entering…" : "Enter quest"}
                 </button>
               )
             ) : me.status === "invited" ? (
@@ -200,6 +229,22 @@ function QuestDetailPage() {
                 Change your mind — join
               </button>
             ) : null}
+          </div>
+        ) : null}
+
+        {creator.data?.isCreator && !finished ? (
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            <span className="text-[12px] text-muted-foreground">Who can enter</span>
+            <button
+              type="button"
+              disabled={visibility.isPending}
+              onClick={() =>
+                visibility.mutate(quest.visibility === "private" ? "public" : "private")
+              }
+              className="glass-pill min-h-10 px-4 text-[12px] transition-colors duration-200 hover:text-neon disabled:opacity-60"
+            >
+              {quest.visibility === "private" ? "Make it open to everyone" : "Make it private"}
+            </button>
           </div>
         ) : null}
 
