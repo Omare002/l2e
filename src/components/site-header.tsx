@@ -42,7 +42,10 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const [community, setCommunity] = useState(false);
+  const communityRef = useRef<HTMLDivElement>(null);
   const [logoError, setLogoError] = useState(false);
+
   const { userId, isAuthenticated } = useAuth();
   const router = useRouter();
   const queryClient = useQueryClient();
