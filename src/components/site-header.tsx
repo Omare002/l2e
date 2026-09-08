@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useRouter, useRouterState } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "motion/react";
-import { ChevronDown, LogOut, Menu, X } from "lucide-react";
+import { ChevronDown, LogOut, Menu, MessageCircle, X } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -190,14 +190,6 @@ export function SiteHeader() {
             </Link>
           ))}
 
-          {isAuthenticated ? (
-            <Link to="/messages" className={LINK} activeProps={LINK_ACTIVE}>
-              Messages
-              {unreadThreads > 0 ? (
-                <span className="absolute -right-3 top-0 size-1.5 rounded-full bg-neon" />
-              ) : null}
-            </Link>
-          ) : null}
         </nav>
 
 
