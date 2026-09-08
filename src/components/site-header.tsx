@@ -195,6 +195,20 @@ export function SiteHeader() {
 
         <div className="flex shrink-0 items-center gap-2">
           <ThemeToggle />
+          {isAuthenticated ? (
+            <Link
+              to="/messages"
+              aria-label={unreadThreads > 0 ? `Messages, ${unreadThreads} unread` : "Messages"}
+              className="relative flex size-10 items-center justify-center rounded-full border border-transparent text-muted-foreground transition-colors duration-200 hover:border-border hover:text-foreground"
+            >
+              <MessageCircle className="size-4" />
+              {unreadThreads > 0 ? (
+                <span className="absolute -right-0.5 -top-0.5 flex min-w-4 items-center justify-center rounded-full bg-neon px-1 font-mono text-[9px] font-semibold leading-4 text-ink">
+                  {unreadThreads > 99 ? "99+" : unreadThreads}
+                </span>
+              ) : null}
+            </Link>
+          ) : null}
           <NotificationBell />
           <Link
             to="/submit"
