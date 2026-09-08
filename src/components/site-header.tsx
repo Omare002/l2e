@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useRouter, useRouterState } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "motion/react";
-import { ChevronDown, LogOut, Menu, X } from "lucide-react";
+import { ChevronDown, LogOut, Menu, MessageCircle, X } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -190,19 +190,25 @@ export function SiteHeader() {
             </Link>
           ))}
 
-          {isAuthenticated ? (
-            <Link to="/messages" className={LINK} activeProps={LINK_ACTIVE}>
-              Messages
-              {unreadThreads > 0 ? (
-                <span className="absolute -right-3 top-0 size-1.5 rounded-full bg-neon" />
-              ) : null}
-            </Link>
-          ) : null}
         </nav>
 
 
         <div className="flex shrink-0 items-center gap-2">
           <ThemeToggle />
+          {isAuthenticated ? (
+            <Link
+              to="/messages"
+              aria-label={unreadThreads > 0 ? `Messages, ${unreadThreads} unread` : "Messages"}
+              className="relative flex size-10 items-center justify-center rounded-full border border-transparent text-muted-foreground transition-colors duration-200 hover:border-border hover:text-foreground"
+            >
+              <MessageCircle className="size-4" />
+              {unreadThreads > 0 ? (
+                <span className="absolute -right-0.5 -top-0.5 flex min-w-4 items-center justify-center rounded-full bg-neon px-1 font-mono text-[9px] font-semibold leading-4 text-ink">
+                  {unreadThreads > 99 ? "99+" : unreadThreads}
+                </span>
+              ) : null}
+            </Link>
+          ) : null}
           <NotificationBell />
           <Link
             to="/submit"
@@ -306,14 +312,6 @@ export function SiteHeader() {
               </div>
               {isAuthenticated ? (
                 <>
-                  <Link
-                    to="/messages"
-                    className="flex min-h-12 items-center gap-2 border-b border-border/70 text-[14px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
-                    activeProps={{ className: "text-foreground" }}
-                  >
-                    Messages
-                    {unreadThreads > 0 ? <span className="size-1.5 rounded-full bg-neon" /> : null}
-                  </Link>
                   <Link
                     to="/dashboard"
                     className="flex min-h-12 items-center gap-3 border-b border-border/70 text-[14px] text-foreground/70"
