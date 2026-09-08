@@ -313,14 +313,6 @@ export function SiteHeader() {
               {isAuthenticated ? (
                 <>
                   <Link
-                    to="/messages"
-                    className="flex min-h-12 items-center gap-2 border-b border-border/70 text-[14px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
-                    activeProps={{ className: "text-foreground" }}
-                  >
-                    Messages
-                    {unreadThreads > 0 ? <span className="size-1.5 rounded-full bg-neon" /> : null}
-                  </Link>
-                  <Link
                     to="/dashboard"
                     className="flex min-h-12 items-center gap-3 border-b border-border/70 text-[14px] text-foreground/70"
                     activeProps={{ className: "text-foreground" }}
