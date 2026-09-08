@@ -8,6 +8,7 @@ import {
   getQuestMessages,
   getQuestSubmissions,
   getWeeklyTasks,
+  getQuestRoster,
   amIQuestCreator,
 } from "@/lib/quests.functions";
 
@@ -137,7 +138,31 @@ export const questKeys = {
   chat: (questId: string) => ["quest-chat", questId] as const,
   owner: (questId: string, userId: string) => ["quest-owner", questId, userId] as const,
   submissions: (questId: string) => ["quest-submissions", questId] as const,
+  roster: (questId: string) => ["quest-roster", questId] as const,
 };
+
+/** Creator-only headcount used to warn before deleting a quest. */
+export function questRosterQuery(questId: string, enabled: boolean) {
+  return queryOptions({
+    queryKey: questKeys.roster(questId),
+    enabled,
+    queryFn: () => getQuestRoster({ data: { questId } }),
+    staleTime: 10_000,
+  });
+}
+
+/** Open (not yet started is not modelled) → Active → Completed/Expired. */
+export function questState(quest: { starts_at?: string; ends_at: string; closed_at?: string | null }) {
+  if (quest.closed_at) return "completed" as const;
+  if (new Date(quest.ends_at) <= new Date()) return "expired" as const;
+  return "active" as const;
+}
+
+export const QUEST_STATE_LABEL = {
+  active: "Active",
+  completed: "Completed",
+  expired: "Expired",
+} as const;
 
 export function isOpenQuest(quest: { kind: string; visibility?: string; closed_at?: string | null }) {
   return (

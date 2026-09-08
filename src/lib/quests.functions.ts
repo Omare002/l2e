@@ -629,3 +629,132 @@ export const amIQuestCreator = createServerFn({ method: "GET" })
       .maybeSingle();
     return { isCreator: Boolean(res.data) };
   });
+
+/* ---------------------------------------------------------------------------
+ * Lifecycle: creators edit or delete their own quest, participants can leave.
+ * Ownership is checked in the query itself, so RLS is the final word.
+ * ------------------------------------------------------------------------- */
+
+const editSchema = idSchema.extend({
+  title: z.string().trim().min(3, "Give the quest a name").max(90),
+  description: z.string().trim().max(600).default(""),
+  kind: z.enum(QUEST_KINDS),
+  taskId: z.string().uuid().nullable().optional(),
+  endsAt: z.string().datetime(),
+  visibility: z.enum(["public", "private"]),
+});
+
+/** Creator-only: change a quest's details while it is still running. */
+export const updateQuest = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => editSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    const quest = await context.supabase
+      .from("quests")
+      .select("id, creator_id, closed_at")
+      .eq("id", data.questId)
+      .maybeSingle();
+    if (!quest.data || quest.data.creator_id !== context.userId) {
+      throw new Error("Only the quest creator can edit this quest");
+    }
+    if (quest.data.closed_at) throw new Error("This quest is finished and can no longer be edited");
+
+    const ends = new Date(data.endsAt);
+    if (Number.isNaN(ends.getTime()) || ends.getTime() <= Date.now()) {
+      throw new Error("Pick a deadline in the future");
+    }
+
+    const { error } = await context.supabase
+      .from("quests")
+      .update({
+        title: data.title,
+        description: data.description,
+        kind: data.kind,
+        ...(data.taskId === undefined ? {} : { task_id: data.taskId }),
+        visibility: data.visibility,
+        ends_at: ends.toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", data.questId)
+      .eq("creator_id", context.userId);
+    if (error) {
+      console.error("[updateQuest]", error.message);
+      throw new Error("Could not save your changes");
+    }
+    return { ok: true };
+  });
+
+/**
+ * Creator-only: delete a quest. Only the quest, its participation rows and its
+ * chat go away — projects, accounts, votes and community posts are untouched.
+ */
+export const deleteQuest = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => idSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    const { data: removed, error } = await context.supabase
+      .from("quests")
+      .delete()
+      .eq("id", data.questId)
+      .eq("creator_id", context.userId)
+      .select("id")
+      .maybeSingle();
+    if (error) {
+      console.error("[deleteQuest]", error.message);
+      throw new Error("Could not delete this quest");
+    }
+    if (!removed) throw new Error("Only the quest creator can delete this quest");
+    return { ok: true };
+  });
+
+/** How many builders are in a quest, and how many already submitted (creator only). */
+export const getQuestRoster = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => idSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    const quest = await context.supabase
+      .from("quests")
+      .select("id, creator_id")
+      .eq("id", data.questId)
+      .maybeSingle();
+    if (!quest.data || quest.data.creator_id !== context.userId) {
+      return { participants: 0, submissions: 0 };
+    }
+    const res = await context.supabase
+      .from("quest_participants")
+      .select("user_id, status, project_id")
+      .eq("quest_id", data.questId);
+    const rows = (res.data ?? []).filter((r) => r.user_id !== context.userId);
+    return {
+      participants: rows.filter((r) => r.status !== "declined").length,
+      submissions: rows.filter((r) => Boolean(r.project_id)).length,
+    };
+  });
+
+/**
+ * Participant-only: leave a quest you entered. The creator cannot leave their
+ * own quest (they delete it instead); nothing else about the quest changes.
+ */
+export const leaveQuest = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => idSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    const quest = await context.supabase
+      .from("quests")
+      .select("id, creator_id")
+      .eq("id", data.questId)
+      .maybeSingle();
+    if (quest.data?.creator_id === context.userId) {
+      throw new Error("You started this quest — delete it instead of leaving");
+    }
+    const { error } = await context.supabase
+      .from("quest_participants")
+      .delete()
+      .eq("quest_id", data.questId)
+      .eq("user_id", context.userId);
+    if (error) {
+      console.error("[leaveQuest]", error.message);
+      throw new Error("Could not leave this quest");
+    }
+    return { ok: true };
+  });
