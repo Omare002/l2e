@@ -1637,10 +1637,6 @@ export type Database = {
       }
     }
     Functions: {
-      can_view_quest_discussion: {
-        Args: { _quest_id: string }
-        Returns: boolean
-      }
       close_finished_quests: { Args: never; Returns: number }
       is_quest_member: {
         Args: { _quest_id: string; _user_id: string }
