@@ -9,9 +9,17 @@ import { LoadFailure, SkeletonLines } from "@/components/skeleton-block";
 import { UserAvatar } from "@/components/user-avatar";
 import { useAuth } from "@/hooks/use-auth";
 import { myProjectsQuery } from "@/lib/db";
-import { respondToQuest, setQuestVisibility, submitQuestProject } from "@/lib/quests.functions";
+import {
+  deleteQuest,
+  leaveQuest,
+  respondToQuest,
+  setQuestVisibility,
+  submitQuestProject,
+  updateQuest,
+} from "@/lib/quests.functions";
 import {
   QUEST_KIND_LABEL,
+  QUEST_STATE_LABEL,
   type QuestKind,
   isOpenQuest,
   myQuestEntryQuery,
@@ -19,6 +27,8 @@ import {
   questCreatorQuery,
   questKeys,
   questQuery,
+  questRosterQuery,
+  questState,
   questSubmissionsQuery,
   sinceLabel,
   timeLeft,
