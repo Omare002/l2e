@@ -34,6 +34,13 @@ import {
   timeLeft,
 } from "@/lib/quests";
 
+/** ISO → value a datetime-local input understands, in the viewer's own zone. */
+function toLocalInput(iso: string) {
+  const d = new Date(iso);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 export const Route = createFileRoute("/quests/$id")({
   head: () => ({
     meta: [
@@ -66,10 +73,17 @@ function QuestDetailPage() {
   const submissions = useQuery(
     questSubmissionsQuery(id, Boolean(creator.data?.isCreator)),
   );
+  const roster = useQuery(questRosterQuery(id, Boolean(creator.data?.isCreator)));
 
   const runRespond = useServerFn(respondToQuest);
   const runSubmit = useServerFn(submitQuestProject);
   const runVisibility = useServerFn(setQuestVisibility);
+  const runUpdate = useServerFn(updateQuest);
+  const runDelete = useServerFn(deleteQuest);
+  const runLeave = useServerFn(leaveQuest);
+  const navigate = Route.useNavigate();
+  const [editing, setEditing] = useState(false);
+  const [form, setForm] = useState({ title: "", description: "", endsAt: "" });
 
   const [, tick] = useState(0);
   useEffect(() => {
@@ -118,6 +132,46 @@ function QuestDetailPage() {
     onError: (e) => toast.error(e instanceof Error ? e.message : "Could not enter your project"),
   });
 
+  const save = useMutation({
+    mutationFn: (input: { title: string; description: string; endsAt: string }) =>
+      runUpdate({
+        data: {
+          questId: id,
+          title: input.title,
+          description: input.description,
+          endsAt: new Date(input.endsAt).toISOString(),
+          kind: (detail.data?.quest.kind ?? "group") as QuestKind,
+          visibility: (detail.data?.quest.visibility ?? "public") as "public" | "private",
+        },
+      }),
+    onSuccess: () => {
+      refresh();
+      setEditing(false);
+      toast.success("Quest updated");
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Could not save your changes"),
+  });
+
+  const remove = useMutation({
+    mutationFn: () => runDelete({ data: { questId: id } }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: questKeys.all });
+      queryClient.invalidateQueries({ queryKey: questKeys.mine(userId ?? "anon") });
+      toast.success("Quest deleted");
+      void navigate({ to: "/quests" });
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Could not delete this quest"),
+  });
+
+  const leave = useMutation({
+    mutationFn: () => runLeave({ data: { questId: id } }),
+    onSuccess: () => {
+      refresh();
+      toast.success("You left this quest");
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Could not leave this quest"),
+  });
+
   if (detail.isLoading) {
     return (
       <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
@@ -156,6 +210,9 @@ function QuestDetailPage() {
             }`}
           >
             {questAccessLabel(quest)}
+          </span>
+          <span className="glass-pill px-2.5 py-1 font-mono text-[10px] text-muted-foreground">
+            {QUEST_STATE_LABEL[questState(quest)]}
           </span>
           <span className="font-mono text-[11px] text-muted-foreground">
             {finished ? "Finished" : timeLeft(quest.ends_at)}
@@ -248,19 +305,119 @@ function QuestDetailPage() {
           </div>
         ) : null}
 
-        {creator.data?.isCreator && !finished ? (
-          <div className="mt-6 flex flex-wrap items-center gap-3">
-            <span className="text-[12px] text-muted-foreground">Who can enter</span>
-            <button
-              type="button"
-              disabled={visibility.isPending}
-              onClick={() =>
-                visibility.mutate(quest.visibility === "private" ? "public" : "private")
-              }
-              className="glass-pill min-h-10 px-4 text-[12px] transition-colors duration-200 hover:text-neon disabled:opacity-60"
-            >
-              {quest.visibility === "private" ? "Make it open to everyone" : "Make it private"}
-            </button>
+        {creator.data?.isCreator ? (
+          <div className="mt-6 border-t border-border pt-6">
+            {!finished ? (
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="text-[12px] text-muted-foreground">Who can enter</span>
+                <button
+                  type="button"
+                  disabled={visibility.isPending}
+                  onClick={() =>
+                    visibility.mutate(quest.visibility === "private" ? "public" : "private")
+                  }
+                  className="glass-pill min-h-10 px-4 text-[12px] transition-colors duration-200 hover:text-neon disabled:opacity-60"
+                >
+                  {quest.visibility === "private" ? "Make it open to everyone" : "Make it private"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setForm({
+                      title: quest.title,
+                      description: quest.description ?? "",
+                      endsAt: toLocalInput(quest.ends_at),
+                    });
+                    setEditing((v) => !v);
+                  }}
+                  className="glass-pill min-h-10 px-4 text-[12px] transition-colors duration-200 hover:text-neon"
+                >
+                  {editing ? "Cancel edit" : "Edit quest"}
+                </button>
+                <button
+                  type="button"
+                  disabled={remove.isPending}
+                  onClick={() => {
+                    const others = roster.data?.participants ?? 0;
+                    const sent = roster.data?.submissions ?? 0;
+                    const warning =
+                      others > 0
+                        ? `${others} other ${others === 1 ? "builder is" : "builders are"} in this quest${
+                            sent > 0
+                              ? ` and ${sent} already submitted a project`
+                              : ""
+                          }. Deleting removes the quest and its chat for everyone. Projects and accounts are kept. Delete it?`
+                        : "Delete this quest? Its chat goes with it. Your projects are kept.";
+                    if (window.confirm(warning)) remove.mutate();
+                  }}
+                  className="glass-pill min-h-10 px-4 text-[12px] text-muted-foreground transition-colors duration-200 hover:text-red-500 disabled:opacity-60"
+                >
+                  Delete quest
+                </button>
+              </div>
+            ) : (
+              <p className="font-mono text-[11px] text-muted-foreground">
+                This quest is {QUEST_STATE_LABEL[questState(quest)].toLowerCase()} — it can no longer
+                be edited.
+              </p>
+            )}
+
+            {editing && !finished ? (
+              <form
+                className="mt-5 grid gap-3"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  save.mutate(form);
+                }}
+              >
+                <label className="grid gap-1.5 text-[12px] text-muted-foreground">
+                  Quest name
+                  <input
+                    value={form.title}
+                    onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+                    maxLength={90}
+                    required
+                    className="min-h-11 rounded-lg border border-border bg-transparent px-3 text-[13px] text-foreground outline-none focus-visible:border-neon"
+                  />
+                </label>
+                <label className="grid gap-1.5 text-[12px] text-muted-foreground">
+                  What it asks for
+                  <textarea
+                    value={form.description}
+                    onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+                    maxLength={600}
+                    rows={3}
+                    className="rounded-lg border border-border bg-transparent p-3 text-[13px] text-foreground outline-none focus-visible:border-neon"
+                  />
+                </label>
+                <label className="grid gap-1.5 text-[12px] text-muted-foreground">
+                  Deadline
+                  <input
+                    type="datetime-local"
+                    value={form.endsAt}
+                    onChange={(e) => setForm((f) => ({ ...f, endsAt: e.target.value }))}
+                    required
+                    className="min-h-11 rounded-lg border border-border bg-transparent px-3 text-[13px] text-foreground outline-none focus-visible:border-neon"
+                  />
+                </label>
+                <div className="flex flex-wrap gap-2.5">
+                  <button
+                    type="submit"
+                    disabled={save.isPending}
+                    className="min-h-11 rounded-full bg-foreground px-5 text-[13px] font-medium text-background transition-colors duration-200 hover:bg-foreground/90 disabled:opacity-60"
+                  >
+                    {save.isPending ? "Saving…" : "Save changes"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditing(false)}
+                    className="glass-pill min-h-11 px-5 text-[13px] text-muted-foreground transition-colors duration-200 hover:text-foreground"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            ) : null}
           </div>
         ) : null}
 
@@ -284,6 +441,22 @@ function QuestDetailPage() {
                 No project submitted yet.
               </p>
             )}
+
+            {!creator.data?.isCreator ? (
+              <button
+                type="button"
+                disabled={leave.isPending}
+                onClick={() => {
+                  const msg = me.project_id
+                    ? "You already submitted a project to this quest. Leaving removes your entry from the standings — your project itself is kept. Leave the quest?"
+                    : "Leave this quest? You can enter again while it's open.";
+                  if (window.confirm(msg)) leave.mutate();
+                }}
+                className="glass-pill mt-3 min-h-10 px-4 text-[12px] text-muted-foreground transition-colors duration-200 hover:text-red-500 disabled:opacity-60"
+              >
+                {leave.isPending ? "Leaving…" : "Leave quest"}
+              </button>
+            ) : null}
 
             {finished ? (
               <p className="mt-3 font-mono text-[11px] text-muted-foreground">
