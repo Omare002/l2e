@@ -670,7 +670,7 @@ export const updateQuest = createServerFn({ method: "POST" })
         title: data.title,
         description: data.description,
         kind: data.kind,
-        task_id: data.taskId ?? null,
+        ...(data.taskId === undefined ? {} : { task_id: data.taskId }),
         visibility: data.visibility,
         ends_at: ends.toISOString(),
         updated_at: new Date().toISOString(),
