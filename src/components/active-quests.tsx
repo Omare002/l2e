@@ -13,7 +13,7 @@ import {
   questKeys,
   timeLeft,
 } from "@/lib/quests";
-import { respondToQuest, submitQuestProject } from "@/lib/quests.functions";
+import { leaveQuest, respondToQuest, submitQuestProject } from "@/lib/quests.functions";
 
 /**
  * "My quests": every quest the member accepted or was invited to, with the
@@ -27,6 +27,7 @@ export function ActiveQuests() {
   const mine = useQuery({ ...myProjectsQuery(userId ?? ""), enabled: Boolean(userId) });
   const runSubmit = useServerFn(submitQuestProject);
   const runRespond = useServerFn(respondToQuest);
+  const runLeave = useServerFn(leaveQuest);
 
   const refresh = () => {
     void queryClient.invalidateQueries({ queryKey: questKeys.mine(userId ?? "anon") });
@@ -52,6 +53,15 @@ export function ActiveQuests() {
       toast.success(r.status === "declined" ? "Invitation declined" : "Quest is active");
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : "Could not update your answer"),
+  });
+
+  const leave = useMutation({
+    mutationFn: (questId: string) => runLeave({ data: { questId } }),
+    onSuccess: () => {
+      refresh();
+      toast.success("You left the quest");
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Could not leave this quest"),
   });
 
   if (isError) return null;
@@ -173,6 +183,22 @@ export function ActiveQuests() {
                         No project submitted yet.
                       </p>
                     )}
+
+                    {q.creator_id !== userId ? (
+                      <button
+                        type="button"
+                        disabled={leave.isPending}
+                        onClick={() => {
+                          const msg = row.project_id
+                            ? "You already submitted a project to this quest. Leaving removes your entry from the standings — your project itself is kept. Leave the quest?"
+                            : "Leave this quest? You can enter again while it's open.";
+                          if (window.confirm(msg)) leave.mutate(q.id);
+                        }}
+                        className="glass-pill-dark mt-3 min-h-10 px-4 text-[12px] text-on-dark-muted transition-colors duration-200 hover:text-red-400 disabled:opacity-60"
+                      >
+                        Leave quest
+                      </button>
+                    ) : null}
 
                     {locked ? (
                       <p className="mt-3 flex items-center gap-1.5 font-mono text-[11px] text-on-dark-muted">
