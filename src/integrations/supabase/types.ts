@@ -1638,6 +1638,11 @@ export type Database = {
     }
     Functions: {
       close_finished_quests: { Args: never; Returns: number }
+      is_open_quest: { Args: { _quest_id: string }; Returns: boolean }
+      is_quest_creator: {
+        Args: { _quest_id: string; _user_id: string }
+        Returns: boolean
+      }
       is_quest_member: {
         Args: { _quest_id: string; _user_id: string }
         Returns: boolean
