@@ -22,20 +22,42 @@ export function useRealtimeSync() {
     const channel = supabase
       .channel("community-sync")
       .on("postgres_changes", { event: "*", schema: "public", table: "votes" }, () =>
-        refresh(["projects", "project", "leaderboard", "my-projects", "activity", "community-stats"]),
+        refresh([
+          "projects",
+          "project",
+          "leaderboard",
+          "my-projects",
+          "activity",
+          "user-activity",
+          "community-stats",
+        ]),
       )
       .on("postgres_changes", { event: "*", schema: "public", table: "projects" }, () =>
-        refresh(["projects", "project", "leaderboard", "my-projects", "activity", "community-stats"]),
+        refresh([
+          "projects",
+          "project",
+          "leaderboard",
+          "my-projects",
+          "activity",
+          "user-activity",
+          "community-stats",
+        ]),
       )
       .on("postgres_changes", { event: "*", schema: "public", table: "comments" }, () =>
-        refresh(["projects", "project", "comments", "activity", "community-stats"]),
+        refresh([
+          "projects",
+          "project",
+          "comments",
+          "activity",
+          "user-activity",
+          "community-stats",
+        ]),
       )
       .on("postgres_changes", { event: "*", schema: "public", table: "profiles" }, () =>
         refresh(["leaderboard", "profile", "my-profile", "community-stats"]),
       )
-      .on("postgres_changes", { event: "*", schema: "public", table: "activity_events" }, () =>
-        refresh(["activity", "user-activity"]),
-      )
+      // The raw activity table is not streamed to clients (it holds account ids);
+      // the feed refreshes off the votes/projects/comments/discussions events below.
       .on("postgres_changes", { event: "*", schema: "public", table: "discussions" }, () =>
         refresh(["discussions", "discussion", "activity", "community-stats"]),
       )
