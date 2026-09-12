@@ -1,3 +1,5 @@
 - [x] Decouple home-page project feed from secondary feature failures and show distinct loading, empty, and error states.
 - [x] Preserve real project rows, upvotes, and existing UI while handling auth/week/quest/task/notification failures gracefully.
 - [x] Verify refresh and public home rendering with focused browser/build checks.
+- [ ] Fit the complete mobile header at 320–430px without changing desktop navigation.
+- [ ] Verify the hamburger and expandable Community menu at each requested mobile width.
