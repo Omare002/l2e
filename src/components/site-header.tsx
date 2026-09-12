@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useRouter, useRouterState } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "motion/react";
-import { ChevronDown, LogOut, Menu, MessageCircle, X } from "lucide-react";
+import { Bell, ChevronDown, LogOut, Menu, MessageCircle, X } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -105,16 +105,16 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/[0.05] bg-navbar/60 backdrop-blur-xl backdrop-saturate-150">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 2xl:max-w-[1400px]">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-1 px-2 sm:px-6 xl:h-16 xl:gap-3 2xl:max-w-[1400px]">
         <Link
           to="/"
-          className="group flex shrink-0 items-center pr-2 sm:pr-3"
+          className="group flex min-w-0 shrink items-center xl:shrink-0 xl:pr-3"
           aria-label="Leaderboard home"
         >
           {logoError ? (
-            <div className="flex h-5 items-center gap-1.5 sm:h-6" aria-hidden>
+            <div className="flex h-5 min-w-0 items-center gap-1.5 sm:h-6" aria-hidden>
               <span className="size-2 rounded-full bg-neon" />
-              <span className="font-mono text-[15px] font-semibold tracking-tight text-foreground sm:text-base">
+              <span className="truncate font-mono text-[13px] font-semibold text-foreground sm:text-base">
                 Leaderboard
               </span>
             </div>
@@ -125,7 +125,7 @@ export function SiteHeader() {
               width={1266}
               height={210}
               onError={() => setLogoError(true)}
-              className="h-7 w-auto transition-opacity duration-200 group-hover:opacity-80 dark:invert"
+              className="h-auto w-[88px] max-w-full transition-opacity duration-200 group-hover:opacity-80 dark:invert sm:w-[108px] xl:h-7 xl:w-auto"
             />
           )}
         </Link>
@@ -193,13 +193,13 @@ export function SiteHeader() {
         </nav>
 
 
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 items-center gap-0.5 sm:gap-1 xl:gap-2">
           <ThemeToggle />
           {isAuthenticated ? (
             <Link
               to="/messages"
               aria-label={unreadThreads > 0 ? `Messages, ${unreadThreads} unread` : "Messages"}
-              className="relative flex size-10 items-center justify-center rounded-full border border-transparent text-muted-foreground transition-colors duration-200 hover:border-border hover:text-foreground"
+              className="relative flex size-9 shrink-0 items-center justify-center rounded-full border border-transparent text-muted-foreground transition-colors duration-200 hover:border-border hover:text-foreground xl:size-10"
             >
               <MessageCircle className="size-4" />
               {unreadThreads > 0 ? (
@@ -208,8 +208,25 @@ export function SiteHeader() {
                 </span>
               ) : null}
             </Link>
-          ) : null}
+          ) : (
+            <Link
+              to="/auth"
+              aria-label="Sign in to view messages"
+              className="relative flex size-9 shrink-0 items-center justify-center rounded-full border border-transparent text-muted-foreground transition-colors duration-200 hover:border-border hover:text-foreground xl:hidden"
+            >
+              <MessageCircle className="size-4" />
+            </Link>
+          )}
           <NotificationBell />
+          {!isAuthenticated ? (
+            <Link
+              to="/auth"
+              aria-label="Sign in to view notifications"
+              className="relative flex size-9 shrink-0 items-center justify-center rounded-full border border-transparent text-muted-foreground transition-colors duration-200 hover:border-border hover:text-foreground xl:hidden"
+            >
+              <Bell className="size-4" />
+            </Link>
+          ) : null}
           <Link
             to="/submit"
             className={cn(
@@ -245,7 +262,7 @@ export function SiteHeader() {
             onClick={() => setOpen((o) => !o)}
             aria-expanded={open}
             aria-label={open ? "Close menu" : "Open menu"}
-            className="flex size-11 items-center justify-center rounded-full border border-border text-foreground transition-colors duration-200 hover:border-neon xl:hidden"
+            className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border text-foreground transition-colors duration-200 hover:border-neon xl:hidden"
           >
             {open ? <X className="size-4" /> : <Menu className="size-4" />}
           </button>
@@ -273,20 +290,40 @@ export function SiteHeader() {
                   {item.label}
                 </Link>
               ))}
-              <div className="border-b border-border/70 py-2">
-                <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+              <div className="border-b border-border/70">
+                <button
+                  type="button"
+                  onClick={() => setCommunity((value) => !value)}
+                  aria-expanded={community}
+                  className="flex min-h-12 w-full items-center justify-between text-left text-[14px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
+                >
                   Community
-                </div>
-                {COMMUNITY.map((item) => (
-                  <Link
-                    key={item.to}
-                    to={item.to}
-                    className="flex min-h-11 items-center text-[14px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
-                    activeProps={{ className: "text-foreground" }}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
+                  <ChevronDown
+                    className={cn("size-4 transition-transform duration-200", community && "rotate-180")}
+                  />
+                </button>
+                <AnimatePresence initial={false}>
+                  {community ? (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.18, ease: EASE }}
+                      className="overflow-hidden pb-2 pl-3"
+                    >
+                      {COMMUNITY.map((item) => (
+                        <Link
+                          key={item.to}
+                          to={item.to}
+                          className="flex min-h-11 items-center text-[14px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
+                          activeProps={{ className: "text-foreground" }}
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
+                    </motion.div>
+                  ) : null}
+                </AnimatePresence>
               </div>
               {NAV_TAIL.map((item) => (
                 <Link
@@ -306,10 +343,6 @@ export function SiteHeader() {
               >
                 Submit project
               </Link>
-              <div className="flex min-h-12 items-center justify-between border-b border-border/70 text-[14px] text-foreground/70">
-                Theme
-                <ThemeToggle />
-              </div>
               {isAuthenticated ? (
                 <>
                   <Link
