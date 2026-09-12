@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useRouter, useRouterState } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "motion/react";
-import { ChevronDown, LogOut, Menu, MessageCircle, X } from "lucide-react";
+import { Bell, ChevronDown, LogOut, Menu, MessageCircle, X } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -208,8 +208,25 @@ export function SiteHeader() {
                 </span>
               ) : null}
             </Link>
-          ) : null}
+          ) : (
+            <Link
+              to="/auth"
+              aria-label="Sign in to view messages"
+              className="relative flex size-9 shrink-0 items-center justify-center rounded-full border border-transparent text-muted-foreground transition-colors duration-200 hover:border-border hover:text-foreground xl:hidden"
+            >
+              <MessageCircle className="size-4" />
+            </Link>
+          )}
           <NotificationBell />
+          {!isAuthenticated ? (
+            <Link
+              to="/auth"
+              aria-label="Sign in to view notifications"
+              className="relative flex size-9 shrink-0 items-center justify-center rounded-full border border-transparent text-muted-foreground transition-colors duration-200 hover:border-border hover:text-foreground xl:hidden"
+            >
+              <Bell className="size-4" />
+            </Link>
+          ) : null}
           <Link
             to="/submit"
             className={cn(
@@ -326,10 +343,6 @@ export function SiteHeader() {
               >
                 Submit project
               </Link>
-              <div className="flex min-h-12 items-center justify-between border-b border-border/70 text-[14px] text-foreground/70">
-                Theme
-                <ThemeToggle />
-              </div>
               {isAuthenticated ? (
                 <>
                   <Link
