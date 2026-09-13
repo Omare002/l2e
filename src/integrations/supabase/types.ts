@@ -143,6 +143,7 @@ export type Database = {
           author_id: string
           body: string
           created_at: string
+          hidden: boolean
           id: string
           kind: string
           project_id: string
@@ -152,6 +153,7 @@ export type Database = {
           author_id: string
           body: string
           created_at?: string
+          hidden?: boolean
           id?: string
           kind?: string
           project_id: string
@@ -161,6 +163,7 @@ export type Database = {
           author_id?: string
           body?: string
           created_at?: string
+          hidden?: boolean
           id?: string
           kind?: string
           project_id?: string
@@ -380,12 +383,122 @@ export type Database = {
           },
         ]
       }
+      copyright_complaints: {
+        Row: {
+          accuracy_statement: boolean
+          claimant_address: string | null
+          claimant_email: string
+          claimant_id: string | null
+          claimant_name: string
+          claimant_organisation: string | null
+          copyrighted_work: string
+          created_at: string
+          good_faith: boolean
+          id: string
+          infringing_description: string | null
+          infringing_url: string
+          original_url: string | null
+          resolution_note: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          signature: string
+          status: Database["public"]["Enums"]["report_status"]
+          updated_at: string
+        }
+        Insert: {
+          accuracy_statement?: boolean
+          claimant_address?: string | null
+          claimant_email: string
+          claimant_id?: string | null
+          claimant_name: string
+          claimant_organisation?: string | null
+          copyrighted_work: string
+          created_at?: string
+          good_faith?: boolean
+          id?: string
+          infringing_description?: string | null
+          infringing_url: string
+          original_url?: string | null
+          resolution_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          signature: string
+          status?: Database["public"]["Enums"]["report_status"]
+          updated_at?: string
+        }
+        Update: {
+          accuracy_statement?: boolean
+          claimant_address?: string | null
+          claimant_email?: string
+          claimant_id?: string | null
+          claimant_name?: string
+          claimant_organisation?: string | null
+          copyrighted_work?: string
+          created_at?: string
+          good_faith?: boolean
+          id?: string
+          infringing_description?: string | null
+          infringing_url?: string
+          original_url?: string | null
+          resolution_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          signature?: string
+          status?: Database["public"]["Enums"]["report_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "copyright_complaints_claimant_id_fkey"
+            columns: ["claimant_id"]
+            isOneToOne: false
+            referencedRelation: "follow_counts"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "copyright_complaints_claimant_id_fkey"
+            columns: ["claimant_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "copyright_complaints_claimant_id_fkey"
+            columns: ["claimant_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "copyright_complaints_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "follow_counts"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "copyright_complaints_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "copyright_complaints_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       discussion_replies: {
         Row: {
           author_id: string
           body: string
           created_at: string
           discussion_id: string
+          hidden: boolean
           id: string
           updated_at: string
         }
@@ -394,6 +507,7 @@ export type Database = {
           body: string
           created_at?: string
           discussion_id: string
+          hidden?: boolean
           id?: string
           updated_at?: string
         }
@@ -402,6 +516,7 @@ export type Database = {
           body?: string
           created_at?: string
           discussion_id?: string
+          hidden?: boolean
           id?: string
           updated_at?: string
         }
@@ -449,6 +564,7 @@ export type Database = {
           body: string
           category: string
           created_at: string
+          hidden: boolean
           id: string
           last_activity_at: string
           pinned: boolean
@@ -461,6 +577,7 @@ export type Database = {
           body: string
           category?: string
           created_at?: string
+          hidden?: boolean
           id?: string
           last_activity_at?: string
           pinned?: boolean
@@ -473,6 +590,7 @@ export type Database = {
           body?: string
           category?: string
           created_at?: string
+          hidden?: boolean
           id?: string
           last_activity_at?: string
           pinned?: boolean
@@ -634,6 +752,92 @@ export type Database = {
           },
         ]
       }
+      moderation_actions: {
+        Row: {
+          action: Database["public"]["Enums"]["moderation_action"]
+          affected_user_id: string | null
+          created_at: string
+          id: string
+          moderator_id: string
+          notes: string | null
+          report_id: string | null
+          target_id: string | null
+          target_type: Database["public"]["Enums"]["report_target"] | null
+        }
+        Insert: {
+          action: Database["public"]["Enums"]["moderation_action"]
+          affected_user_id?: string | null
+          created_at?: string
+          id?: string
+          moderator_id: string
+          notes?: string | null
+          report_id?: string | null
+          target_id?: string | null
+          target_type?: Database["public"]["Enums"]["report_target"] | null
+        }
+        Update: {
+          action?: Database["public"]["Enums"]["moderation_action"]
+          affected_user_id?: string | null
+          created_at?: string
+          id?: string
+          moderator_id?: string
+          notes?: string | null
+          report_id?: string | null
+          target_id?: string | null
+          target_type?: Database["public"]["Enums"]["report_target"] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "moderation_actions_affected_user_id_fkey"
+            columns: ["affected_user_id"]
+            isOneToOne: false
+            referencedRelation: "follow_counts"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "moderation_actions_affected_user_id_fkey"
+            columns: ["affected_user_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "moderation_actions_affected_user_id_fkey"
+            columns: ["affected_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "moderation_actions_moderator_id_fkey"
+            columns: ["moderator_id"]
+            isOneToOne: false
+            referencedRelation: "follow_counts"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "moderation_actions_moderator_id_fkey"
+            columns: ["moderator_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "moderation_actions_moderator_id_fkey"
+            columns: ["moderator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "moderation_actions_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           actor_id: string | null
@@ -745,6 +949,8 @@ export type Database = {
           id: string
           is_demo: boolean
           portfolio_url: string | null
+          suspended_at: string | null
+          suspension_reason: string | null
           updated_at: string
           username: string
         }
@@ -758,6 +964,8 @@ export type Database = {
           id: string
           is_demo?: boolean
           portfolio_url?: string | null
+          suspended_at?: string | null
+          suspension_reason?: string | null
           updated_at?: string
           username: string
         }
@@ -771,6 +979,8 @@ export type Database = {
           id?: string
           is_demo?: boolean
           portfolio_url?: string | null
+          suspended_at?: string | null
+          suspension_reason?: string | null
           updated_at?: string
           username?: string
         }
@@ -930,6 +1140,7 @@ export type Database = {
           demo_url: string | null
           description: string
           github_url: string | null
+          hidden: boolean
           id: string
           owner_id: string
           published: boolean
@@ -947,6 +1158,7 @@ export type Database = {
           demo_url?: string | null
           description: string
           github_url?: string | null
+          hidden?: boolean
           id?: string
           owner_id: string
           published?: boolean
@@ -964,6 +1176,7 @@ export type Database = {
           demo_url?: string | null
           description?: string
           github_url?: string | null
+          hidden?: boolean
           id?: string
           owner_id?: string
           published?: boolean
@@ -1305,6 +1518,139 @@ export type Database = {
           },
         ]
       }
+      reports: {
+        Row: {
+          created_at: string
+          details: string | null
+          id: string
+          reason: Database["public"]["Enums"]["report_reason"]
+          reported_user_id: string | null
+          reporter_id: string
+          resolution_note: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["report_status"]
+          target_id: string
+          target_type: Database["public"]["Enums"]["report_target"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          details?: string | null
+          id?: string
+          reason: Database["public"]["Enums"]["report_reason"]
+          reported_user_id?: string | null
+          reporter_id: string
+          resolution_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["report_status"]
+          target_id: string
+          target_type: Database["public"]["Enums"]["report_target"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          details?: string | null
+          id?: string
+          reason?: Database["public"]["Enums"]["report_reason"]
+          reported_user_id?: string | null
+          reporter_id?: string
+          resolution_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["report_status"]
+          target_id?: string
+          target_type?: Database["public"]["Enums"]["report_target"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reports_reported_user_id_fkey"
+            columns: ["reported_user_id"]
+            isOneToOne: false
+            referencedRelation: "follow_counts"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "reports_reported_user_id_fkey"
+            columns: ["reported_user_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_reported_user_id_fkey"
+            columns: ["reported_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "follow_counts"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "follow_counts"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "reports_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       votes: {
         Row: {
           created_at: string
@@ -1638,6 +1984,13 @@ export type Database = {
     }
     Functions: {
       close_finished_quests: { Args: never; Returns: number }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       is_open_quest: { Args: { _quest_id: string }; Returns: boolean }
       is_quest_creator: {
         Args: { _quest_id: string; _user_id: string }
@@ -1647,6 +2000,7 @@ export type Database = {
         Args: { _quest_id: string; _user_id: string }
         Returns: boolean
       }
+      is_staff: { Args: { _user_id: string }; Returns: boolean }
       my_unread_counts: {
         Args: never
         Returns: {
@@ -1682,7 +2036,30 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
+      moderation_action:
+        | "dismiss"
+        | "warn"
+        | "hide_content"
+        | "unhide_content"
+        | "suspend_account"
+        | "unsuspend_account"
+      report_reason:
+        | "copied_project"
+        | "copyright"
+        | "impersonation"
+        | "spam"
+        | "harassment"
+        | "off_topic"
+        | "misleading"
+        | "other"
+      report_status: "new" | "reviewing" | "action_taken" | "dismissed"
+      report_target:
+        | "project"
+        | "discussion"
+        | "discussion_reply"
+        | "comment"
+        | "profile"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1809,6 +2186,34 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+      moderation_action: [
+        "dismiss",
+        "warn",
+        "hide_content",
+        "unhide_content",
+        "suspend_account",
+        "unsuspend_account",
+      ],
+      report_reason: [
+        "copied_project",
+        "copyright",
+        "impersonation",
+        "spam",
+        "harassment",
+        "off_topic",
+        "misleading",
+        "other",
+      ],
+      report_status: ["new", "reviewing", "action_taken", "dismissed"],
+      report_target: [
+        "project",
+        "discussion",
+        "discussion_reply",
+        "comment",
+        "profile",
+      ],
+    },
   },
 } as const
