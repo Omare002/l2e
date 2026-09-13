@@ -41,7 +41,7 @@ function destination(n: NotificationItem): { to: string; search: Record<string, 
   return { to: "/messages", search: {} };
 }
 
-export function NotificationBell() {
+export function NotificationBell({ compact = false }: { compact?: boolean }) {
   const { userId, isAuthenticated } = useAuth();
   const [open, setOpen] = useState(false);
   const [pushPermission, setPushPermission] = useState<NotificationPermission | null>(null);
@@ -148,7 +148,7 @@ export function NotificationBell() {
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-label={unread ? `${unread} unread notifications` : "Notifications"}
-        className="relative flex size-9 shrink-0 items-center justify-center rounded-full border border-transparent text-muted-foreground transition-colors duration-200 hover:border-border hover:text-foreground xl:size-10"
+        className={`relative flex shrink-0 items-center justify-center rounded-full border border-transparent text-muted-foreground transition-colors duration-200 hover:border-border hover:text-foreground ${compact ? "size-9" : "size-10"}`}
       >
         <Bell className="size-4" />
         {unread > 0 ? (

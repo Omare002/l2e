@@ -105,16 +105,16 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/[0.05] bg-navbar/60 backdrop-blur-xl backdrop-saturate-150">
-      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-1 px-2 sm:px-6 xl:h-16 xl:gap-3 2xl:max-w-[1400px]">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-1 px-2 md:hidden">
         <Link
           to="/"
-          className="group flex min-w-0 shrink items-center xl:shrink-0 xl:pr-3"
+          className="group flex min-w-0 shrink items-center"
           aria-label="Leaderboard home"
         >
           {logoError ? (
-            <div className="flex h-5 min-w-0 items-center gap-1.5 sm:h-6" aria-hidden>
+            <div className="flex h-5 min-w-0 items-center gap-1.5" aria-hidden>
               <span className="size-2 rounded-full bg-neon" />
-              <span className="truncate font-mono text-[13px] font-semibold text-foreground sm:text-base">
+              <span className="truncate font-mono text-[13px] font-semibold text-foreground">
                 Leaderboard
               </span>
             </div>
@@ -125,81 +125,18 @@ export function SiteHeader() {
               width={1266}
               height={210}
               onError={() => setLogoError(true)}
-              className="h-auto w-[88px] max-w-full transition-opacity duration-200 group-hover:opacity-80 dark:invert sm:w-[108px] xl:h-7 xl:w-auto"
+              className="h-auto w-[88px] max-w-full transition-opacity duration-200 group-hover:opacity-80 dark:invert"
             />
           )}
         </Link>
 
-        <nav className="hidden items-center gap-4 xl:flex">
-          {NAV.map((item) => (
-            <Link key={item.to} to={item.to} className={LINK} activeProps={LINK_ACTIVE}>
-              {item.label}
-            </Link>
-          ))}
-
-          <div ref={communityRef} className="relative">
-            <button
-              type="button"
-              onClick={() => setCommunity((c) => !c)}
-              aria-expanded={community}
-              aria-haspopup="menu"
-              className={cn(
-                LINK,
-                "flex items-center gap-1",
-                COMMUNITY.some((c) => pathname.startsWith(c.to)) && "text-foreground",
-              )}
-            >
-              Community
-              <ChevronDown
-                className={cn(
-                  "size-3.5 transition-transform duration-200",
-                  community && "rotate-180",
-                )}
-              />
-            </button>
-            <AnimatePresence initial={false}>
-              {community ? (
-                <motion.div
-                  initial={{ opacity: 0, y: -4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -4 }}
-                  transition={{ duration: 0.18, ease: EASE }}
-                  role="menu"
-                  className="glass-panel absolute left-0 top-[calc(100%+14px)] z-50 w-48 overflow-hidden p-1.5"
-                >
-                  {COMMUNITY.map((item) => (
-                    <Link
-                      key={item.to}
-                      to={item.to}
-                      role="menuitem"
-                      onClick={() => setCommunity(false)}
-                      className="block rounded-lg px-3 py-2 text-[13px] text-foreground/75 transition-colors duration-200 hover:bg-muted/60 hover:text-foreground"
-                      activeProps={{ className: "text-foreground bg-muted/50" }}
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                </motion.div>
-              ) : null}
-            </AnimatePresence>
-          </div>
-
-          {NAV_TAIL.map((item) => (
-            <Link key={item.to} to={item.to} className={LINK} activeProps={LINK_ACTIVE}>
-              {item.label}
-            </Link>
-          ))}
-
-        </nav>
-
-
-        <div className="flex shrink-0 items-center gap-0.5 sm:gap-1 xl:gap-2">
-          <ThemeToggle />
+        <div className="flex shrink-0 items-center gap-0.5">
+          <ThemeToggle compact />
           {isAuthenticated ? (
             <Link
               to="/messages"
               aria-label={unreadThreads > 0 ? `Messages, ${unreadThreads} unread` : "Messages"}
-              className="relative flex size-9 shrink-0 items-center justify-center rounded-full border border-transparent text-muted-foreground transition-colors duration-200 hover:border-border hover:text-foreground xl:size-10"
+              className="relative flex size-9 shrink-0 items-center justify-center rounded-full border border-transparent text-muted-foreground transition-colors duration-200 hover:border-border hover:text-foreground"
             >
               <MessageCircle className="size-4" />
               {unreadThreads > 0 ? (
@@ -212,60 +149,79 @@ export function SiteHeader() {
             <Link
               to="/auth"
               aria-label="Sign in to view messages"
-              className="relative flex size-9 shrink-0 items-center justify-center rounded-full border border-transparent text-muted-foreground transition-colors duration-200 hover:border-border hover:text-foreground xl:hidden"
+              className="relative flex size-9 shrink-0 items-center justify-center rounded-full border border-transparent text-muted-foreground transition-colors duration-200 hover:border-border hover:text-foreground"
             >
               <MessageCircle className="size-4" />
             </Link>
           )}
-          <NotificationBell />
-          {!isAuthenticated ? (
+          {isAuthenticated ? <NotificationBell compact /> : (
             <Link
               to="/auth"
               aria-label="Sign in to view notifications"
-              className="relative flex size-9 shrink-0 items-center justify-center rounded-full border border-transparent text-muted-foreground transition-colors duration-200 hover:border-border hover:text-foreground xl:hidden"
+              className="relative flex size-9 shrink-0 items-center justify-center rounded-full border border-transparent text-muted-foreground transition-colors duration-200 hover:border-border hover:text-foreground"
             >
               <Bell className="size-4" />
             </Link>
-          ) : null}
-          <Link
-            to="/submit"
-            className={cn(
-              "glass-pill hidden px-3.5 py-2 text-[13px] font-medium transition-colors duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-neon/40 hover:text-neon",
-              isAuthenticated ? "2xl:inline-flex" : "xl:inline-flex",
-            )}
-          >
-            Submit project
-          </Link>
-
-
-          {isAuthenticated ? (
-            <Link
-              to="/dashboard"
-              className="hidden items-center gap-2.5 rounded-full border border-transparent py-1 pl-1 pr-3 text-[13px] transition-colors duration-200 hover:border-border xl:inline-flex"
-            >
-              {monogram}
-              <span className="max-w-[7rem] truncate">
-                {profile?.display_name ?? "Dashboard"}
-              </span>
-            </Link>
-          ) : (
-            <Link
-              to="/auth"
-              className="hidden rounded-full bg-foreground px-4 py-2 text-[13px] font-medium text-background transition-colors duration-200 hover:bg-foreground/90 xl:inline-flex"
-            >
-              Sign in
-            </Link>
           )}
-
           <button
             type="button"
             onClick={() => setOpen((o) => !o)}
             aria-expanded={open}
             aria-label={open ? "Close menu" : "Open menu"}
-            className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border text-foreground transition-colors duration-200 hover:border-neon xl:hidden"
+            className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border text-foreground transition-colors duration-200 hover:border-neon"
           >
             {open ? <X className="size-4" /> : <Menu className="size-4" />}
           </button>
+        </div>
+      </div>
+
+      <div className="mx-auto hidden h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 md:flex 2xl:max-w-[1400px]">
+        <Link to="/" className="group flex shrink-0 items-center pr-2 sm:pr-3" aria-label="Leaderboard home">
+          {logoError ? (
+            <div className="flex h-5 items-center gap-1.5 sm:h-6" aria-hidden>
+              <span className="size-2 rounded-full bg-neon" />
+              <span className="font-mono text-[15px] font-semibold text-foreground sm:text-base">Leaderboard</span>
+            </div>
+          ) : (
+            <img src={logo} alt="Leaderboard" width={1266} height={210} onError={() => setLogoError(true)} className="h-7 w-auto transition-opacity duration-200 group-hover:opacity-80 dark:invert" />
+          )}
+        </Link>
+
+        <nav className="flex min-w-0 items-center gap-4">
+          {NAV.map((item) => <Link key={item.to} to={item.to} className={LINK} activeProps={LINK_ACTIVE}>{item.label}</Link>)}
+          <div ref={communityRef} className="relative">
+            <button type="button" onClick={() => setCommunity((c) => !c)} aria-expanded={community} aria-haspopup="menu" className={cn(LINK, "flex items-center gap-1", COMMUNITY.some((c) => pathname.startsWith(c.to)) && "text-foreground")}>
+              Community
+              <ChevronDown className={cn("size-3.5 transition-transform duration-200", community && "rotate-180")} />
+            </button>
+            <AnimatePresence initial={false}>
+              {community ? (
+                <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.18, ease: EASE }} role="menu" className="glass-panel absolute left-0 top-[calc(100%+14px)] z-50 w-48 overflow-hidden p-1.5">
+                  {COMMUNITY.map((item) => <Link key={item.to} to={item.to} role="menuitem" onClick={() => setCommunity(false)} className="block rounded-lg px-3 py-2 text-[13px] text-foreground/75 transition-colors duration-200 hover:bg-muted/60 hover:text-foreground" activeProps={{ className: "text-foreground bg-muted/50" }}>{item.label}</Link>)}
+                </motion.div>
+              ) : null}
+            </AnimatePresence>
+          </div>
+          {NAV_TAIL.map((item) => <Link key={item.to} to={item.to} className={LINK} activeProps={LINK_ACTIVE}>{item.label}</Link>)}
+        </nav>
+
+        <div className="flex shrink-0 items-center gap-2">
+          <ThemeToggle />
+          {isAuthenticated ? (
+            <Link to="/messages" aria-label={unreadThreads > 0 ? `Messages, ${unreadThreads} unread` : "Messages"} className="relative flex size-10 items-center justify-center rounded-full border border-transparent text-muted-foreground transition-colors duration-200 hover:border-border hover:text-foreground">
+              <MessageCircle className="size-4" />
+              {unreadThreads > 0 ? <span className="absolute -right-0.5 -top-0.5 flex min-w-4 items-center justify-center rounded-full bg-neon px-1 font-mono text-[9px] font-semibold leading-4 text-ink">{unreadThreads > 99 ? "99+" : unreadThreads}</span> : null}
+            </Link>
+          ) : null}
+          <NotificationBell />
+          <Link to="/submit" className={cn("glass-pill hidden px-3.5 py-2 text-[13px] font-medium transition-colors duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-neon/40 hover:text-neon", isAuthenticated ? "2xl:inline-flex" : "xl:inline-flex")}>Submit project</Link>
+          {isAuthenticated ? (
+            <Link to="/dashboard" className="hidden items-center gap-2.5 rounded-full border border-transparent py-1 pl-1 pr-3 text-[13px] transition-colors duration-200 hover:border-border xl:inline-flex">
+              {monogram}<span className="max-w-[7rem] truncate">{profile?.display_name ?? "Dashboard"}</span>
+            </Link>
+          ) : (
+            <Link to="/auth" className="hidden rounded-full bg-foreground px-4 py-2 text-[13px] font-medium text-background transition-colors duration-200 hover:bg-foreground/90 xl:inline-flex">Sign in</Link>
+          )}
         </div>
       </div>
 
@@ -277,7 +233,7 @@ export function SiteHeader() {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.24, ease: EASE }}
-            className="overflow-hidden border-t border-border bg-navbar xl:hidden"
+            className="overflow-hidden border-t border-border bg-navbar md:hidden"
           >
             <nav className="mx-auto flex max-w-6xl flex-col px-4 py-2 sm:px-6">
               {NAV.map((item) => (
