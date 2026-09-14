@@ -183,3 +183,102 @@ export const updateCollaborationSchema = z.object({
 });
 
 export const removeCollaborationSchema = z.object({ id: z.string().uuid() });
+
+/* ---------- Reporting & moderation ---------- */
+
+export const REPORT_TARGET_TYPES = [
+  "project",
+  "discussion",
+  "discussion_reply",
+  "comment",
+  "profile",
+] as const;
+
+export const REPORT_REASON_VALUES = [
+  "copied_project",
+  "copyright",
+  "impersonation",
+  "spam",
+  "harassment",
+  "off_topic",
+  "misleading",
+  "other",
+] as const;
+
+export const REPORT_STATUS_VALUES = ["new", "reviewing", "action_taken", "dismissed"] as const;
+
+export const reportInputSchema = z.object({
+  targetType: z.enum(REPORT_TARGET_TYPES),
+  targetId: z.string().uuid(),
+  reason: z.enum(REPORT_REASON_VALUES),
+  details: z
+    .string()
+    .trim()
+    .max(2000)
+    .transform((v) => (v === "" ? null : v))
+    .nullable()
+    .optional(),
+});
+
+export const reportStatusSchema = z.object({
+  status: z.enum([...REPORT_STATUS_VALUES, "all"]).default("new"),
+});
+
+export const updateReportStatusSchema = z.object({
+  id: z.string().uuid(),
+  status: z.enum(REPORT_STATUS_VALUES),
+});
+
+export const moderationActionSchema = z.object({
+  reportId: z.string().uuid(),
+  action: z.enum([
+    "dismiss",
+    "warn",
+    "hide_content",
+    "unhide_content",
+    "suspend_account",
+    "unsuspend_account",
+  ]),
+  notes: z
+    .string()
+    .trim()
+    .max(1000)
+    .transform((v) => (v === "" ? null : v))
+    .nullable()
+    .optional(),
+});
+
+export const complaintStatusSchema = z.object({
+  id: z.string().uuid(),
+  status: z.enum(REPORT_STATUS_VALUES),
+  notes: z
+    .string()
+    .trim()
+    .max(1000)
+    .transform((v) => (v === "" ? null : v))
+    .nullable()
+    .optional(),
+});
+
+const requiredUrl = z
+  .string()
+  .trim()
+  .min(4, "Add the link to the content")
+  .max(500)
+  .refine((v) => /^https?:\/\/\S+\.\S+/.test(v) || v.startsWith("/"), {
+    message: "Enter a full URL starting with http:// or https://",
+  });
+
+export const copyrightComplaintSchema = z.object({
+  claimantName: z.string().trim().min(2, "Add your full legal name").max(120),
+  claimantEmail: z.string().trim().email("Enter a valid email").max(255),
+  organisation: z.string().trim().max(160).nullable().optional(),
+  address: z.string().trim().max(400).nullable().optional(),
+  copyrightedWork: z.string().trim().min(10, "Describe the work you own").max(2000),
+  originalUrl: optionalUrl,
+  infringingUrl: requiredUrl,
+  infringingDescription: z.string().trim().max(2000).nullable().optional(),
+  goodFaith: z.literal(true, { message: "Please confirm the good-faith statement" }),
+  accuracyStatement: z.literal(true, { message: "Please confirm the accuracy statement" }),
+  signature: z.string().trim().min(2, "Type your name as an electronic signature").max(120),
+});
