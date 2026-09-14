@@ -5,6 +5,7 @@ import {
   moderationActionSchema,
   reportInputSchema,
   reportStatusSchema,
+  updateReportStatusSchema,
   complaintStatusSchema,
 } from "@/lib/validation";
 
@@ -288,15 +289,7 @@ export const listReports = createServerFn({ method: "GET" })
 
 export const setReportStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) =>
-    reportStatusSchema
-      .extend(reportInputSchema.pick({}).shape)
-      .parse({ status: (input as { status: string }).status }) &&
-    ({ id: (input as { id: string }).id, status: (input as { status: string }).status } as {
-      id: string;
-      status: string;
-    }),
-  )
+  .inputValidator((input: unknown) => updateReportStatusSchema.parse(input))
   .handler(async ({ data, context }) => {
     await requireStaff(context.userId);
     const db = await admin();
