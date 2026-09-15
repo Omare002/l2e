@@ -13,6 +13,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as HallOfFameRouteImport } from './routes/hall-of-fame'
+import { Route as CopyrightComplaintRouteImport } from './routes/copyright-complaint'
 import { Route as CopyrightRouteImport } from './routes/copyright'
 import { Route as CommunityRouteImport } from './routes/community'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -50,6 +51,11 @@ const HowItWorksRoute = HowItWorksRouteImport.update({
 const HallOfFameRoute = HallOfFameRouteImport.update({
   id: '/hall-of-fame',
   path: '/hall-of-fame',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CopyrightComplaintRoute = CopyrightComplaintRouteImport.update({
+  id: '/copyright-complaint',
+  path: '/copyright-complaint',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CopyrightRoute = CopyrightRouteImport.update({
@@ -147,6 +153,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/community': typeof CommunityRoute
   '/copyright': typeof CopyrightRoute
+  '/copyright-complaint': typeof CopyrightComplaintRoute
   '/hall-of-fame': typeof HallOfFameRoute
   '/how-it-works': typeof HowItWorksRoute
   '/leaderboard': typeof LeaderboardRoute
@@ -170,6 +177,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/community': typeof CommunityRoute
   '/copyright': typeof CopyrightRoute
+  '/copyright-complaint': typeof CopyrightComplaintRoute
   '/hall-of-fame': typeof HallOfFameRoute
   '/how-it-works': typeof HowItWorksRoute
   '/leaderboard': typeof LeaderboardRoute
@@ -195,6 +203,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/community': typeof CommunityRoute
   '/copyright': typeof CopyrightRoute
+  '/copyright-complaint': typeof CopyrightComplaintRoute
   '/hall-of-fame': typeof HallOfFameRoute
   '/how-it-works': typeof HowItWorksRoute
   '/leaderboard': typeof LeaderboardRoute
@@ -220,6 +229,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/community'
     | '/copyright'
+    | '/copyright-complaint'
     | '/hall-of-fame'
     | '/how-it-works'
     | '/leaderboard'
@@ -243,6 +253,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/community'
     | '/copyright'
+    | '/copyright-complaint'
     | '/hall-of-fame'
     | '/how-it-works'
     | '/leaderboard'
@@ -267,6 +278,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/community'
     | '/copyright'
+    | '/copyright-complaint'
     | '/hall-of-fame'
     | '/how-it-works'
     | '/leaderboard'
@@ -292,6 +304,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   CommunityRoute: typeof CommunityRoute
   CopyrightRoute: typeof CopyrightRoute
+  CopyrightComplaintRoute: typeof CopyrightComplaintRoute
   HallOfFameRoute: typeof HallOfFameRoute
   HowItWorksRoute: typeof HowItWorksRoute
   LeaderboardRoute: typeof LeaderboardRoute
@@ -335,6 +348,13 @@ declare module '@tanstack/react-router' {
       path: '/hall-of-fame'
       fullPath: '/hall-of-fame'
       preLoaderRoute: typeof HallOfFameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/copyright-complaint': {
+      id: '/copyright-complaint'
+      path: '/copyright-complaint'
+      fullPath: '/copyright-complaint'
+      preLoaderRoute: typeof CopyrightComplaintRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/copyright': {
@@ -489,6 +509,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   CommunityRoute: CommunityRoute,
   CopyrightRoute: CopyrightRoute,
+  CopyrightComplaintRoute: CopyrightComplaintRoute,
   HallOfFameRoute: HallOfFameRoute,
   HowItWorksRoute: HowItWorksRoute,
   LeaderboardRoute: LeaderboardRoute,
