@@ -13,6 +13,8 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as HallOfFameRouteImport } from './routes/hall-of-fame'
+import { Route as CopyrightComplaintRouteImport } from './routes/copyright-complaint'
+import { Route as CopyrightRouteImport } from './routes/copyright'
 import { Route as CommunityRouteImport } from './routes/community'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
@@ -26,6 +28,7 @@ import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
 import { Route as ForumIdRouteImport } from './routes/forum.$id'
 import { Route as BuildersUsernameRouteImport } from './routes/builders.$username'
 import { Route as AuthenticatedSubmitRouteImport } from './routes/_authenticated/submit'
+import { Route as AuthenticatedModerationRouteImport } from './routes/_authenticated/moderation'
 import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as ProjectsSlugStatsRouteImport } from './routes/projects_.$slug.stats'
@@ -48,6 +51,16 @@ const HowItWorksRoute = HowItWorksRouteImport.update({
 const HallOfFameRoute = HallOfFameRouteImport.update({
   id: '/hall-of-fame',
   path: '/hall-of-fame',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CopyrightComplaintRoute = CopyrightComplaintRouteImport.update({
+  id: '/copyright-complaint',
+  path: '/copyright-complaint',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CopyrightRoute = CopyrightRouteImport.update({
+  id: '/copyright',
+  path: '/copyright',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CommunityRoute = CommunityRouteImport.update({
@@ -114,6 +127,11 @@ const AuthenticatedSubmitRoute = AuthenticatedSubmitRouteImport.update({
   path: '/submit',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedModerationRoute = AuthenticatedModerationRouteImport.update({
+  id: '/moderation',
+  path: '/moderation',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedMessagesRoute = AuthenticatedMessagesRouteImport.update({
   id: '/messages',
   path: '/messages',
@@ -134,12 +152,15 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/community': typeof CommunityRoute
+  '/copyright': typeof CopyrightRoute
+  '/copyright-complaint': typeof CopyrightComplaintRoute
   '/hall-of-fame': typeof HallOfFameRoute
   '/how-it-works': typeof HowItWorksRoute
   '/leaderboard': typeof LeaderboardRoute
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/messages': typeof AuthenticatedMessagesRoute
+  '/moderation': typeof AuthenticatedModerationRoute
   '/submit': typeof AuthenticatedSubmitRoute
   '/builders/$username': typeof BuildersUsernameRoute
   '/forum/$id': typeof ForumIdRoute
@@ -155,12 +176,15 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/community': typeof CommunityRoute
+  '/copyright': typeof CopyrightRoute
+  '/copyright-complaint': typeof CopyrightComplaintRoute
   '/hall-of-fame': typeof HallOfFameRoute
   '/how-it-works': typeof HowItWorksRoute
   '/leaderboard': typeof LeaderboardRoute
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/messages': typeof AuthenticatedMessagesRoute
+  '/moderation': typeof AuthenticatedModerationRoute
   '/submit': typeof AuthenticatedSubmitRoute
   '/builders/$username': typeof BuildersUsernameRoute
   '/forum/$id': typeof ForumIdRoute
@@ -178,12 +202,15 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/community': typeof CommunityRoute
+  '/copyright': typeof CopyrightRoute
+  '/copyright-complaint': typeof CopyrightComplaintRoute
   '/hall-of-fame': typeof HallOfFameRoute
   '/how-it-works': typeof HowItWorksRoute
   '/leaderboard': typeof LeaderboardRoute
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/messages': typeof AuthenticatedMessagesRoute
+  '/_authenticated/moderation': typeof AuthenticatedModerationRoute
   '/_authenticated/submit': typeof AuthenticatedSubmitRoute
   '/builders/$username': typeof BuildersUsernameRoute
   '/forum/$id': typeof ForumIdRoute
@@ -201,12 +228,15 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/community'
+    | '/copyright'
+    | '/copyright-complaint'
     | '/hall-of-fame'
     | '/how-it-works'
     | '/leaderboard'
     | '/reset-password'
     | '/dashboard'
     | '/messages'
+    | '/moderation'
     | '/submit'
     | '/builders/$username'
     | '/forum/$id'
@@ -222,12 +252,15 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/community'
+    | '/copyright'
+    | '/copyright-complaint'
     | '/hall-of-fame'
     | '/how-it-works'
     | '/leaderboard'
     | '/reset-password'
     | '/dashboard'
     | '/messages'
+    | '/moderation'
     | '/submit'
     | '/builders/$username'
     | '/forum/$id'
@@ -244,12 +277,15 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/community'
+    | '/copyright'
+    | '/copyright-complaint'
     | '/hall-of-fame'
     | '/how-it-works'
     | '/leaderboard'
     | '/reset-password'
     | '/_authenticated/dashboard'
     | '/_authenticated/messages'
+    | '/_authenticated/moderation'
     | '/_authenticated/submit'
     | '/builders/$username'
     | '/forum/$id'
@@ -267,6 +303,8 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   CommunityRoute: typeof CommunityRoute
+  CopyrightRoute: typeof CopyrightRoute
+  CopyrightComplaintRoute: typeof CopyrightComplaintRoute
   HallOfFameRoute: typeof HallOfFameRoute
   HowItWorksRoute: typeof HowItWorksRoute
   LeaderboardRoute: typeof LeaderboardRoute
@@ -310,6 +348,20 @@ declare module '@tanstack/react-router' {
       path: '/hall-of-fame'
       fullPath: '/hall-of-fame'
       preLoaderRoute: typeof HallOfFameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/copyright-complaint': {
+      id: '/copyright-complaint'
+      path: '/copyright-complaint'
+      fullPath: '/copyright-complaint'
+      preLoaderRoute: typeof CopyrightComplaintRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/copyright': {
+      id: '/copyright'
+      path: '/copyright'
+      fullPath: '/copyright'
+      preLoaderRoute: typeof CopyrightRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/community': {
@@ -403,6 +455,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSubmitRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/moderation': {
+      id: '/_authenticated/moderation'
+      path: '/moderation'
+      fullPath: '/moderation'
+      preLoaderRoute: typeof AuthenticatedModerationRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/messages': {
       id: '/_authenticated/messages'
       path: '/messages'
@@ -430,12 +489,14 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedMessagesRoute: typeof AuthenticatedMessagesRoute
+  AuthenticatedModerationRoute: typeof AuthenticatedModerationRoute
   AuthenticatedSubmitRoute: typeof AuthenticatedSubmitRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedMessagesRoute: AuthenticatedMessagesRoute,
+  AuthenticatedModerationRoute: AuthenticatedModerationRoute,
   AuthenticatedSubmitRoute: AuthenticatedSubmitRoute,
 }
 
@@ -447,6 +508,8 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   CommunityRoute: CommunityRoute,
+  CopyrightRoute: CopyrightRoute,
+  CopyrightComplaintRoute: CopyrightComplaintRoute,
   HallOfFameRoute: HallOfFameRoute,
   HowItWorksRoute: HowItWorksRoute,
   LeaderboardRoute: LeaderboardRoute,
