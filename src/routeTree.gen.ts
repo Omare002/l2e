@@ -26,6 +26,7 @@ import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
 import { Route as ForumIdRouteImport } from './routes/forum.$id'
 import { Route as BuildersUsernameRouteImport } from './routes/builders.$username'
 import { Route as AuthenticatedSubmitRouteImport } from './routes/_authenticated/submit'
+import { Route as AuthenticatedModerationRouteImport } from './routes/_authenticated/moderation'
 import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as ProjectsSlugStatsRouteImport } from './routes/projects_.$slug.stats'
@@ -114,6 +115,11 @@ const AuthenticatedSubmitRoute = AuthenticatedSubmitRouteImport.update({
   path: '/submit',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedModerationRoute = AuthenticatedModerationRouteImport.update({
+  id: '/moderation',
+  path: '/moderation',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedMessagesRoute = AuthenticatedMessagesRouteImport.update({
   id: '/messages',
   path: '/messages',
@@ -140,6 +146,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/messages': typeof AuthenticatedMessagesRoute
+  '/moderation': typeof AuthenticatedModerationRoute
   '/submit': typeof AuthenticatedSubmitRoute
   '/builders/$username': typeof BuildersUsernameRoute
   '/forum/$id': typeof ForumIdRoute
@@ -161,6 +168,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/messages': typeof AuthenticatedMessagesRoute
+  '/moderation': typeof AuthenticatedModerationRoute
   '/submit': typeof AuthenticatedSubmitRoute
   '/builders/$username': typeof BuildersUsernameRoute
   '/forum/$id': typeof ForumIdRoute
@@ -184,6 +192,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/messages': typeof AuthenticatedMessagesRoute
+  '/_authenticated/moderation': typeof AuthenticatedModerationRoute
   '/_authenticated/submit': typeof AuthenticatedSubmitRoute
   '/builders/$username': typeof BuildersUsernameRoute
   '/forum/$id': typeof ForumIdRoute
@@ -207,6 +216,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/dashboard'
     | '/messages'
+    | '/moderation'
     | '/submit'
     | '/builders/$username'
     | '/forum/$id'
@@ -228,6 +238,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/dashboard'
     | '/messages'
+    | '/moderation'
     | '/submit'
     | '/builders/$username'
     | '/forum/$id'
@@ -250,6 +261,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/_authenticated/dashboard'
     | '/_authenticated/messages'
+    | '/_authenticated/moderation'
     | '/_authenticated/submit'
     | '/builders/$username'
     | '/forum/$id'
@@ -403,6 +415,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSubmitRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/moderation': {
+      id: '/_authenticated/moderation'
+      path: '/moderation'
+      fullPath: '/moderation'
+      preLoaderRoute: typeof AuthenticatedModerationRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/messages': {
       id: '/_authenticated/messages'
       path: '/messages'
@@ -430,12 +449,14 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedMessagesRoute: typeof AuthenticatedMessagesRoute
+  AuthenticatedModerationRoute: typeof AuthenticatedModerationRoute
   AuthenticatedSubmitRoute: typeof AuthenticatedSubmitRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedMessagesRoute: AuthenticatedMessagesRoute,
+  AuthenticatedModerationRoute: AuthenticatedModerationRoute,
   AuthenticatedSubmitRoute: AuthenticatedSubmitRoute,
 }
 
