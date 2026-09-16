@@ -6,6 +6,7 @@ import { earnedAchievements } from "@/data/community";
 import { leaderboardQuery, profileQuery, projectsQuery, userActivityQuery } from "@/lib/db";
 import { UserAvatar } from "@/components/user-avatar";
 import { MessageButton } from "@/components/messages/message-button";
+import { ReportButton } from "@/components/report-dialog";
 import { FollowButton } from "@/components/follow-button";
 import { followCountsQuery } from "@/lib/social";
 import { ACTIVITY_LABELS, relativeTime } from "@/lib/display";
@@ -92,6 +93,13 @@ function BuilderProfile() {
           <div className="mt-6 flex flex-wrap gap-2.5">
             <FollowButton targetId={profile.id} username={profile.username} />
             <MessageButton recipientId={profile.id} label={`Message ${profile.display_name}`} />
+            <ReportButton
+              targetType="profile"
+              targetId={profile.id}
+              ownerId={profile.id}
+              variant="pill"
+              label="Report profile"
+            />
           </div>
           <div className="mt-4 flex flex-wrap gap-5 font-mono text-[12px]">
             {profile.github_url ? (

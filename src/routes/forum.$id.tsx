@@ -7,6 +7,7 @@ import { LoadFailure, SkeletonLines } from "@/components/skeleton-block";
 import { discussionQuery, repliesQuery } from "@/lib/db";
 import { addReply, deleteDiscussion, deleteReply, editReply, saveDiscussion } from "@/lib/forum.functions";
 import { useAuth } from "@/hooks/use-auth";
+import { ReportButton } from "@/components/report-dialog";
 import { relativeTime } from "@/lib/display";
 import { UserAvatar } from "@/components/user-avatar";
 import { MessageButton } from "@/components/messages/message-button";
@@ -196,6 +197,7 @@ function DiscussionPage() {
             <span aria-hidden>·</span>
             <span>{relativeTime(d.created_at)}</span>
             <MessageButton recipientId={d.author_id} variant="icon" label="Message author" />
+            <ReportButton targetType="discussion" targetId={d.id} ownerId={d.author_id} />
           </div>
           <p className="mt-6 whitespace-pre-line text-[14px] leading-relaxed">{d.body}</p>
           {isOwner ? (
@@ -295,6 +297,15 @@ function DiscussionPage() {
                     {r.body}
                   </p>
                 )}
+                {editingId !== r.id ? (
+                  <div className="mt-2.5 flex flex-wrap gap-3 font-mono text-[11px] text-muted-foreground">
+                    <ReportButton
+                      targetType="discussion_reply"
+                      targetId={r.id}
+                      ownerId={r.author_id}
+                    />
+                  </div>
+                ) : null}
                 {r.author_id === userId && editingId !== r.id ? (
                   <div className="mt-2.5 flex flex-wrap gap-3 font-mono text-[11px] text-muted-foreground">
                     <button
