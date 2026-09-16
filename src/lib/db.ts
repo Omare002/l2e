@@ -16,6 +16,9 @@ import {
   type WeeklyStanding,
 } from "@/lib/public-reads.functions";
 
+const PROFILE_COLUMNS =
+  "id, username, display_name, avatar_url, bio, github_url, portfolio_url, accent_color, is_demo, created_at, updated_at";
+
 export type ProfileRow = Omit<Tables<"profiles">, "suspended_at" | "suspension_reason">;
 export type PublicProfileRow = Omit<ProfileRow, "id"> & { id: string | null };
 export type ProjectRow = Tables<"projects">;
