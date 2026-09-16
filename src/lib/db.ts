@@ -16,7 +16,7 @@ import {
   type WeeklyStanding,
 } from "@/lib/public-reads.functions";
 
-export type ProfileRow = Tables<"profiles">;
+export type ProfileRow = Omit<Tables<"profiles">, "suspended_at" | "suspension_reason">;
 export type PublicProfileRow = Omit<ProfileRow, "id"> & { id: string | null };
 export type ProjectRow = Tables<"projects">;
 export type ProjectStats = Tables<"project_stats">;
@@ -182,7 +182,11 @@ export function myProfileQuery(userId: string) {
   return queryOptions({
     queryKey: qk.myProfile(userId),
     queryFn: async (): Promise<ProfileRow | null> => {
-      const res = await supabase.from("profiles").select("*").eq("id", userId).maybeSingle();
+      const res = await supabase
+        .from("profiles")
+        .select(PROFILE_COLUMNS)
+        .eq("id", userId)
+        .maybeSingle();
       return unwrap(res, "Could not load your profile");
     },
   });
