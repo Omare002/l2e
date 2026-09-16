@@ -76,6 +76,7 @@ function Dashboard() {
   const id = userId ?? "";
 
   const { data: profile } = useQuery({ ...myProfileQuery(id), enabled: Boolean(id) });
+  const access = useQuery(moderationAccessQuery(Boolean(id)));
   const { data: projects } = useQuery({ ...myProjectsQuery(id), enabled: Boolean(id) });
   const { data: leaders } = useQuery(leaderboardQuery());
   const { data: written } = useQuery({ ...commentsWrittenQuery(id), enabled: Boolean(id) });
