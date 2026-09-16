@@ -27,6 +27,11 @@ const LABELS: Record<string, string> = {
   collaborator_declined: "declined your collaboration invite",
   new_follower: "started following you",
   project_upvoted: "upvoted your project",
+  moderation_warning: "sent you a warning from the moderation team",
+  content_hidden: "hid your content while it is reviewed",
+  content_restored: "restored your content",
+  account_suspended: "suspended your account",
+  account_restored: "reinstated your account",
 };
 
 /** Where clicking a notification should take you. */

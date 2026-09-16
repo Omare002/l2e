@@ -8,10 +8,18 @@ export function SiteFooter() {
           <span className="hidden sm:inline">· LearnToEarn Fellowship</span>
         </div>
         <div className="flex flex-wrap gap-6">
-          <a href="#" className="transition-colors duration-200 hover:text-foreground">Privacy</a>
-          <a href="#" className="transition-colors duration-200 hover:text-foreground">Terms</a>
-          <a href="#" className="transition-colors duration-200 hover:text-foreground">GitHub</a>
-          <a href="#" className="transition-colors duration-200 hover:text-foreground">X / Twitter</a>
+          <Link to="/copyright" className="transition-colors duration-200 hover:text-foreground">
+            Copyright policy
+          </Link>
+          <Link
+            to="/copyright-complaint"
+            className="transition-colors duration-200 hover:text-foreground"
+          >
+            Report infringement
+          </Link>
+          <Link to="/how-it-works" className="transition-colors duration-200 hover:text-foreground">
+            How it works
+          </Link>
         </div>
       </div>
     </footer>

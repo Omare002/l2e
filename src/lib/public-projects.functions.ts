@@ -38,7 +38,8 @@ export const getPublicProjects = createServerFn({ method: "GET" })
       .select(
         "id, owner_id, slug, title, tagline, description, demo_url, github_url, thumbnail_url, category, tech, status, published, created_at, updated_at",
       )
-      .eq("published", true);
+      .eq("published", true)
+      .eq("hidden", false);
 
     if (projectResult.error) {
       console.error("[public-projects] Could not load projects:", projectResult.error.message);
