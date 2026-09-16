@@ -23,6 +23,7 @@ import { profileInputSchema } from "@/lib/validation";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { ACTIVITY_LABELS, relativeTime } from "@/lib/display";
+import { moderationAccessQuery } from "@/lib/moderation";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -183,12 +184,22 @@ function Dashboard() {
             ) : null}
           </div>
         </div>
-        <Link
-          to="/submit"
-          className="flex min-h-11 items-center justify-center rounded-full border border-border px-5 text-[13px] font-medium transition-colors duration-200 hover:border-neon hover:bg-muted/60"
-        >
-          New submission
-        </Link>
+        <div className="flex flex-wrap gap-2.5">
+          {access.data?.isStaff ? (
+            <Link
+              to="/moderation"
+              className="flex min-h-11 items-center justify-center rounded-full border border-neon px-5 text-[13px] font-medium text-neon transition-colors duration-200 hover:bg-neon/10"
+            >
+              Moderation queue
+            </Link>
+          ) : null}
+          <Link
+            to="/submit"
+            className="flex min-h-11 items-center justify-center rounded-full border border-border px-5 text-[13px] font-medium transition-colors duration-200 hover:border-neon hover:bg-muted/60"
+          >
+            New submission
+          </Link>
+        </div>
       </header>
 
       <div className="mt-12 grid gap-4 sm:grid-cols-3">
