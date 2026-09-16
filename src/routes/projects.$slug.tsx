@@ -17,6 +17,7 @@ import { FollowButton } from "@/components/follow-button";
 import { BuiltBy } from "@/components/projects/built-by";
 import { statusLabel } from "@/data/community";
 import { recordProjectView } from "@/lib/project-stats.functions";
+import { ReportButton } from "@/components/report-dialog";
 
 export const Route = createFileRoute("/projects/$slug")({
   head: ({ params }) => ({
@@ -204,6 +205,12 @@ function ProjectPage() {
         </Link>
         <FollowButton targetId={project.owner_id} username={project.owner_username ?? undefined} />
         <MessageButton recipientId={project.owner_id} projectId={project.id} />
+        <ReportButton
+          targetType="project"
+          targetId={project.id}
+          ownerId={project.owner_id}
+          variant="pill"
+        />
       </div>
 
       <section className="mt-14">
@@ -313,6 +320,11 @@ function ProjectPage() {
                     {c.body}
                   </p>
                 )}
+                {editingId !== c.id ? (
+                  <div className="mt-2.5 flex flex-wrap gap-3 font-mono text-[11px] text-muted-foreground">
+                    <ReportButton targetType="comment" targetId={c.id} ownerId={c.author_id} />
+                  </div>
+                ) : null}
                 {c.author_id === userId && editingId !== c.id ? (
                   <div className="mt-2.5 flex flex-wrap gap-3 font-mono text-[11px] text-muted-foreground">
                     <button
