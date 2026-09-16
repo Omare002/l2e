@@ -3,6 +3,10 @@ import type { Database } from "@/integrations/supabase/types";
 
 type Client = SupabaseClient<Database>;
 
+/** Suspension fields are moderation-only and not readable by client roles. */
+export const PROFILE_COLUMNS =
+  "id, username, display_name, avatar_url, bio, github_url, portfolio_url, accent_color, is_demo, created_at, updated_at";
+
 function baseUsername(email: string | undefined, userId: string) {
   const raw = (email ?? "").split("@")[0] ?? "";
   const cleaned = raw.toLowerCase().replace(/[^a-z0-9_-]+/g, "");
@@ -15,7 +19,7 @@ export async function ensureProfile(
   userId: string,
   claims: Record<string, unknown>,
 ) {
-  const existing = await supabase.from("profiles").select("*").eq("id", userId).maybeSingle();
+  const existing = await supabase.from("profiles").select(PROFILE_COLUMNS).eq("id", userId).maybeSingle();
   if (existing.data) return existing.data;
 
   const email = typeof claims["email"] === "string" ? (claims["email"] as string) : undefined;
@@ -38,14 +42,14 @@ export async function ensureProfile(
         display_name: metaName ?? candidate,
         avatar_url: null,
       })
-      .select("*")
+      .select(PROFILE_COLUMNS)
       .single();
     if (data) return data;
     if (error && !error.message.toLowerCase().includes("duplicate")) {
       console.error("[profile] create failed:", error.message);
       throw new Error("Could not set up your profile");
     }
-    const retry = await supabase.from("profiles").select("*").eq("id", userId).maybeSingle();
+    const retry = await supabase.from("profiles").select(PROFILE_COLUMNS).eq("id", userId).maybeSingle();
     if (retry.data) return retry.data;
   }
   throw new Error("Could not set up your profile");
