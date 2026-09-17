@@ -94,7 +94,7 @@ export function notificationsQuery(userId: string | null) {
         .limit(40);
       if (error) {
         console.error("[messaging] notifications:", error.message);
-        return [];
+        throw new Error("Could not load your notifications");
       }
       return (data ?? []) as unknown as NotificationItem[];
     },

@@ -58,7 +58,7 @@ export function NotificationBell({ compact = false }: { compact?: boolean }) {
   const runSavePushSubscription = useServerFn(savePushSubscription);
   const runRemovePushSubscription = useServerFn(removePushSubscription);
   const runGetPushPublicKey = useServerFn(getPushPublicKey);
-  const { data } = useQuery(notificationsQuery(userId));
+  const { data, isError, refetch } = useQuery(notificationsQuery(userId));
   const items = data ?? [];
   const unread = items.filter((n) => !n.read_at).length;
 
@@ -204,7 +204,18 @@ export function NotificationBell({ compact = false }: { compact?: boolean }) {
               </div>
             ) : null}
             <div className="max-h-[60vh] overflow-y-auto">
-              {items.length === 0 ? (
+              {isError ? (
+                <div className="px-4 py-8 text-center text-[13px] text-muted-foreground">
+                  Your notifications couldn&apos;t load.
+                  <button
+                    type="button"
+                    onClick={() => void refetch()}
+                    className="mt-2 block w-full font-mono text-[11px] text-neon transition-colors duration-200 hover:text-foreground"
+                  >
+                    Try again
+                  </button>
+                </div>
+              ) : items.length === 0 ? (
                 <p className="px-4 py-8 text-center text-[13px] text-muted-foreground">
                   Nothing yet.
                 </p>
