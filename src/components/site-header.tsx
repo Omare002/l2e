@@ -125,7 +125,7 @@ export function SiteHeader() {
               width={1266}
               height={210}
               onError={() => setLogoError(true)}
-              className="h-auto w-[88px] max-w-full transition-opacity duration-200 group-hover:opacity-80 dark:invert"
+              className="h-auto w-[120px] max-w-full transition-opacity duration-200 group-hover:opacity-80 dark:invert"
             />
           )}
         </Link>
@@ -183,7 +183,7 @@ export function SiteHeader() {
               <span className="font-mono text-[15px] font-semibold text-foreground sm:text-base">Leaderboard</span>
             </div>
           ) : (
-            <img src={logo} alt="Leaderboard" width={1266} height={210} onError={() => setLogoError(true)} className="h-7 w-auto transition-opacity duration-200 group-hover:opacity-80 dark:invert" />
+            <img src={logo} alt="Leaderboard" width={1266} height={210} onError={() => setLogoError(true)} className="h-8 w-auto transition-opacity duration-200 group-hover:opacity-80 dark:invert" />
           )}
         </Link>
 
