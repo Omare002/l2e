@@ -9,6 +9,7 @@ import { ActiveQuests } from "@/components/active-quests";
 import { QuestHistory } from "@/components/quest-history";
 import { AvatarPicker } from "@/components/avatar-picker";
 import { UserAvatar } from "@/components/user-avatar";
+import { SubmittedProjectCard } from "@/components/dashboard/submitted-project-card";
 import { earnedAchievements } from "@/data/community";
 import { deleteProject, saveProfile, setProjectVisibility } from "@/lib/app.functions";
 import {
