@@ -40,12 +40,21 @@ export const getPublicProject = createServerFn({ method: "GET" })
 
 export const getPublicLeaderboard = createServerFn({ method: "GET" }).handler(async () => {
   const db = await admin();
-  const res = await db
-    .from("leaderboard")
-    .select("*")
-    .order("rank", { ascending: true })
-    .limit(100);
-  if (res.error) fail("Could not load the leaderboard", res.error.message);
+  const read = () =>
+    db.from("leaderboard").select("*").order("rank", { ascending: true }).limit(100);
+
+  let res = await read();
+  if (res.error) {
+    // Transient backend hiccups (clock skew on key validation, brief network
+    // blips) must never blank the page: retry once, then degrade to empty.
+    console.error("[public-reads] leaderboard retry after:", res.error.message);
+    await new Promise((r) => setTimeout(r, 250));
+    res = await read();
+  }
+  if (res.error) {
+    console.error("[public-reads] Could not load the leaderboard:", res.error.message);
+    return [];
+  }
   return res.data ?? [];
 });
 
