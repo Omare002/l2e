@@ -240,63 +240,17 @@ function Dashboard() {
         <h2 className="text-[15px] font-semibold tracking-tight">Submitted projects</h2>
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
           {mine.map((p) => (
-            <div key={p.id} className={`${CARD} lift-hover px-5 py-5`}>
-              <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
-                <Link
-                  to="/projects/$slug"
-                  params={{ slug: p.slug ?? "" }}
-                  className="truncate text-[14px] font-medium tracking-tight transition-colors duration-200 hover:text-neon"
-                >
-                  {p.title}
-                </Link>
-                <span
-                  className={`glass-pill shrink-0 px-2.5 py-0.5 font-mono text-[10px] ${
-                    p.published ? "border-neon/35 text-neon" : "text-on-dark-muted"
-                  }`}
-                >
-                  {p.published ? "Public" : "Private"}
-                </span>
-              </div>
-              <p className="mt-2 line-clamp-2 text-[13px] leading-relaxed text-muted-foreground">
-                {p.tagline}
-              </p>
-              <div className="mt-4 flex flex-wrap items-center gap-4 font-mono text-[11px] tabular-nums text-muted-foreground">
-                <span>{(p.vote_count ?? 0).toLocaleString()} upvotes</span>
-                <span>{p.comment_count ?? 0} comments</span>
-              </div>
-              <div className="mt-4 flex flex-wrap gap-2">
-                <Link
-                  to="/submit"
-                  search={{ id: p.id ?? undefined }}
-                  className="flex min-h-10 items-center rounded-full border border-border px-4 text-[12px] transition-colors duration-200 hover:border-neon"
-                >
-                  Edit
-                </Link>
-                <button
-                  type="button"
-                  disabled={visibilityMutation.isPending}
-                  onClick={() =>
-                    visibilityMutation.mutate({ id: p.id!, published: !p.published })
-                  }
-                  className="flex min-h-10 items-center rounded-full border border-border px-4 text-[12px] transition-colors duration-200 hover:border-neon disabled:opacity-60"
-                >
-                  {p.published ? "Make private" : "Make public"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setConfirmDelete({ id: p.id!, title: p.title ?? "this project" })}
-                  className="flex min-h-10 items-center rounded-full border border-border px-4 text-[12px] text-muted-foreground transition-colors duration-200 hover:border-destructive hover:text-destructive"
-                >
-                  Delete
-                </button>
-              </div>
-              {!p.published ? (
-                <p className="mt-3 text-[12px] text-muted-foreground">
-                  Hidden from the showcase, search and the leaderboard. Your upvotes are kept.
-                </p>
-              ) : null}
-
-            </div>
+            <SubmittedProjectCard
+              key={p.id}
+              project={p}
+              isVisibilityPending={visibilityMutation.isPending}
+              onToggleVisibility={() =>
+                visibilityMutation.mutate({ id: p.id!, published: !p.published })
+              }
+              onDeleteRequest={() =>
+                setConfirmDelete({ id: p.id!, title: p.title ?? "this project" })
+              }
+            />
           ))}
           {mine.length === 0 ? (
             <p className="text-[13px] text-muted-foreground">
