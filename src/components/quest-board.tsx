@@ -44,25 +44,25 @@ export function QuestBoard({ limit = 6 }: { limit?: number }) {
                 params={{ id: q.id }}
                 className="surface-card lift-hover block p-5"
               >
-                <div className="flex items-center justify-between gap-3">
-                  <span className="glass-pill-dark px-2.5 py-1 font-mono text-[10px] text-on-dark">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <span className="glass-pill-dark px-2.5 py-1 font-mono text-xs text-on-dark">
                     {QUEST_KIND_LABEL[q.kind as QuestKind] ?? "Quest"}
                   </span>
-                  <span className="font-mono text-[10px] text-on-dark-muted">
+                  <span className="font-mono text-xs text-card-muted">
                     {finished
                       ? "Finished"
                       : `${timeLeft(q.ends_at)} · ${new Date(q.ends_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}`}
                   </span>
                 </div>
-                <h3 className="mt-4 text-[15px] font-semibold tracking-tight text-on-dark">
+                <h3 className="mt-4 text-lg font-semibold tracking-normal text-on-dark">
                   {q.title}
                 </h3>
                 {q.task ? (
-                  <p className="mt-1 font-mono text-[11px] text-on-dark-muted">
+                  <p className="mt-1 font-mono text-xs text-card-muted">
                     Task: {q.task.title}
                   </p>
                 ) : null}
-                <div className="mt-4 flex flex-wrap items-center gap-4 font-mono text-[11px] text-on-dark-muted">
+                <div className="mt-4 flex flex-wrap items-center gap-4 font-mono text-xs text-card-muted">
                   <span className="flex items-center gap-1.5">
                     <Users className="size-3.5" /> {accepted} racing
                   </span>

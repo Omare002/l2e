@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -72,7 +73,7 @@ function QuestsIndex() {
 
       {thisWeekTask ? (
         <div className="glass-panel mt-9 p-6 sm:p-8">
-          <div className="font-mono text-[11px] text-muted-foreground">
+          <div className="font-mono text-xs text-muted-foreground">
             This week's task · week {season.week}
           </div>
           <h2 className="mt-2 text-xl font-semibold tracking-tight sm:text-2xl">
@@ -81,7 +82,7 @@ function QuestsIndex() {
           <p className="mt-3 max-w-2xl text-[14px] leading-relaxed text-muted-foreground">
             {thisWeekTask.prompt}
           </p>
-          <div className="mt-4 font-mono text-[11px] text-muted-foreground">
+          <div className="mt-4 font-mono text-xs text-muted-foreground">
             {timeLeft(thisWeekTask.ends_at)}
           </div>
         </div>
@@ -89,13 +90,13 @@ function QuestsIndex() {
 
       <div className="mt-8">
         {isAuthenticated ? (
-          <button
+          <Button
             type="button"
             onClick={() => setOpen((o) => !o)}
             className="min-h-12 w-full rounded-full bg-foreground px-5 text-[14px] font-medium text-background transition-colors duration-200 hover:bg-foreground/90 sm:w-auto"
           >
             {open ? "Cancel" : "Start a quest"}
-          </button>
+          </Button>
         ) : (
           <p className="text-[13px] text-muted-foreground">
             <Link to="/auth" className="underline underline-offset-4 hover:text-neon">
@@ -115,8 +116,8 @@ function QuestsIndex() {
       ) : null}
 
       <section className="mt-12">
-        <h2 className="text-[13px] font-medium">How a quest is won</h2>
-        <ul className="mt-4 grid gap-2.5 text-[13px] leading-relaxed text-muted-foreground">
+        <h2 className="text-lg font-semibold">How a quest is won</h2>
+        <ul className="mt-4 grid gap-2.5 text-sm leading-relaxed text-muted-foreground">
           <li>Only upvotes landing between the quest start and its deadline count.</li>
           <li>You cannot upvote your own project — self-votes are refused everywhere on the site.</li>
           <li>One upvote per person per project, so nobody can stack votes.</li>
@@ -132,7 +133,7 @@ function QuestsIndex() {
       </section>
 
       <section className="mt-12">
-        <h2 className="text-[13px] font-medium">Live quests</h2>
+        <h2 className="text-lg font-semibold">Live quests</h2>
         {quests.isLoading ? (
           <SkeletonLines rows={3} />
         ) : quests.isError ? (
@@ -152,7 +153,7 @@ function QuestsIndex() {
 
       {past.length > 0 ? (
         <section className="mt-12">
-          <h2 className="text-[13px] font-medium">Finished</h2>
+          <h2 className="text-lg font-semibold">Finished</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             {past.map((q) => (
               <QuestCard key={q.id} quest={q} />
@@ -185,30 +186,30 @@ function QuestCard({ quest }: { quest: QuestListRow }) {
     <div className="surface-card lift-hover p-5 sm:p-6">
       <Link to="/quests/$id" params={{ id: quest.id }} className="block">
       <div className="flex flex-wrap items-center gap-2">
-        <span className="glass-pill min-w-0 truncate px-2.5 py-1 font-mono text-[10px] text-on-dark-muted">
+        <span className="glass-pill-dark min-w-0 truncate px-2.5 py-1 font-mono text-xs text-card-muted">
           {QUEST_KIND_LABEL[quest.kind as QuestKind] ?? "Quest"}
         </span>
         <span
-          className={`glass-pill shrink-0 px-2.5 py-1 font-mono text-[10px] ${
-            openToAll ? "border-neon/35 text-neon" : "text-on-dark-muted"
+          className={`glass-pill-dark shrink-0 px-2.5 py-1 font-mono text-xs ${
+            openToAll ? "border-neon/35 text-neon" : "text-card-muted"
           }`}
         >
           {questAccessLabel(quest)}
         </span>
-        <span className="ml-auto shrink-0 font-mono text-[10px] text-on-dark-muted">
+        <span className="ml-auto shrink-0 font-mono text-xs text-card-muted">
           {timeLeft(quest.ends_at)}
         </span>
       </div>
-      <h3 className="mt-4 text-[15px] font-semibold tracking-tight text-on-dark">{quest.title}</h3>
+      <h3 className="mt-4 text-lg font-semibold tracking-normal text-on-dark">{quest.title}</h3>
       {quest.task ? (
-        <p className="mt-1 font-mono text-[11px] text-on-dark-muted">Task: {quest.task.title}</p>
+        <p className="mt-1 font-mono text-xs text-card-muted">Task: {quest.task.title}</p>
       ) : null}
       {quest.description ? (
-        <p className="mt-2 line-clamp-2 text-[13px] leading-relaxed text-on-dark-muted">
+        <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-card-muted">
           {quest.description}
         </p>
       ) : null}
-      <div className="mt-5 flex items-center gap-4 font-mono text-[11px] text-on-dark-muted">
+      <div className="mt-5 flex items-center gap-4 font-mono text-xs text-card-muted">
         <span className="flex items-center gap-1.5">
           <Users className="size-3.5" /> {accepted}
         </span>
@@ -220,25 +221,25 @@ function QuestCard({ quest }: { quest: QuestListRow }) {
       </div>
       </Link>
       {live ? (
-        <div className="mt-4">
+        <div className="mt-4 border-t border-card-border pt-4">
           {!isAuthenticated ? (
             <Link
               to="/auth"
-              className="flex min-h-10 items-center justify-center rounded-full border border-border px-4 text-[12px] text-on-dark-muted transition-colors duration-200 hover:border-neon hover:text-neon"
+              className="flex min-h-10 items-center justify-center rounded-full border border-border px-4 text-[13px] text-card-muted transition-colors duration-200 hover:border-neon hover:text-neon"
             >
               Sign in to enter
             </Link>
           ) : openToAll ? (
-            <button
+            <Button
               type="button"
               disabled={join.isPending}
               onClick={() => join.mutate()}
-              className="flex min-h-10 w-full items-center justify-center rounded-full bg-foreground px-4 text-[12px] font-medium text-background transition-colors duration-200 hover:bg-foreground/90 disabled:opacity-60 sm:w-auto"
+              variant="cardPrimary" size="card" className="w-full sm:w-auto"
             >
               {join.isPending ? "Entering…" : "Enter quest"}
-            </button>
+            </Button>
           ) : (
-            <span className="font-mono text-[11px] text-on-dark-muted">
+            <span className="font-mono text-xs text-card-muted">
               Private — invitation only
             </span>
           )}
@@ -305,7 +306,7 @@ function QuestForm({
       className="glass-panel mt-6 grid gap-4 p-6"
     >
       <div className="grid gap-2">
-        <label className="text-[12px] text-muted-foreground" htmlFor="quest-title">
+        <label className="text-[13px] text-muted-foreground" htmlFor="quest-title">
           Quest name
         </label>
         <input
@@ -318,7 +319,7 @@ function QuestForm({
       </div>
 
       <div className="grid gap-2">
-        <label className="text-[12px] text-muted-foreground" htmlFor="quest-desc">
+        <label className="text-[13px] text-muted-foreground" htmlFor="quest-desc">
           What's the challenge?
         </label>
         <textarea
@@ -332,24 +333,24 @@ function QuestForm({
 
       <div className="grid gap-2 sm:grid-cols-2">
         <div className="grid gap-2">
-          <span className="text-[12px] text-muted-foreground">Type</span>
+          <span className="text-[13px] text-muted-foreground">Type</span>
           <div className="flex flex-wrap gap-2">
             {(Object.keys(QUEST_KIND_LABEL) as QuestKind[]).map((k) => (
-              <button
+              <Button
                 key={k}
                 type="button"
                 onClick={() => setKind(k)}
-                className={`glass-pill px-3 py-1.5 font-mono text-[11px] transition-colors duration-200 ${
+                className={`glass-pill px-3 py-1.5 font-mono text-xs transition-colors duration-200 ${
                   kind === k ? "border-neon/45 text-neon" : "text-muted-foreground"
                 }`}
               >
                 {QUEST_KIND_LABEL[k]}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
         <div className="grid gap-2">
-          <label className="text-[12px] text-muted-foreground" htmlFor="quest-ends">
+          <label className="text-[13px] text-muted-foreground" htmlFor="quest-ends">
             Deadline
           </label>
           <input
@@ -363,25 +364,25 @@ function QuestForm({
       </div>
 
       <div className="grid gap-2">
-        <span className="text-[12px] text-muted-foreground">Who can enter</span>
+        <span className="text-[13px] text-muted-foreground">Who can enter</span>
         <div className="flex flex-wrap gap-2">
           {([
             ["public", "Open — anyone can enter"],
             ["private", "Private — invite only"],
           ] as const).map(([value, label]) => (
-            <button
+            <Button
               key={value}
               type="button"
               onClick={() => setVisibility(value)}
-              className={`glass-pill px-3 py-1.5 font-mono text-[11px] transition-colors duration-200 ${
+              className={`glass-pill px-3 py-1.5 font-mono text-xs transition-colors duration-200 ${
                 visibility === value ? "border-neon/45 text-neon" : "text-muted-foreground"
               }`}
             >
               {label}
-            </button>
+            </Button>
           ))}
         </div>
-        <p className="text-[12px] text-muted-foreground">
+        <p className="text-[13px] text-muted-foreground">
           {visibility === "public"
             ? "Listed publicly and any signed-in builder can enter."
             : "Only the builders you invite can enter."}
@@ -389,7 +390,7 @@ function QuestForm({
       </div>
 
       <div className="grid gap-2">
-        <label className="text-[12px] text-muted-foreground" htmlFor="quest-invite">
+        <label className="text-[13px] text-muted-foreground" htmlFor="quest-invite">
           Invite builders
         </label>
         <input
@@ -403,13 +404,13 @@ function QuestForm({
           {(people.data ?? []).map((p) => {
             const on = invite.includes(p.id);
             return (
-              <button
+              <Button
                 key={p.id}
                 type="button"
                 onClick={() =>
                   setInvite((prev) => (on ? prev.filter((i) => i !== p.id) : [...prev, p.id]))
                 }
-                className={`glass-pill flex items-center gap-2 px-2.5 py-1.5 text-[12px] transition-colors duration-200 ${
+                className={`glass-pill flex items-center gap-2 px-2.5 py-1.5 text-[13px] transition-colors duration-200 ${
                   on ? "border-neon/45 text-neon" : "text-muted-foreground"
                 }`}
               >
@@ -420,24 +421,24 @@ function QuestForm({
                   size={20}
                 />
                 {p.display_name}
-              </button>
+              </Button>
             );
           })}
           {(people.data ?? []).length === 0 ? (
-            <span className="text-[12px] text-muted-foreground">
+            <span className="text-[13px] text-muted-foreground">
               Follow builders or search by name to invite them.
             </span>
           ) : null}
         </div>
       </div>
 
-      <button
+      <Button
         type="submit"
         disabled={create.isPending || title.trim().length < 3}
         className="min-h-12 w-full rounded-full sm:w-auto sm:justify-self-start bg-foreground px-5 text-[14px] font-medium text-background transition-colors duration-200 hover:bg-foreground/90 disabled:opacity-50"
       >
         {create.isPending ? "Creating…" : "Create quest"}
-      </button>
+      </Button>
     </form>
   );
 }

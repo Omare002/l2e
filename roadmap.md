@@ -3,3 +3,6 @@
 - [x] Verify refresh and public home rendering with focused browser/build checks.
 - [x] Fit the complete mobile header at 320–430px without changing desktop navigation.
 - [x] Verify the hamburger and expandable Community menu at each requested mobile width.
+- [ ] Refine shared card surfaces, typography, and primary/secondary/destructive action hierarchy without changing behavior.
+- [ ] Apply consistent hierarchy across project, quest, dashboard, and community cards.
+- [ ] Verify real content and existing actions at desktop and mobile sizes in both themes.

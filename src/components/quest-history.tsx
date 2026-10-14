@@ -19,8 +19,8 @@ export function QuestHistory() {
   return (
     <section className="mt-14 sm:mt-16">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
-        <h2 className="text-[15px] font-semibold tracking-tight">Quest history</h2>
-        <Link to="/quests" className="font-mono text-[11px] text-muted-foreground hover:text-neon">
+        <h2 className="text-lg font-semibold tracking-normal">Quest history</h2>
+        <Link to="/quests" className="font-mono text-xs text-muted-foreground hover:text-neon">
           All quests →
         </Link>
       </div>
@@ -47,25 +47,25 @@ export function QuestHistory() {
                 params={{ id: q.id }}
                 className="surface-card lift-hover block p-5"
               >
-                <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
-                  <span className="glass-pill min-w-0 truncate px-2.5 py-1 font-mono text-[10px] text-on-dark-muted">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <span className="glass-pill-dark min-w-0 truncate px-2.5 py-1 font-mono text-xs text-card-muted">
                     {QUEST_KIND_LABEL[q.kind as QuestKind] ?? "Quest"}
                   </span>
-                  <span className="shrink-0 text-right font-mono text-[10px] text-on-dark-muted">
+                  <span className="shrink-0 text-right font-mono text-xs text-card-muted">
                     {finished
                       ? `Ended ${new Date(q.ends_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}`
                       : `${timeLeft(q.ends_at)} · ${new Date(q.ends_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}`}
                   </span>
                 </div>
-                <h3 className="mt-4 text-[15px] font-semibold tracking-tight text-on-dark">
+                <h3 className="mt-4 text-lg font-semibold tracking-normal text-on-dark">
                   {q.title}
                 </h3>
                 {q.task ? (
-                  <p className="mt-1 font-mono text-[11px] text-on-dark-muted">
+                  <p className="mt-1 font-mono text-xs text-card-muted">
                     Task: {q.task.title}
                   </p>
                 ) : null}
-                <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1.5 font-mono text-[11px] text-on-dark-muted">
+                <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1.5 font-mono text-xs text-card-muted">
                   <span className="flex items-center gap-1.5">
                     <Users className="size-3.5" /> {accepted} racing
                   </span>

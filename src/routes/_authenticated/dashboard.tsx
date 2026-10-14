@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { CollaborationInvites } from "@/components/projects/collaboration-invites";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
@@ -49,7 +50,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 
 const CARD = "surface-card";
 const FIELD =
-  "mt-2 w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-3 text-[14px] outline-none transition-colors duration-200 focus:border-neon";
+  "mt-2 w-full rounded-lg border border-card-border bg-card-subtle text-card-foreground px-3.5 py-3 text-[14px] outline-none transition-colors duration-200 focus:border-neon";
 
 function RankSparkline({ points }: { points: number[] }) {
   if (points.length < 2) return <div className="h-16" />;
@@ -180,7 +181,7 @@ function Dashboard() {
             <h1 className="truncate text-2xl font-semibold tracking-tight sm:text-3xl">
               {profile?.display_name ?? "Your profile"}
             </h1>
-            <p className="mt-1 font-mono text-[12px] text-muted-foreground">@{profile?.username}</p>
+            <p className="mt-1 font-mono text-[13px] text-muted-foreground">@{profile?.username}</p>
             {profile?.bio ? (
               <p className="mt-3 text-[14px] leading-relaxed text-muted-foreground">{profile.bio}</p>
             ) : null}
@@ -197,7 +198,7 @@ function Dashboard() {
           ) : null}
           <Link
             to="/submit"
-            className="flex min-h-11 items-center justify-center rounded-full border border-border px-5 text-[13px] font-medium transition-colors duration-200 hover:border-neon hover:bg-muted/60"
+            className="flex min-h-11 items-center justify-center rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors duration-200 hover:bg-primary/90"
           >
             New submission
           </Link>
@@ -210,34 +211,34 @@ function Dashboard() {
           ["Total upvotes", votes.toLocaleString()],
           ["Feedback received", String(comments)],
         ].map(([label, value]) => (
-          <div key={label} className={`${CARD} lift-hover px-5 py-5 sm:px-6 sm:py-6`}>
-            <div className="text-2xl font-semibold tracking-tight tabular-nums">{value}</div>
-            <div className="mt-2 text-[12px] text-muted-foreground">{label}</div>
+          <div key={label} className={`${CARD} px-5 py-5 sm:px-6 sm:py-6`}>
+            <div className="text-3xl font-semibold tracking-normal tabular-nums text-card-foreground">{value}</div>
+            <div className="mt-2 text-sm text-card-muted">{label}</div>
           </div>
         ))}
       </div>
 
       <section className="mt-6">
-        <div className={`${CARD} lift-hover px-5 py-5 sm:px-6 sm:py-6`}>
+        <div className={`${CARD} px-5 py-5 sm:px-6 sm:py-6`}>
           <div className="flex flex-wrap items-baseline justify-between gap-3">
-            <h2 className="text-[15px] font-semibold tracking-tight">Ranking trend</h2>
-            <span className="font-mono text-[11px] text-muted-foreground">Last 7 days</span>
+            <h2 className="text-xl font-semibold tracking-normal">Ranking trend</h2>
+            <span className="font-mono text-xs text-muted-foreground">Last 7 days</span>
           </div>
           <div className="mt-4">
             <RankSparkline points={rankPoints} />
           </div>
           {rankPoints.length > 1 ? (
-            <p className="mt-3 text-[12px] text-muted-foreground">
+            <p className="mt-3 text-[13px] text-muted-foreground">
               Moved from #{rankPoints[0]} to #{rankPoints[rankPoints.length - 1]}.
             </p>
           ) : (
-            <p className="mt-3 text-[12px] text-muted-foreground">Trend appears as votes come in.</p>
+            <p className="mt-3 text-[13px] text-muted-foreground">Trend appears as votes come in.</p>
           )}
         </div>
       </section>
 
       <section className="mt-14 sm:mt-16">
-        <h2 className="text-[15px] font-semibold tracking-tight">Submitted projects</h2>
+        <h2 className="text-xl font-semibold tracking-normal">Submitted projects</h2>
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
           {mine.map((p) => (
             <SubmittedProjectCard
@@ -253,7 +254,7 @@ function Dashboard() {
             />
           ))}
           {mine.length === 0 ? (
-            <p className="text-[13px] text-muted-foreground">
+            <p className="text-[13px] text-card-muted">
               Nothing submitted yet — publish your first project to enter the race.
             </p>
           ) : null}
@@ -261,10 +262,10 @@ function Dashboard() {
       </section>
 
       <section className="mt-14 sm:mt-16">
-        <h2 className="text-[15px] font-semibold tracking-tight">Recent activity</h2>
+        <h2 className="text-xl font-semibold tracking-normal">Recent activity</h2>
         <ol className="mt-5 border-l border-border pl-5 sm:pl-6">
           {(activity ?? []).length === 0 ? (
-            <li className="text-[13px] text-muted-foreground">No activity yet.</li>
+            <li className="text-[13px] text-card-muted">No activity yet.</li>
           ) : (
             (activity ?? []).map((a) => (
               <li key={a.id} className="relative pb-6 last:pb-0">
@@ -273,7 +274,7 @@ function Dashboard() {
                   You {ACTIVITY_LABELS[a.type] ?? a.type}{" "}
                   {a.project ? <span className="font-medium">{a.project.title}</span> : null}
                 </div>
-                <span className="mt-1 block font-mono text-[11px] text-muted-foreground/70">
+                <span className="mt-1 block font-mono text-xs text-muted-foreground/70">
                   {relativeTime(a.created_at)}
                 </span>
               </li>
@@ -287,34 +288,34 @@ function Dashboard() {
           role="dialog"
           aria-modal="true"
           aria-label="Confirm project deletion"
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-ink/60 p-4 backdrop-blur-sm"
           onClick={() => setConfirmDelete(null)}
         >
           <div
             className="glass-panel w-full max-w-sm p-6"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-[15px] font-semibold tracking-tight">Delete this project?</h3>
+            <h3 className="text-xl font-semibold tracking-normal">Delete this project?</h3>
             <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
               “{confirmDelete.title}” and its comments and upvotes will be removed for good. This
               cannot be undone — make it private instead if you only want to hide it.
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
-              <button
+              <Button
                 type="button"
                 disabled={removeMutation.isPending}
                 onClick={() => removeMutation.mutate(confirmDelete.id)}
                 className="min-h-11 rounded-full bg-destructive px-5 text-[13px] font-medium text-destructive-foreground transition-opacity duration-200 hover:opacity-90 disabled:opacity-60"
               >
                 {removeMutation.isPending ? "Deleting…" : "Delete permanently"}
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 onClick={() => setConfirmDelete(null)}
                 className="min-h-11 rounded-full border border-border px-5 text-[13px] transition-colors duration-200 hover:border-neon"
               >
                 Keep it
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -324,7 +325,7 @@ function Dashboard() {
       <QuestHistory />
 
       <section className="mt-14 sm:mt-16">
-        <h2 className="text-[15px] font-semibold tracking-tight">Achievements</h2>
+        <h2 className="text-xl font-semibold tracking-normal">Achievements</h2>
         <div className="mt-5">
           <AchievementTiles
             keys={earnedAchievements({
@@ -338,7 +339,7 @@ function Dashboard() {
       </section>
 
       <section className="mt-14 sm:mt-16">
-        <h2 className="text-[15px] font-semibold tracking-tight">Edit profile</h2>
+        <h2 className="text-xl font-semibold tracking-normal">Edit profile</h2>
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -356,9 +357,9 @@ function Dashboard() {
             }
             saveMutation.mutate(parsed.data);
           }}
-          className={`${CARD} mt-5 grid gap-5 p-5 sm:grid-cols-2 sm:p-6`}
+          className={`${CARD} mt-5 grid gap-5 p-5 text-card-muted sm:grid-cols-2 sm:p-6`}
         >
-          <label className="text-[12px] text-muted-foreground">
+          <label className="text-[13px] text-card-muted">
             Display name
             <input
               value={form.displayName}
@@ -366,7 +367,7 @@ function Dashboard() {
               className={FIELD}
             />
           </label>
-          <label className="text-[12px] text-muted-foreground">
+          <label className="text-[13px] text-card-muted">
             Username
             <input
               value={form.username}
@@ -374,7 +375,7 @@ function Dashboard() {
               className={FIELD}
             />
           </label>
-          <label className="text-[12px] text-muted-foreground">
+          <label className="text-[13px] text-card-muted">
             GitHub
             <input
               value={form.githubUrl}
@@ -383,7 +384,7 @@ function Dashboard() {
               className={FIELD}
             />
           </label>
-          <label className="text-[12px] text-muted-foreground">
+          <label className="text-[13px] text-card-muted">
             Portfolio
             <input
               value={form.portfolioUrl}
@@ -392,7 +393,7 @@ function Dashboard() {
               className={FIELD}
             />
           </label>
-          <label className="text-[12px] text-muted-foreground sm:col-span-2">
+          <label className="text-[13px] text-muted-foreground sm:col-span-2">
             Bio
             <textarea
               value={form.bio}
@@ -401,7 +402,7 @@ function Dashboard() {
               className={FIELD}
             />
           </label>
-          <div className="text-[12px] text-muted-foreground sm:col-span-2">
+          <div className="text-[13px] text-muted-foreground sm:col-span-2">
             Profile photo
             <div className="mt-3">
               {userId ? (
@@ -415,35 +416,35 @@ function Dashboard() {
             </div>
           </div>
           <div className="sm:col-span-2">
-            <button
+            <Button
               type="submit"
               disabled={saveMutation.isPending}
-              className="min-h-11 rounded-full bg-foreground px-5 text-[13px] font-medium text-background transition-colors duration-200 hover:bg-foreground/90 disabled:opacity-60"
+              variant="cardPrimary" size="card"
             >
               {saveMutation.isPending ? "Saving…" : "Save changes"}
-            </button>
+            </Button>
           </div>
         </form>
       </section>
 
       <section className="mt-14 sm:mt-16">
-        <h2 className="text-[15px] font-semibold tracking-tight">Account</h2>
-        <div className={`${CARD} mt-5 divide-y divide-border`}>
+        <h2 className="text-xl font-semibold tracking-normal">Account</h2>
+        <div className={`${CARD} mt-5 divide-y divide-card-border text-card-foreground`}>
           <div className="flex flex-wrap items-center gap-3 px-5 py-5 sm:px-6">
             <div className="min-w-0">
               <div className="text-[13px] font-medium">Email</div>
-              <div className="mt-0.5 truncate font-mono text-[11px] text-muted-foreground">
+              <div className="mt-0.5 truncate font-mono text-xs text-muted-foreground">
                 {user?.email ?? "—"}
               </div>
             </div>
-            <span className="ml-auto font-mono text-[11px] text-muted-foreground">
+            <span className="ml-auto font-mono text-xs text-muted-foreground">
               {user?.email_confirmed_at ? "Verified" : "Pending"}
             </span>
           </div>
           <div className="flex flex-wrap items-center gap-3 px-5 py-5 sm:px-6">
             <div className="min-w-0">
               <div className="text-[13px] font-medium">Connected sign-in</div>
-              <div className="mt-0.5 font-mono text-[11px] text-muted-foreground">
+              <div className="mt-0.5 font-mono text-xs text-muted-foreground">
                 {(user?.identities ?? []).map((i) => i.provider).join(", ") || "email"}
               </div>
             </div>
@@ -451,15 +452,15 @@ function Dashboard() {
           <div className="flex flex-wrap items-center gap-3 px-5 py-5 sm:px-6">
             <div className="min-w-0">
               <div className="text-[13px] font-medium">Sign out</div>
-              <div className="mt-0.5 text-[12px] text-muted-foreground">End this session.</div>
+              <div className="mt-0.5 text-[13px] text-muted-foreground">End this session.</div>
             </div>
-            <button
+            <Button
               type="button"
               onClick={signOut}
-              className="ml-auto min-h-11 rounded-full border border-border px-4 text-[12px] transition-colors duration-200 hover:border-neon hover:bg-muted/60"
+              className="ml-auto min-h-11 rounded-full border border-border px-4 text-[13px] transition-colors duration-200 hover:border-neon hover:bg-muted/60"
             >
               Sign out
-            </button>
+            </Button>
           </div>
         </div>
       </section>

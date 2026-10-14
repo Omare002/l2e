@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -18,7 +19,7 @@ const FIELD =
 function Body({ text }: { text: string }) {
   const parts = text.split(/(https?:\/\/[^\s]+)/g);
   return (
-    <p className="mt-2 whitespace-pre-wrap text-[13px] leading-relaxed text-muted-foreground">
+    <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-relaxed text-card-muted">
       {parts.map((part, i) =>
         /^https?:\/\//.test(part) ? (
           <a
@@ -26,7 +27,7 @@ function Body({ text }: { text: string }) {
             href={part}
             target="_blank"
             rel="noreferrer noopener"
-            className="break-all text-neon underline underline-offset-4"
+            className="break-all text-card-foreground underline underline-offset-4"
           >
             {part}
           </a>
@@ -84,23 +85,23 @@ export function CommunityFeed() {
     <section aria-label="Community feed">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <div>
-          <h2 className="text-[15px] font-semibold tracking-tight">Community feed</h2>
+          <h2 className="text-lg font-semibold tracking-normal">Community feed</h2>
           <p className="mt-1 text-[13px] text-muted-foreground">
             Share an update, drop a link, or talk through a quest.
           </p>
         </div>
         {isAuthenticated ? (
-          <button
+          <Button
             type="button"
             onClick={() => setOpen((v) => !v)}
-            className="min-h-10 rounded-full bg-foreground px-4 text-[12px] font-medium text-background transition-colors duration-200 hover:bg-foreground/90"
+            className="min-h-10 rounded-full bg-foreground px-4 text-[13px] font-medium text-background transition-colors duration-200 hover:bg-foreground/90"
           >
             {open ? "Close" : "Post update"}
-          </button>
+          </Button>
         ) : (
           <Link
             to="/auth"
-            className="glass-pill min-h-10 px-4 py-2 text-[12px] transition-colors duration-200 hover:text-neon"
+            className="glass-pill min-h-10 px-4 py-2 text-[13px] transition-colors duration-200 hover:text-neon"
           >
             Sign in to post
           </Link>
@@ -119,7 +120,7 @@ export function CommunityFeed() {
           }}
           className="surface-card mt-5 p-4 sm:p-5"
         >
-          <label className="block text-[12px] text-on-dark-muted">
+          <label className="block text-[13px] text-card-muted">
             Title
             <input
               value={title}
@@ -128,7 +129,7 @@ export function CommunityFeed() {
               className={FIELD}
             />
           </label>
-          <label className="mt-4 block text-[12px] text-on-dark-muted">
+          <label className="mt-4 block text-[13px] text-card-muted">
             Update
             <textarea
               value={body}
@@ -139,7 +140,7 @@ export function CommunityFeed() {
             />
           </label>
           {openQuests.length > 0 ? (
-            <label className="mt-4 block text-[12px] text-on-dark-muted">
+            <label className="mt-4 block text-[13px] text-card-muted">
               About a quest (optional)
               <select
                 value={questId}
@@ -155,13 +156,13 @@ export function CommunityFeed() {
               </select>
             </label>
           ) : null}
-          <button
+          <Button
             type="submit"
             disabled={post.isPending}
-            className="mt-5 min-h-11 rounded-full bg-neon px-5 text-[13px] font-semibold text-background transition-opacity duration-200 hover:opacity-85 disabled:opacity-50"
+            className="mt-5 min-h-11 rounded-full bg-card-action px-5 text-sm font-semibold text-card-action-foreground transition-opacity duration-200 hover:opacity-85 disabled:opacity-50"
           >
             {post.isPending ? "Posting…" : "Post to feed"}
-          </button>
+          </Button>
         </form>
       ) : null}
 
@@ -189,29 +190,29 @@ export function CommunityFeed() {
                 <span className="text-[13px] font-medium text-on-dark">
                   {p.author?.display_name ?? "Builder"}
                 </span>
-                <span className="glass-pill-dark px-2.5 py-1 font-mono text-[10px] text-on-dark">
+                <span className="glass-pill-dark px-2.5 py-1 font-mono text-xs text-on-dark">
                   {p.category}
                 </span>
                 {p.quest_title ? (
-                  <span className="glass-pill-dark flex items-center gap-1.5 px-2.5 py-1 font-mono text-[10px] text-on-dark">
+                  <span className="glass-pill-dark flex items-center gap-1.5 px-2.5 py-1 font-mono text-xs text-on-dark">
                     <Target className="size-3 text-neon" /> {p.quest_title}
                   </span>
                 ) : null}
-                <span className="font-mono text-[10px] text-on-dark-muted">
+                <span className="font-mono text-xs text-card-muted">
                   {new Date(p.created_at).toLocaleDateString(undefined, {
                     month: "short",
                     day: "numeric",
                   })}
                 </span>
               </div>
-              <h3 className="mt-3 text-[14px] font-semibold tracking-tight text-on-dark">
+              <h3 className="mt-3 text-lg font-semibold tracking-normal text-on-dark">
                 {p.title}
               </h3>
               <Body text={p.body.length > 400 ? `${p.body.slice(0, 400)}…` : p.body} />
               <Link
                 to="/forum/$id"
                 params={{ id: p.id }}
-                className="mt-3 inline-flex items-center gap-1.5 font-mono text-[11px] text-on-dark-muted transition-colors duration-200 hover:text-neon"
+                className="mt-4 inline-flex min-h-10 items-center gap-1.5 font-mono text-xs text-card-muted transition-colors duration-200 hover:text-neon"
               >
                 <MessageSquare className="size-3.5" />
                 {p.reply_count === 1 ? "1 comment" : `${p.reply_count ?? 0} comments`}

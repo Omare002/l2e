@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CalendarClock, Trophy, Users } from "lucide-react";
@@ -71,7 +72,7 @@ function CommunityPage() {
   return (
     <main className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
       <header className="max-w-2xl">
-        <span className="inline-flex items-center rounded-full border border-border bg-secondary/60 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+        <span className="inline-flex items-center rounded-full border border-border bg-secondary/60 px-3 py-1 font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
           Community
         </span>
         <h1 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl">
@@ -113,47 +114,47 @@ function CommunityPage() {
                 ).length;
                 return (
                   <li key={q.id} className="surface-card lift-hover flex flex-col p-5">
-                    <div className="flex items-center justify-between gap-3">
-                      <span className="glass-pill-dark px-2.5 py-1 font-mono text-[10px] text-on-dark">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <span className="glass-pill-dark px-2.5 py-1 font-mono text-xs text-on-dark">
                         {QUEST_KIND_LABEL[q.kind as QuestKind] ?? "Quest"}
                       </span>
-                      <span className="font-mono text-[10px] text-on-dark-muted">
+                      <span className="font-mono text-xs text-card-muted">
                         {timeLeft(q.ends_at)}
                       </span>
                     </div>
                     <Link
                       to="/quests/$id"
                       params={{ id: q.id }}
-                      className="mt-4 text-[15px] font-semibold tracking-tight text-on-dark transition-colors duration-200 hover:text-neon"
+                      className="mt-4 text-lg font-semibold tracking-normal text-on-dark transition-colors duration-200 hover:text-neon"
                     >
                       {q.title}
                     </Link>
                     {q.task ? (
-                      <p className="mt-1 font-mono text-[11px] text-on-dark-muted">
+                      <p className="mt-1 font-mono text-xs text-card-muted">
                         Task: {q.task.title}
                       </p>
                     ) : null}
-                    <div className="mt-4 flex items-center justify-between gap-3 border-t border-white/[0.06] pt-4">
-                      <span className="flex items-center gap-1.5 font-mono text-[11px] text-on-dark-muted">
+                    <div className="mt-4 flex items-center justify-between gap-3 border-t border-card-border pt-4">
+                      <span className="flex items-center gap-1.5 font-mono text-xs text-card-muted">
                         <Users className="size-3.5" /> {joined} racing
                       </span>
                       {q.kind === "challenge" ? (
-                        <span className="font-mono text-[10px] text-on-dark-muted">
+                        <span className="font-mono text-xs text-card-muted">
                           Invite only
                         </span>
                       ) : isAuthenticated ? (
-                        <button
+                        <Button
                           type="button"
                           disabled={join.isPending}
                           onClick={() => join.mutate(q.id)}
-                          className="rounded-full bg-neon px-4 py-2 text-[12px] font-semibold text-background transition-opacity duration-200 hover:opacity-85 disabled:opacity-50"
+                          className="rounded-full bg-card-action px-4 py-2 text-sm font-semibold text-card-action-foreground transition-opacity duration-200 hover:opacity-85 disabled:opacity-50"
                         >
                           {join.isPending && join.variables === q.id ? "Joining…" : "Join quest"}
-                        </button>
+                        </Button>
                       ) : (
                         <Link
                           to="/auth"
-                          className="glass-pill-dark px-4 py-2 text-[12px] font-medium text-on-dark transition-colors duration-200 hover:border-neon/40 hover:text-neon"
+                          className="glass-pill-dark px-4 py-2 text-[13px] font-medium text-on-dark transition-colors duration-200 hover:border-neon/40 hover:text-neon"
                         >
                           Sign in to join
                         </Link>
@@ -187,10 +188,10 @@ function CommunityPage() {
                       className="surface-card flex items-center justify-between gap-3 px-4 py-3 transition-colors duration-200 hover:border-neon/30"
                     >
                       <span className="min-w-0">
-                        <span className="block truncate text-[13px] font-medium text-foreground">
+                        <span className="block truncate text-sm font-medium text-card-foreground">
                           {q.title}
                         </span>
-                        <span className="mt-0.5 flex items-center gap-1.5 font-mono text-[10px] text-muted-foreground">
+                        <span className="mt-0.5 flex items-center gap-1.5 font-mono text-xs text-card-muted">
                           <CalendarClock className="size-3" />
                           {new Date(q.ends_at).toLocaleDateString(undefined, {
                             weekday: "short",
@@ -199,7 +200,7 @@ function CommunityPage() {
                           })}
                         </span>
                       </span>
-                      <span className="shrink-0 font-mono text-[11px] text-neon">
+                      <span className="shrink-0 font-mono text-xs text-neon">
                         {timeLeft(q.ends_at)}
                       </span>
                     </Link>
@@ -228,7 +229,7 @@ function CommunityPage() {
                       className="surface-card flex items-center gap-3 px-4 py-3 transition-colors duration-200 hover:border-neon/30"
                     >
                       <span
-                        className={`w-7 shrink-0 font-mono text-[11px] tabular-nums ${
+                        className={`w-7 shrink-0 font-mono text-xs tabular-nums ${
                           (b.rank ?? 99) <= 3 ? "text-neon" : "text-muted-foreground"
                         }`}
                       >
@@ -241,14 +242,14 @@ function CommunityPage() {
                         size={30}
                       />
                       <span className="min-w-0 flex-1">
-                        <span className="block truncate text-[13px] font-medium text-foreground">
+                        <span className="block truncate text-sm font-medium text-card-foreground">
                           {b.display_name}
                         </span>
-                        <span className="block truncate font-mono text-[10px] text-muted-foreground">
+                        <span className="block truncate font-mono text-xs text-card-muted">
                           @{b.username}
                         </span>
                       </span>
-                      <span className="flex shrink-0 items-center gap-1 font-mono text-[11px] text-muted-foreground">
+                      <span className="flex shrink-0 items-center gap-1 font-mono text-xs text-card-muted">
                         <Trophy className="size-3 text-neon" />
                         {b.score ?? 0}
                       </span>
@@ -259,7 +260,7 @@ function CommunityPage() {
             )}
             <Link
               to="/builders"
-              className="mt-4 inline-block font-mono text-[11px] text-muted-foreground underline underline-offset-4 transition-colors duration-200 hover:text-neon"
+              className="mt-4 inline-block font-mono text-xs text-card-muted underline underline-offset-4 transition-colors duration-200 hover:text-neon"
             >
               Browse every builder →
             </Link>

@@ -30,6 +30,14 @@
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
+  --color-card-muted: var(--card-muted);
+  --color-card-border: var(--card-border);
+  --color-card-subtle: var(--card-subtle);
+  --color-card-action: var(--card-action);
+  --color-card-action-foreground: var(--card-action-foreground);
+  --color-card-danger: var(--card-danger);
+  --shadow-card: var(--card-shadow);
+  --shadow-card-hover: var(--card-shadow-hover);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
@@ -97,7 +105,7 @@
   --secondary-foreground: oklch(0.178 0 0);
   --muted: oklch(0.94 0.002 106.42);
   /* #A5A5A5 */
-  --muted-foreground: oklch(0.71 0 0);
+  --muted-foreground: oklch(0.47 0 0);
   /* #9BE564 — soft premium green accent */
   --accent: oklch(0.871 0.205 131.6);
   --accent-foreground: oklch(0.178 0 0);
@@ -106,6 +114,14 @@
   --ink: oklch(0.178 0 0);
   --surface-dark: oklch(0.205 0 0);
   --surface-darker: oklch(0.16 0 0);
+  --card-muted: oklch(0.76 0.005 130);
+  --card-border: oklch(1 0 0 / 16%);
+  --card-subtle: oklch(1 0 0 / 6%);
+  --card-action: oklch(0.96 0.004 110);
+  --card-action-foreground: oklch(0.19 0.004 130);
+  --card-danger: oklch(0.76 0.14 24);
+  --card-shadow: 0 1px 2px oklch(0 0 0 / 8%), 0 5px 14px -10px oklch(0 0 0 / 24%);
+  --card-shadow-hover: 0 2px 4px oklch(0 0 0 / 10%), 0 8px 18px -12px oklch(0 0 0 / 30%);
   --navbar: var(--background);
   /* Glass accents — light-mode defaults; .dark overrides below */
   --glass-bg: rgb(255 255 255 / 45%);
@@ -143,7 +159,7 @@
   --foreground: #f2f3f0;
 
   /* #191C19 — cards (project cards, race track, hall of fame) */
-  --card: #191c19;
+  --card: oklch(0.245 0.007 140);
   --card-foreground: #f2f3f0;
 
   /* #202420 — elevated surfaces: dropdowns, popovers, selects, modals */
@@ -191,7 +207,7 @@
   --sidebar-ring: var(--neon);
 
   /* Card surface system read by the surface-card utility */
-  --surface-dark: #191c19;
+  --surface-dark: var(--card);
   --surface-darker: #202420;
 
   /* #151815 — navbar, one step above the page background */
@@ -242,7 +258,7 @@
   h3,
   h4 {
     font-family: var(--font-mono);
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
     text-wrap: balance;
   }
 
@@ -270,16 +286,15 @@
   );
 }
 
-/* Layer 2: the card surface. Translucent tone + a light 12px blur so cards
- * float above the ambient background instead of sitting flat on it. */
+/* Opaque surfaces keep the tonal hierarchy stable in either theme. */
 @utility surface-card {
-  background-color: color-mix(in oklab, var(--surface-dark) 88%, transparent);
-  backdrop-filter: blur(var(--glass-blur)) saturate(115%);
-  border: 1px solid var(--glass-border);
-  border-radius: calc(var(--radius) + 6px);
-  box-shadow:
-    0 1px 0 0 rgb(255 255 255 / 3%) inset,
-    0 12px 28px -20px rgb(0 0 0 / 45%);
+  background-color: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  box-shadow: var(--card-shadow);
+  overflow-wrap: anywhere;
+  min-width: 0;
   transition:
     border-color 200ms var(--ease-out-soft),
     background-color 200ms var(--ease-out-soft),
@@ -318,10 +333,8 @@
 
 /* Layer 3: project imagery, lifted a touch above its own card. */
 @utility elevated-media {
-  border-radius: 24px;
+  border-radius: 6px;
   overflow: hidden;
-  box-shadow: 0 22px 45px -30px oklch(0 0 0 / 80%);
-  transform: translateY(-2px);
 }
 
 /* Restrained hover: 3px lift, slightly deeper shadow, neutral -> neon border. */
@@ -333,12 +346,15 @@
     transform 200ms var(--ease-out-soft);
 
   &:hover {
-    transform: translateY(-3px);
-    border-color: color-mix(in oklab, var(--neon) 30%, transparent);
-    box-shadow:
-      0 1px 0 0 oklch(1 0 0 / 5%) inset,
-      0 26px 55px -30px oklch(0 0 0 / 75%);
+    transform: translateY(-2px);
+    border-color: color-mix(in oklab, var(--card-border) 75%, var(--neon));
+    box-shadow: var(--card-shadow-hover);
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lift-hover:hover { transform: none; }
+  .surface-card { transition: none; }
 }
 
 
