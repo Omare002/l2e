@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -74,8 +75,8 @@ export function ActiveQuests() {
   return (
     <section className="mt-14 sm:mt-16">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
-        <h2 className="text-[15px] font-semibold tracking-tight">My quests</h2>
-        <Link to="/quests" className="font-mono text-[11px] text-muted-foreground hover:text-neon">
+        <h2 className="text-lg font-semibold tracking-normal">My quests</h2>
+        <Link to="/quests" className="font-mono text-xs text-muted-foreground hover:text-neon">
           All quests →
         </Link>
       </div>
@@ -99,17 +100,17 @@ export function ActiveQuests() {
             return (
               <article key={row.id} className="surface-card p-5">
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-                  <span className="glass-pill-dark px-2.5 py-1 font-mono text-[10px] text-on-dark">
+                  <span className="glass-pill-dark px-2.5 py-1 font-mono text-xs text-on-dark">
                     {QUEST_KIND_LABEL[q.kind as QuestKind] ?? "Quest"}
                   </span>
                   <span
-                    className={`glass-pill-dark px-2.5 py-1 font-mono text-[10px] ${
-                      accepted ? "text-neon" : "text-on-dark-muted"
+                    className={`glass-pill-dark px-2.5 py-1 font-mono text-xs ${
+                      accepted ? "text-neon" : "text-card-muted"
                     }`}
                   >
                     {accepted ? "Active" : "Invitation pending"}
                   </span>
-                  <span className="flex items-center gap-1.5 font-mono text-[10px] text-on-dark-muted">
+                  <span className="flex items-center gap-1.5 font-mono text-xs text-card-muted">
                     <CalendarClock className="size-3" />
                     {timeLeft(q.ends_at)} · {new Date(q.ends_at).toLocaleDateString(undefined, {
                       month: "short",
@@ -121,44 +122,44 @@ export function ActiveQuests() {
                 <Link
                   to="/quests/$id"
                   params={{ id: q.id }}
-                  className="mt-4 block text-[15px] font-semibold tracking-tight text-on-dark transition-colors duration-200 hover:text-neon"
+                  className="mt-4 block text-lg font-semibold tracking-normal text-on-dark transition-colors duration-200 hover:text-neon"
                 >
                   {q.title}
                 </Link>
                 {q.task ? (
-                  <p className="mt-1.5 text-[12px] leading-relaxed text-on-dark-muted">
-                    <span className="font-mono text-[11px]">Task: {q.task.title}</span>
+                  <p className="mt-1.5 text-sm leading-relaxed text-card-muted">
+                    <span className="font-mono text-xs">Task: {q.task.title}</span>
                     {q.task.prompt ? ` — ${q.task.prompt}` : null}
                   </p>
                 ) : q.description ? (
-                  <p className="mt-1.5 text-[12px] leading-relaxed text-on-dark-muted">
+                  <p className="mt-1.5 text-sm leading-relaxed text-card-muted">
                     {q.description}
                   </p>
                 ) : null}
 
                 {!accepted ? (
                   <div className="mt-4 flex flex-wrap gap-2.5">
-                    <button
+                    <Button
                       type="button"
                       disabled={respond.isPending}
                       onClick={() => respond.mutate({ questId: q.id, action: "accept" })}
-                      className="min-h-11 rounded-full bg-neon px-5 text-[13px] font-semibold text-background transition-opacity duration-200 hover:opacity-85 disabled:opacity-50"
+                      className="min-h-11 rounded-full bg-card-action px-5 text-sm font-semibold text-card-action-foreground transition-opacity duration-200 hover:opacity-85 disabled:opacity-50"
                     >
                       Accept quest
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       type="button"
                       disabled={respond.isPending}
                       onClick={() => respond.mutate({ questId: q.id, action: "decline" })}
-                      className="glass-pill-dark min-h-11 px-5 text-[13px] text-on-dark-muted transition-colors duration-200 hover:text-on-dark"
+                      className="glass-pill-dark min-h-11 px-5 text-[13px] text-card-muted transition-colors duration-200 hover:text-on-dark"
                     >
                       Decline
-                    </button>
+                    </Button>
                   </div>
                 ) : (
-                  <div className="mt-4 border-t border-white/[0.06] pt-4">
+                  <div className="mt-4 border-t border-card-border pt-4">
                     {row.project ? (
-                      <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] text-on-dark">
+                      <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-on-dark">
                         <CheckCircle2 className="size-3.5 text-neon" />
                         Submitted:{" "}
                         <Link
@@ -168,7 +169,7 @@ export function ActiveQuests() {
                         >
                           {row.project.title}
                         </Link>
-                        <span className="font-mono text-[10px] text-on-dark-muted">
+                        <span className="font-mono text-xs text-card-muted">
                           {row.submitted_at
                             ? `on ${new Date(row.submitted_at).toLocaleDateString(undefined, {
                                 month: "short",
@@ -179,13 +180,13 @@ export function ActiveQuests() {
                         </span>
                       </p>
                     ) : (
-                      <p className="text-[12px] text-on-dark-muted">
+                      <p className="text-[13px] text-card-muted">
                         No project submitted yet.
                       </p>
                     )}
 
                     {q.creator_id !== userId ? (
-                      <button
+                      <Button
                         type="button"
                         disabled={leave.isPending}
                         onClick={() => {
@@ -194,14 +195,14 @@ export function ActiveQuests() {
                             : "Leave this quest? You can enter again while it's open.";
                           if (window.confirm(msg)) leave.mutate(q.id);
                         }}
-                        className="glass-pill-dark mt-3 min-h-10 px-4 text-[12px] text-on-dark-muted transition-colors duration-200 hover:text-red-400 disabled:opacity-60"
+                        className="glass-pill-dark mt-3 min-h-10 px-4 text-[13px] text-card-muted transition-colors duration-200 hover:text-card-danger disabled:opacity-60"
                       >
                         Leave quest
-                      </button>
+                      </Button>
                     ) : null}
 
                     {locked ? (
-                      <p className="mt-3 flex items-center gap-1.5 font-mono text-[11px] text-on-dark-muted">
+                      <p className="mt-3 flex items-center gap-1.5 font-mono text-xs text-card-muted">
                         <Lock className="size-3" /> Submissions are locked
                       </p>
                     ) : (
@@ -214,7 +215,7 @@ export function ActiveQuests() {
                             e.target.value &&
                             submit.mutate({ questId: q.id, projectId: e.target.value })
                           }
-                          className="min-h-11 w-full rounded-lg border border-white/[0.12] bg-transparent px-3 text-[13px] text-on-dark outline-none focus-visible:border-neon"
+                          className="min-h-11 w-full rounded-lg border border-card-border bg-transparent px-3 text-[13px] text-on-dark outline-none focus-visible:border-neon"
                         >
                           <option value="">
                             {row.project ? "Change your entry…" : "Submit an existing project…"}
@@ -228,7 +229,7 @@ export function ActiveQuests() {
                         <Link
                           to="/submit"
                           search={{ quest: q.id }}
-                          className="glass-pill-dark inline-flex min-h-11 items-center justify-center px-4 text-[12px] text-on-dark transition-colors duration-200 hover:text-neon"
+                          className="glass-pill-dark inline-flex min-h-11 items-center justify-center px-4 text-[13px] text-on-dark transition-colors duration-200 hover:text-neon"
                         >
                           New project for this quest
                         </Link>

@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Edit, Lock, Trash2, Unlock, MessageSquare, ChevronUp } from "lucide-react";
 import type { ProjectStats } from "@/lib/db";
 import { normalizeCategory, statusLabel } from "@/data/community";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface SubmittedProjectCardProps {
@@ -25,13 +26,7 @@ export function SubmittedProjectCard({
 
   return (
     <article
-      className={cn(
-        "group flex flex-col rounded-2xl border border-white/[0.08] bg-surface-darker/90 p-5 sm:p-6",
-        "shadow-[0_1px_2px_-1px_oklch(0_0_0/4%),0_3px_8px_-3px_oklch(0_0_0/6%)]",
-        "transition-all duration-200 ease-out",
-        "hover:border-neon/25 hover:bg-surface-darker hover:shadow-[0_1px_2px_-1px_oklch(0_0_0/4%),0_6px_16px_-6px_oklch(0_0_0/12%)]",
-        "hover:-translate-y-0.5",
-      )}
+      className="surface-card lift-hover group flex flex-col p-5 sm:p-6"
     >
       {/* Top row: title + status badge */}
       <div className="flex items-start justify-between gap-4">
@@ -39,17 +34,17 @@ export function SubmittedProjectCard({
           <Link
             to="/projects/$slug"
             params={{ slug: project.slug ?? "" }}
-            className="block truncate text-[17px] font-semibold leading-tight tracking-tight text-on-dark transition-colors duration-200 group-hover:text-neon"
+            className="block text-lg font-semibold leading-snug tracking-normal text-on-dark transition-colors duration-200 hover:text-neon"
           >
             {title}
           </Link>
         </h3>
         <span
           className={cn(
-            "shrink-0 rounded-full px-2.5 py-1 text-[10px] font-medium leading-none tracking-wide",
+            "shrink-0 rounded-full px-2.5 py-1 text-xs font-medium leading-none tracking-wide",
             isPublic
               ? "border border-neon/30 bg-neon/10 text-neon"
-              : "border border-white/10 bg-white/[0.05] text-on-dark-muted",
+              : "border border-card-border bg-card-subtle text-card-muted",
           )}
           aria-label={isPublic ? "Public project" : "Private project"}
         >
@@ -59,17 +54,17 @@ export function SubmittedProjectCard({
 
       {/* Description */}
       {tagline ? (
-        <p className="mt-3 line-clamp-2 text-[14px] leading-relaxed text-muted-foreground">
+        <p className="mt-3 line-clamp-2 text-[14px] leading-relaxed text-card-muted">
           {tagline}
         </p>
       ) : (
-        <p className="mt-3 line-clamp-2 text-[14px] leading-relaxed text-muted-foreground/60 italic">
+        <p className="mt-3 line-clamp-2 text-[14px] leading-relaxed text-card-muted italic">
           No description provided.
         </p>
       )}
 
       {/* Metadata strip */}
-      <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-white/[0.06] pt-4 text-[12px] text-muted-foreground/80">
+      <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-card-border pt-4 text-[13px] text-card-muted">
         <span className="inline-flex items-center gap-1.5 font-mono">
           <ChevronUp className="size-3.5 text-neon" aria-hidden />
           {voteCount.toLocaleString()} upvote{voteCount === 1 ? "" : "s"}
@@ -84,54 +79,23 @@ export function SubmittedProjectCard({
 
       {/* Action row */}
       <div className="mt-auto pt-5 flex flex-wrap items-center gap-2.5">
-        <Link
-          to="/submit"
-          search={{ id: project.id ?? undefined }}
-          className={cn(
-            "inline-flex h-9 items-center gap-1.5 rounded-full px-4 text-[12px] font-medium transition-colors duration-200",
-            "bg-foreground text-background hover:bg-foreground/90",
-          )}
-        >
-          <Edit className="size-3.5" aria-hidden />
-          Edit
-        </Link>
-
-        <button
-          type="button"
-          disabled={isVisibilityPending}
-          onClick={onToggleVisibility}
-          className={cn(
-            "inline-flex h-9 items-center gap-1.5 rounded-full border px-4 text-[12px] font-medium transition-colors duration-200 disabled:opacity-60",
-            "border-white/10 bg-white/[0.04] text-on-dark hover:border-neon/40 hover:bg-neon/5 hover:text-neon",
-          )}
-        >
-          {isPublic ? (
-            <>
-              <Lock className="size-3.5" aria-hidden /> Make private
-            </>
-          ) : (
-            <>
-              <Unlock className="size-3.5" aria-hidden /> Make public
-            </>
-          )}
-        </button>
-
-        <button
-          type="button"
-          onClick={onDeleteRequest}
-          className={cn(
-            "inline-flex h-9 items-center gap-1.5 rounded-full px-4 text-[12px] font-medium transition-colors duration-200",
-            "text-muted-foreground hover:bg-destructive/10 hover:text-destructive",
-          )}
-        >
-          <Trash2 className="size-3.5" aria-hidden />
-          Delete
-        </button>
+        <Button asChild variant="cardPrimary" size="card">
+          <Link to="/submit" search={{ id: project.id ?? undefined }}>
+            <Edit aria-hidden /> Edit
+          </Link>
+        </Button>
+        <Button variant="cardSecondary" size="card" type="button" disabled={isVisibilityPending} onClick={onToggleVisibility}>
+          {isPublic ? <Lock aria-hidden /> : <Unlock aria-hidden />}
+          {isPublic ? "Make private" : "Make public"}
+        </Button>
+        <Button variant="cardDestructive" size="card" type="button" onClick={onDeleteRequest}>
+          <Trash2 aria-hidden /> Delete
+        </Button>
       </div>
 
       {/* Helper note for private projects */}
       {!isPublic ? (
-        <p className="mt-3 text-[11px] leading-snug text-muted-foreground/70">
+        <p className="mt-3 text-xs leading-snug text-card-muted">
           Hidden from the showcase, search and the leaderboard. Your upvotes are kept.
         </p>
       ) : null}
