@@ -134,7 +134,7 @@ function CommunityPage() {
                         Task: {q.task.title}
                       </p>
                     ) : null}
-                    <div className="mt-4 flex items-center justify-between gap-3 border-t border-card-border pt-4">
+                    <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-card-border pt-4">
                       <span className="flex items-center gap-1.5 font-mono text-xs text-card-muted">
                         <Users className="size-3.5" /> {joined} racing
                       </span>
@@ -147,7 +147,7 @@ function CommunityPage() {
                           type="button"
                           disabled={join.isPending}
                           onClick={() => join.mutate(q.id)}
-                          className="rounded-full bg-card-action px-4 py-2 text-sm font-semibold text-card-action-foreground transition-opacity duration-200 hover:opacity-85 disabled:opacity-50"
+                          variant="cardPrimary" size="card"
                         >
                           {join.isPending && join.variables === q.id ? "Joining…" : "Join quest"}
                         </Button>
@@ -230,7 +230,7 @@ function CommunityPage() {
                     >
                       <span
                         className={`w-7 shrink-0 font-mono text-xs tabular-nums ${
-                          (b.rank ?? 99) <= 3 ? "text-neon" : "text-muted-foreground"
+                          (b.rank ?? 99) <= 3 ? "text-neon" : "text-card-muted"
                         }`}
                       >
                         #{b.rank}
@@ -260,7 +260,7 @@ function CommunityPage() {
             )}
             <Link
               to="/builders"
-              className="mt-4 inline-block font-mono text-xs text-card-muted underline underline-offset-4 transition-colors duration-200 hover:text-neon"
+              className="mt-4 inline-block font-mono text-[13px] text-muted-foreground underline underline-offset-4 transition-colors duration-200 hover:text-neon"
             >
               Browse every builder →
             </Link>

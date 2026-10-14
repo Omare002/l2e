@@ -128,7 +128,7 @@ export function ActiveQuests() {
                 </Link>
                 {q.task ? (
                   <p className="mt-1.5 text-sm leading-relaxed text-card-muted">
-                    <span className="font-mono text-xs">Task: {q.task.title}</span>
+                    <span className="font-mono text-sm">Task: {q.task.title}</span>
                     {q.task.prompt ? ` — ${q.task.prompt}` : null}
                   </p>
                 ) : q.description ? (
@@ -143,7 +143,7 @@ export function ActiveQuests() {
                       type="button"
                       disabled={respond.isPending}
                       onClick={() => respond.mutate({ questId: q.id, action: "accept" })}
-                      className="min-h-11 rounded-full bg-card-action px-5 text-sm font-semibold text-card-action-foreground transition-opacity duration-200 hover:opacity-85 disabled:opacity-50"
+                      variant="cardPrimary" size="card"
                     >
                       Accept quest
                     </Button>
@@ -151,7 +151,7 @@ export function ActiveQuests() {
                       type="button"
                       disabled={respond.isPending}
                       onClick={() => respond.mutate({ questId: q.id, action: "decline" })}
-                      className="glass-pill-dark min-h-11 px-5 text-[13px] text-card-muted transition-colors duration-200 hover:text-on-dark"
+                      variant="cardSecondary" size="card"
                     >
                       Decline
                     </Button>
@@ -195,7 +195,7 @@ export function ActiveQuests() {
                             : "Leave this quest? You can enter again while it's open.";
                           if (window.confirm(msg)) leave.mutate(q.id);
                         }}
-                        className="glass-pill-dark mt-3 min-h-10 px-4 text-[13px] text-card-muted transition-colors duration-200 hover:text-card-danger disabled:opacity-60"
+                        variant="cardDestructive" size="card" className="mt-3"
                       >
                         Leave quest
                       </Button>
@@ -215,7 +215,7 @@ export function ActiveQuests() {
                             e.target.value &&
                             submit.mutate({ questId: q.id, projectId: e.target.value })
                           }
-                          className="min-h-11 w-full rounded-lg border border-card-border bg-transparent px-3 text-[13px] text-on-dark outline-none focus-visible:border-neon"
+                          className="min-h-11 w-full rounded-lg border border-card-border bg-card-subtle px-3 text-[13px] text-on-dark outline-none focus-visible:border-neon"
                         >
                           <option value="">
                             {row.project ? "Change your entry…" : "Submit an existing project…"}
@@ -229,7 +229,7 @@ export function ActiveQuests() {
                         <Link
                           to="/submit"
                           search={{ quest: q.id }}
-                          className="glass-pill-dark inline-flex min-h-11 items-center justify-center px-4 text-[13px] text-on-dark transition-colors duration-200 hover:text-neon"
+                          className="inline-flex min-h-11 items-center justify-center rounded-md bg-card-action px-4 py-2 text-center text-sm font-semibold text-card-action-foreground transition-opacity hover:opacity-90"
                         >
                           New project for this quest
                         </Link>

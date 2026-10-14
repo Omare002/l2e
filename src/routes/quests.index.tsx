@@ -90,7 +90,7 @@ function QuestsIndex() {
 
       <div className="mt-8">
         {isAuthenticated ? (
-          <Button
+          <Button variant="ghost"
             type="button"
             onClick={() => setOpen((o) => !o)}
             className="min-h-12 w-full rounded-full bg-foreground px-5 text-[14px] font-medium text-background transition-colors duration-200 hover:bg-foreground/90 sm:w-auto"
@@ -230,7 +230,7 @@ function QuestCard({ quest }: { quest: QuestListRow }) {
               Sign in to enter
             </Link>
           ) : openToAll ? (
-            <Button
+            <Button variant="ghost"
               type="button"
               disabled={join.isPending}
               onClick={() => join.mutate()}
@@ -336,7 +336,7 @@ function QuestForm({
           <span className="text-[13px] text-muted-foreground">Type</span>
           <div className="flex flex-wrap gap-2">
             {(Object.keys(QUEST_KIND_LABEL) as QuestKind[]).map((k) => (
-              <Button
+              <Button variant="ghost"
                 key={k}
                 type="button"
                 onClick={() => setKind(k)}
@@ -370,7 +370,7 @@ function QuestForm({
             ["public", "Open — anyone can enter"],
             ["private", "Private — invite only"],
           ] as const).map(([value, label]) => (
-            <Button
+            <Button variant="ghost"
               key={value}
               type="button"
               onClick={() => setVisibility(value)}
@@ -404,7 +404,7 @@ function QuestForm({
           {(people.data ?? []).map((p) => {
             const on = invite.includes(p.id);
             return (
-              <Button
+              <Button variant="ghost"
                 key={p.id}
                 type="button"
                 onClick={() =>
@@ -432,7 +432,7 @@ function QuestForm({
         </div>
       </div>
 
-      <Button
+      <Button variant="ghost"
         type="submit"
         disabled={create.isPending || title.trim().length < 3}
         className="min-h-12 w-full rounded-full sm:w-auto sm:justify-self-start bg-foreground px-5 text-[14px] font-medium text-background transition-colors duration-200 hover:bg-foreground/90 disabled:opacity-50"
