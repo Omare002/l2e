@@ -9,67 +9,33 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as CommunityRouteImport } from './routes/community'
-import { Route as CopyrightRouteImport } from './routes/copyright'
-import { Route as CopyrightComplaintRouteImport } from './routes/copyright-complaint'
-import { Route as HallOfFameRouteImport } from './routes/hall-of-fame'
-import { Route as HowItWorksRouteImport } from './routes/how-it-works'
-import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
-import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
-import { Route as AuthenticatedModerationRouteImport } from './routes/_authenticated/moderation'
-import { Route as AuthenticatedSubmitRouteImport } from './routes/_authenticated/submit'
-import { Route as BuildersIndexRouteImport } from './routes/builders.index'
-import { Route as BuildersUsernameRouteImport } from './routes/builders.$username'
-import { Route as ForumIndexRouteImport } from './routes/forum.index'
-import { Route as ForumIdRouteImport } from './routes/forum.$id'
-import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
-import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
+import { Route as LeaderboardRouteImport } from './routes/leaderboard'
+import { Route as HowItWorksRouteImport } from './routes/how-it-works'
+import { Route as HallOfFameRouteImport } from './routes/hall-of-fame'
+import { Route as CopyrightComplaintRouteImport } from './routes/copyright-complaint'
+import { Route as CopyrightRouteImport } from './routes/copyright'
+import { Route as CommunityRouteImport } from './routes/community'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as QuestsIndexRouteImport } from './routes/quests.index'
+import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
+import { Route as ForumIndexRouteImport } from './routes/forum.index'
+import { Route as BuildersIndexRouteImport } from './routes/builders.index'
 import { Route as QuestsIdRouteImport } from './routes/quests.$id'
+import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
+import { Route as ForumIdRouteImport } from './routes/forum.$id'
+import { Route as BuildersUsernameRouteImport } from './routes/builders.$username'
+import { Route as AuthenticatedSubmitRouteImport } from './routes/_authenticated/submit'
+import { Route as AuthenticatedModerationRouteImport } from './routes/_authenticated/moderation'
+import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as ProjectsSlugStatsRouteImport } from './routes/projects_.$slug.stats'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CommunityRoute = CommunityRouteImport.update({
-  id: '/community',
-  path: '/community',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CopyrightRoute = CopyrightRouteImport.update({
-  id: '/copyright',
-  path: '/copyright',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CopyrightComplaintRoute = CopyrightComplaintRouteImport.update({
-  id: '/copyright-complaint',
-  path: '/copyright-complaint',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HallOfFameRoute = HallOfFameRouteImport.update({
-  id: '/hall-of-fame',
-  path: '/hall-of-fame',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HowItWorksRoute = HowItWorksRouteImport.update({
-  id: '/how-it-works',
-  path: '/how-it-works',
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LeaderboardRoute = LeaderboardRouteImport.update({
@@ -77,59 +43,43 @@ const LeaderboardRoute = LeaderboardRouteImport.update({
   path: '/leaderboard',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ResetPasswordRoute = ResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
+const HowItWorksRoute = HowItWorksRouteImport.update({
+  id: '/how-it-works',
+  path: '/how-it-works',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedMessagesRoute = AuthenticatedMessagesRouteImport.update({
-  id: '/messages',
-  path: '/messages',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedModerationRoute = AuthenticatedModerationRouteImport.update({
-  id: '/moderation',
-  path: '/moderation',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedSubmitRoute = AuthenticatedSubmitRouteImport.update({
-  id: '/submit',
-  path: '/submit',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const BuildersIndexRoute = BuildersIndexRouteImport.update({
-  id: '/builders/',
-  path: '/builders/',
+const HallOfFameRoute = HallOfFameRouteImport.update({
+  id: '/hall-of-fame',
+  path: '/hall-of-fame',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BuildersUsernameRoute = BuildersUsernameRouteImport.update({
-  id: '/builders/$username',
-  path: '/builders/$username',
+const CopyrightComplaintRoute = CopyrightComplaintRouteImport.update({
+  id: '/copyright-complaint',
+  path: '/copyright-complaint',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ForumIndexRoute = ForumIndexRouteImport.update({
-  id: '/forum/',
-  path: '/forum/',
+const CopyrightRoute = CopyrightRouteImport.update({
+  id: '/copyright',
+  path: '/copyright',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ForumIdRoute = ForumIdRouteImport.update({
-  id: '/forum/$id',
-  path: '/forum/$id',
+const CommunityRoute = CommunityRouteImport.update({
+  id: '/community',
+  path: '/community',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProjectsIndexRoute = ProjectsIndexRouteImport.update({
-  id: '/projects/',
-  path: '/projects/',
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProjectsSlugRoute = ProjectsSlugRouteImport.update({
-  id: '/projects/$slug',
-  path: '/projects/$slug',
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const QuestsIndexRoute = QuestsIndexRouteImport.update({
@@ -137,10 +87,60 @@ const QuestsIndexRoute = QuestsIndexRouteImport.update({
   path: '/quests/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProjectsIndexRoute = ProjectsIndexRouteImport.update({
+  id: '/projects/',
+  path: '/projects/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForumIndexRoute = ForumIndexRouteImport.update({
+  id: '/forum/',
+  path: '/forum/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BuildersIndexRoute = BuildersIndexRouteImport.update({
+  id: '/builders/',
+  path: '/builders/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const QuestsIdRoute = QuestsIdRouteImport.update({
   id: '/quests/$id',
   path: '/quests/$id',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectsSlugRoute = ProjectsSlugRouteImport.update({
+  id: '/projects/$slug',
+  path: '/projects/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForumIdRoute = ForumIdRouteImport.update({
+  id: '/forum/$id',
+  path: '/forum/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BuildersUsernameRoute = BuildersUsernameRouteImport.update({
+  id: '/builders/$username',
+  path: '/builders/$username',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedSubmitRoute = AuthenticatedSubmitRouteImport.update({
+  id: '/submit',
+  path: '/submit',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedModerationRoute = AuthenticatedModerationRouteImport.update({
+  id: '/moderation',
+  path: '/moderation',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMessagesRoute = AuthenticatedMessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const ProjectsSlugStatsRoute = ProjectsSlugStatsRouteImport.update({
   id: '/projects_/$slug/stats',
@@ -322,60 +322,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated': {
-      id: '/_authenticated'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/community': {
-      id: '/community'
-      path: '/community'
-      fullPath: '/community'
-      preLoaderRoute: typeof CommunityRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/copyright': {
-      id: '/copyright'
-      path: '/copyright'
-      fullPath: '/copyright'
-      preLoaderRoute: typeof CopyrightRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/copyright-complaint': {
-      id: '/copyright-complaint'
-      path: '/copyright-complaint'
-      fullPath: '/copyright-complaint'
-      preLoaderRoute: typeof CopyrightComplaintRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/hall-of-fame': {
-      id: '/hall-of-fame'
-      path: '/hall-of-fame'
-      fullPath: '/hall-of-fame'
-      preLoaderRoute: typeof HallOfFameRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/how-it-works': {
-      id: '/how-it-works'
-      path: '/how-it-works'
-      fullPath: '/how-it-works'
-      preLoaderRoute: typeof HowItWorksRouteImport
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/leaderboard': {
@@ -385,81 +336,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LeaderboardRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/reset-password': {
-      id: '/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof ResetPasswordRouteImport
+    '/how-it-works': {
+      id: '/how-it-works'
+      path: '/how-it-works'
+      fullPath: '/how-it-works'
+      preLoaderRoute: typeof HowItWorksRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/dashboard': {
-      id: '/_authenticated/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/messages': {
-      id: '/_authenticated/messages'
-      path: '/messages'
-      fullPath: '/messages'
-      preLoaderRoute: typeof AuthenticatedMessagesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/moderation': {
-      id: '/_authenticated/moderation'
-      path: '/moderation'
-      fullPath: '/moderation'
-      preLoaderRoute: typeof AuthenticatedModerationRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/submit': {
-      id: '/_authenticated/submit'
-      path: '/submit'
-      fullPath: '/submit'
-      preLoaderRoute: typeof AuthenticatedSubmitRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/builders/': {
-      id: '/builders/'
-      path: '/builders'
-      fullPath: '/builders/'
-      preLoaderRoute: typeof BuildersIndexRouteImport
+    '/hall-of-fame': {
+      id: '/hall-of-fame'
+      path: '/hall-of-fame'
+      fullPath: '/hall-of-fame'
+      preLoaderRoute: typeof HallOfFameRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/builders/$username': {
-      id: '/builders/$username'
-      path: '/builders/$username'
-      fullPath: '/builders/$username'
-      preLoaderRoute: typeof BuildersUsernameRouteImport
+    '/copyright-complaint': {
+      id: '/copyright-complaint'
+      path: '/copyright-complaint'
+      fullPath: '/copyright-complaint'
+      preLoaderRoute: typeof CopyrightComplaintRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/forum/': {
-      id: '/forum/'
-      path: '/forum'
-      fullPath: '/forum/'
-      preLoaderRoute: typeof ForumIndexRouteImport
+    '/copyright': {
+      id: '/copyright'
+      path: '/copyright'
+      fullPath: '/copyright'
+      preLoaderRoute: typeof CopyrightRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/forum/$id': {
-      id: '/forum/$id'
-      path: '/forum/$id'
-      fullPath: '/forum/$id'
-      preLoaderRoute: typeof ForumIdRouteImport
+    '/community': {
+      id: '/community'
+      path: '/community'
+      fullPath: '/community'
+      preLoaderRoute: typeof CommunityRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/projects/': {
-      id: '/projects/'
-      path: '/projects'
-      fullPath: '/projects/'
-      preLoaderRoute: typeof ProjectsIndexRouteImport
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/projects/$slug': {
-      id: '/projects/$slug'
-      path: '/projects/$slug'
-      fullPath: '/projects/$slug'
-      preLoaderRoute: typeof ProjectsSlugRouteImport
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/quests/': {
@@ -469,12 +399,82 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof QuestsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/projects/': {
+      id: '/projects/'
+      path: '/projects'
+      fullPath: '/projects/'
+      preLoaderRoute: typeof ProjectsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forum/': {
+      id: '/forum/'
+      path: '/forum'
+      fullPath: '/forum/'
+      preLoaderRoute: typeof ForumIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/builders/': {
+      id: '/builders/'
+      path: '/builders'
+      fullPath: '/builders/'
+      preLoaderRoute: typeof BuildersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/quests/$id': {
       id: '/quests/$id'
       path: '/quests/$id'
       fullPath: '/quests/$id'
       preLoaderRoute: typeof QuestsIdRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/projects/$slug': {
+      id: '/projects/$slug'
+      path: '/projects/$slug'
+      fullPath: '/projects/$slug'
+      preLoaderRoute: typeof ProjectsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forum/$id': {
+      id: '/forum/$id'
+      path: '/forum/$id'
+      fullPath: '/forum/$id'
+      preLoaderRoute: typeof ForumIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/builders/$username': {
+      id: '/builders/$username'
+      path: '/builders/$username'
+      fullPath: '/builders/$username'
+      preLoaderRoute: typeof BuildersUsernameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/submit': {
+      id: '/_authenticated/submit'
+      path: '/submit'
+      fullPath: '/submit'
+      preLoaderRoute: typeof AuthenticatedSubmitRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/moderation': {
+      id: '/_authenticated/moderation'
+      path: '/moderation'
+      fullPath: '/moderation'
+      preLoaderRoute: typeof AuthenticatedModerationRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/messages': {
+      id: '/_authenticated/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof AuthenticatedMessagesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/projects_/$slug/stats': {
       id: '/projects_/$slug/stats'
