@@ -292,7 +292,7 @@ function Dashboard() {
           onClick={() => setConfirmDelete(null)}
         >
           <div
-            className="glass-panel w-full max-w-sm p-6"
+            className="w-full max-w-sm rounded-lg border border-border bg-popover p-6 text-popover-foreground shadow-sm"
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-xl font-semibold tracking-normal">Delete this project?</h3>

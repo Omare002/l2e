@@ -230,7 +230,7 @@ function QuestCard({ quest }: { quest: QuestListRow }) {
               Sign in to enter
             </Link>
           ) : openToAll ? (
-            <Button variant="ghost"
+            <Button
               type="button"
               disabled={join.isPending}
               onClick={() => join.mutate()}
