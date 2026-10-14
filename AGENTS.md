@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Use shared card-surface tokens and Button card variants for card hierarchy; this keeps contrast and action emphasis consistent without changing page layout or business logic.
