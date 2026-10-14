@@ -59,7 +59,7 @@ function BuilderProfile() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
-      <div className="glass-panel grid gap-6 p-6 sm:grid-cols-[auto_minmax(0,1fr)] sm:p-9">
+      <div className="surface-card bg-profile-surface grid gap-6 p-6 sm:grid-cols-[auto_minmax(0,1fr)] sm:p-9">
         <UserAvatar
           name={profile.display_name}
           path={profile.avatar_url}
@@ -74,19 +74,19 @@ function BuilderProfile() {
             </h1>
             {row?.rank ? (
               <span
-                className={`glass-pill px-3 py-1.5 font-mono text-[11px] tabular-nums ${
-                  row.rank <= 3 ? "text-neon" : "text-muted-foreground"
+                className={`glass-pill-dark px-3 py-1.5 font-mono text-[12px] tabular-nums ${
+                  row.rank <= 3 ? "text-neon" : "text-card-muted"
                 }`}
               >
                 Rank #{row.rank}
               </span>
             ) : null}
           </div>
-          <div className="mt-1.5 font-mono text-[12px] text-muted-foreground">
+          <div className="mt-1.5 font-mono text-[13px] text-card-muted">
             @{profile.username} · joined {new Date(profile.created_at).toDateString()}
           </div>
           {profile.bio ? (
-            <p className="mt-4 max-w-2xl text-[14px] leading-relaxed text-muted-foreground">
+            <p className="mt-4 max-w-2xl text-[14px] leading-relaxed text-card-muted">
               {profile.bio}
             </p>
           ) : null}
@@ -116,7 +116,7 @@ function BuilderProfile() {
         </div>
       </div>
 
-      <div className="surface-card mt-8 grid grid-cols-2 overflow-hidden sm:grid-cols-5">
+      <div className="surface-card bg-profile-surface mt-8 grid grid-cols-2 overflow-hidden sm:grid-cols-5">
         {[
           ["Rank", row?.rank ? `#${row.rank}` : "—"],
           ["Upvotes received", votes.toLocaleString()],
@@ -126,10 +126,10 @@ function BuilderProfile() {
         ].map(([label, value]) => (
           <div
             key={label}
-            className="border-b border-white/[0.05] px-5 py-6 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0"
+            className="border-b border-card-border px-5 py-6 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0"
           >
             <div className="text-xl font-semibold tabular-nums">{value}</div>
-            <div className="mt-1.5 text-[12px] text-muted-foreground">{label}</div>
+            <div className="mt-1.5 text-[13px] text-card-muted">{label}</div>
           </div>
         ))}
       </div>

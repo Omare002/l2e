@@ -31,6 +31,7 @@
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-card-muted: var(--card-muted);
+  --color-profile-surface: var(--profile-surface);
   --color-card-border: var(--card-border);
   --color-card-subtle: var(--card-subtle);
   --color-card-action: var(--card-action);
@@ -115,6 +116,7 @@
   --surface-dark: oklch(0.205 0 0);
   --surface-darker: oklch(0.16 0 0);
   --card-muted: oklch(0.76 0.005 130);
+  --profile-surface: oklch(0.25 0.004 140);
   --card-border: oklch(1 0 0 / 16%);
   --card-subtle: oklch(1 0 0 / 6%);
   --card-action: oklch(0.96 0.004 110);
@@ -160,6 +162,7 @@
 
   /* #191C19 — cards (project cards, race track, hall of fame) */
   --card: oklch(0.245 0.007 140);
+  --profile-surface: oklch(0.32 0.007 140);
   --card-foreground: #f2f3f0;
 
   /* #202420 — elevated surfaces: dropdowns, popovers, selects, modals */
