@@ -91,7 +91,7 @@ export function CommunityFeed() {
           </p>
         </div>
         {isAuthenticated ? (
-          <Button
+          <Button variant="ghost"
             type="button"
             onClick={() => setOpen((v) => !v)}
             className="min-h-10 rounded-full bg-foreground px-4 text-[13px] font-medium text-background transition-colors duration-200 hover:bg-foreground/90"
@@ -156,7 +156,7 @@ export function CommunityFeed() {
               </select>
             </label>
           ) : null}
-          <Button
+          <Button variant="ghost"
             type="submit"
             disabled={post.isPending}
             className="mt-5 min-h-11 rounded-full bg-card-action px-5 text-sm font-semibold text-card-action-foreground transition-opacity duration-200 hover:opacity-85 disabled:opacity-50"

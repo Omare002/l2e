@@ -42,12 +42,12 @@ function HallOfFame() {
       <div className="mt-10 grid gap-5 sm:grid-cols-3">
         {top.map((r, i) => (
           <article key={r.id} className="surface-card lift-hover p-6">
-            <div className="font-mono text-[11px] text-white/40">
+            <div className="font-mono text-[13px] text-card-muted">
               {["First", "Second", "Third"][i]} place
             </div>
             <div className="mt-4 flex items-center gap-3">
               <span
-                className="flex size-10 shrink-0 items-center justify-center rounded-full font-mono text-[11px] font-semibold text-ink"
+                className="flex size-10 shrink-0 items-center justify-center rounded-full font-mono text-[13px] font-semibold text-ink"
                 style={{ background: r.accent_color ?? "var(--neon)" }}
               >
                 {initialsOf(r.display_name)}
@@ -57,13 +57,13 @@ function HallOfFame() {
                 params={{ username: r.username ?? "" }}
                 className="min-w-0"
               >
-                <div className="truncate text-[15px] font-semibold text-white">{r.display_name}</div>
-                <div className="truncate font-mono text-[11px] text-white/40">@{r.username}</div>
+                <div className="truncate text-lg font-semibold text-card-foreground">{r.display_name}</div>
+                <div className="truncate font-mono text-[13px] text-card-muted">@{r.username}</div>
               </Link>
             </div>
-            <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-4 font-mono text-[11px]">
+            <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-card-border pt-4 font-mono text-[13px]">
               <span className="text-neon">▲ {(r.score ?? 0).toLocaleString()} votes</span>
-              <span className="text-white/45">{r.project_count ?? 0} projects</span>
+              <span className="text-card-muted">{r.project_count ?? 0} projects</span>
             </div>
           </article>
         ))}
@@ -81,7 +81,7 @@ function HallOfFame() {
             <span className="font-mono tabular-nums text-muted-foreground">{i + 1}</span>
             <span className="min-w-0">
               <span className="block truncate font-medium">{p.title}</span>
-              <span className="block truncate font-mono text-[11px] text-muted-foreground">
+              <span className="block truncate font-mono text-[13px] text-muted-foreground">
                 @{p.owner_username}
               </span>
             </span>

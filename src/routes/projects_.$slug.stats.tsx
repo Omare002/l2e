@@ -46,7 +46,7 @@ function StatsPage() {
       <Link
         to="/projects/$slug"
         params={{ slug }}
-        className="inline-flex items-center gap-2 font-mono text-[11px] text-on-dark-muted transition-colors duration-200 hover:text-neon"
+        className="inline-flex items-center gap-2 font-mono text-[13px] text-muted-foreground transition-colors duration-200 hover:text-neon"
       >
         <ArrowLeft className="size-3.5" /> Back to project
       </Link>
@@ -60,13 +60,13 @@ function StatsPage() {
           <LoadFailure message="Could not load these stats." onRetry={() => refetch()} />
         </div>
       ) : !data ? (
-        <p className="mt-8 text-[13px] text-on-dark-muted">This project could not be found.</p>
+        <p className="mt-8 text-[13px] text-muted-foreground">This project could not be found.</p>
       ) : (
         <>
-          <h1 className="mt-5 text-2xl font-semibold tracking-tight text-on-dark sm:text-3xl">
+          <h1 className="mt-5 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
             {data.title}
           </h1>
-          <p className="mt-2 text-[13px] text-on-dark-muted">
+          <p className="mt-2 text-[13px] text-muted-foreground">
             How this project has performed, week by week.
           </p>
 
@@ -85,13 +85,13 @@ function StatsPage() {
             />
           </div>
 
-          <h2 className="mt-12 font-mono text-[11px] uppercase tracking-[0.2em] text-on-dark-muted">
+          <h2 className="mt-12 text-xl font-semibold tracking-normal text-foreground">
             Last 12 weeks
           </h2>
           <div className="surface-card mt-4 overflow-hidden">
             <table className="w-full text-left">
               <thead>
-                <tr className="border-b border-white/[0.06] font-mono text-[10px] uppercase tracking-[0.15em] text-on-dark-muted">
+                <tr className="border-b border-card-border font-mono text-xs uppercase tracking-normal text-card-muted">
                   <th className="px-4 py-3 font-normal">Week of</th>
                   <th className="px-4 py-3 font-normal tabular-nums">Views</th>
                   <th className="px-4 py-3 font-normal tabular-nums">Upvotes</th>
@@ -105,14 +105,14 @@ function StatsPage() {
                 {[...data.weeks].reverse().map((w) => (
                   <tr
                     key={w.week_start}
-                    className="border-b border-white/[0.04] font-mono text-[12px] text-on-dark last:border-0"
+                    className="border-b border-card-border font-mono text-sm text-on-dark last:border-0"
                   >
-                    <td className="px-4 py-3 text-on-dark-muted">{weekLabel(w.week_start)}</td>
+                    <td className="px-4 py-3 text-card-muted">{weekLabel(w.week_start)}</td>
                     <td className="px-4 py-3 tabular-nums">{w.views}</td>
                     <td className="px-4 py-3 tabular-nums text-neon">{w.upvotes}</td>
                     <td className="hidden px-4 py-3 tabular-nums sm:table-cell">{w.comments}</td>
                     <td className="hidden px-4 py-3 sm:table-cell">
-                      <span className="flex h-1.5 w-28 overflow-hidden rounded-full bg-white/[0.06]">
+                      <span className="flex h-1.5 w-28 overflow-hidden rounded-full bg-card-subtle">
                         <span
                           className="h-full rounded-full bg-neon/70"
                           style={{ width: `${Math.round((w.views / peak) * 100)}%` }}
@@ -144,8 +144,8 @@ function Metric({
   return (
     <div className="surface-card p-5">
       <div
-        className={`flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.15em] ${
-          accent ? "text-neon" : "text-on-dark-muted"
+        className={`flex items-center gap-2 font-mono text-xs uppercase tracking-normal ${
+          accent ? "text-neon" : "text-card-muted"
         }`}
       >
         {icon} {label}

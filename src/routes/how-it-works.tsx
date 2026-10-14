@@ -11,6 +11,8 @@ export const Route = createFileRoute("/how-it-works")({
         content:
           "Weekly seasons, vote-driven race positions, feedback culture and the badges you can earn in the LearnToEarn showcase.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { property: "og:title", content: "How the Race Works — Leaderboard" },
       {
         property: "og:description",

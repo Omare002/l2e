@@ -191,7 +191,7 @@ function Dashboard() {
           {access.data?.isStaff ? (
             <Link
               to="/moderation"
-              className="flex min-h-11 items-center justify-center rounded-full border border-neon px-5 text-[13px] font-medium text-neon transition-colors duration-200 hover:bg-neon/10"
+              className="flex min-h-11 items-center justify-center rounded-full border border-border px-5 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-neon/10"
             >
               Moderation queue
             </Link>
@@ -222,17 +222,17 @@ function Dashboard() {
         <div className={`${CARD} px-5 py-5 sm:px-6 sm:py-6`}>
           <div className="flex flex-wrap items-baseline justify-between gap-3">
             <h2 className="text-xl font-semibold tracking-normal">Ranking trend</h2>
-            <span className="font-mono text-xs text-muted-foreground">Last 7 days</span>
+            <span className="font-mono text-xs text-card-muted">Last 7 days</span>
           </div>
           <div className="mt-4">
             <RankSparkline points={rankPoints} />
           </div>
           {rankPoints.length > 1 ? (
-            <p className="mt-3 text-[13px] text-muted-foreground">
+            <p className="mt-3 text-sm text-card-muted">
               Moved from #{rankPoints[0]} to #{rankPoints[rankPoints.length - 1]}.
             </p>
           ) : (
-            <p className="mt-3 text-[13px] text-muted-foreground">Trend appears as votes come in.</p>
+            <p className="mt-3 text-sm text-card-muted">Trend appears as votes come in.</p>
           )}
         </div>
       </section>
@@ -254,7 +254,7 @@ function Dashboard() {
             />
           ))}
           {mine.length === 0 ? (
-            <p className="text-[13px] text-card-muted">
+            <p className="text-sm text-muted-foreground">
               Nothing submitted yet — publish your first project to enter the race.
             </p>
           ) : null}
@@ -265,7 +265,7 @@ function Dashboard() {
         <h2 className="text-xl font-semibold tracking-normal">Recent activity</h2>
         <ol className="mt-5 border-l border-border pl-5 sm:pl-6">
           {(activity ?? []).length === 0 ? (
-            <li className="text-[13px] text-card-muted">No activity yet.</li>
+            <li className="text-sm text-muted-foreground">No activity yet.</li>
           ) : (
             (activity ?? []).map((a) => (
               <li key={a.id} className="relative pb-6 last:pb-0">
@@ -292,7 +292,7 @@ function Dashboard() {
           onClick={() => setConfirmDelete(null)}
         >
           <div
-            className="glass-panel w-full max-w-sm p-6"
+            className="w-full max-w-sm rounded-lg border border-border bg-popover p-6 text-popover-foreground shadow-sm"
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-xl font-semibold tracking-normal">Delete this project?</h3>
@@ -305,14 +305,14 @@ function Dashboard() {
                 type="button"
                 disabled={removeMutation.isPending}
                 onClick={() => removeMutation.mutate(confirmDelete.id)}
-                className="min-h-11 rounded-full bg-destructive px-5 text-[13px] font-medium text-destructive-foreground transition-opacity duration-200 hover:opacity-90 disabled:opacity-60"
+                variant="destructive" size="card"
               >
                 {removeMutation.isPending ? "Deleting…" : "Delete permanently"}
               </Button>
               <Button
                 type="button"
                 onClick={() => setConfirmDelete(null)}
-                className="min-h-11 rounded-full border border-border px-5 text-[13px] transition-colors duration-200 hover:border-neon"
+                variant="outline" size="card"
               >
                 Keep it
               </Button>
@@ -393,7 +393,7 @@ function Dashboard() {
               className={FIELD}
             />
           </label>
-          <label className="text-[13px] text-muted-foreground sm:col-span-2">
+          <label className="text-sm text-card-muted sm:col-span-2">
             Bio
             <textarea
               value={form.bio}
@@ -402,7 +402,7 @@ function Dashboard() {
               className={FIELD}
             />
           </label>
-          <div className="text-[13px] text-muted-foreground sm:col-span-2">
+          <div className="text-sm text-card-muted sm:col-span-2">
             Profile photo
             <div className="mt-3">
               {userId ? (
@@ -433,18 +433,18 @@ function Dashboard() {
           <div className="flex flex-wrap items-center gap-3 px-5 py-5 sm:px-6">
             <div className="min-w-0">
               <div className="text-[13px] font-medium">Email</div>
-              <div className="mt-0.5 truncate font-mono text-xs text-muted-foreground">
+              <div className="mt-0.5 truncate font-mono text-xs text-card-muted">
                 {user?.email ?? "—"}
               </div>
             </div>
-            <span className="ml-auto font-mono text-xs text-muted-foreground">
+            <span className="ml-auto font-mono text-xs text-card-muted">
               {user?.email_confirmed_at ? "Verified" : "Pending"}
             </span>
           </div>
           <div className="flex flex-wrap items-center gap-3 px-5 py-5 sm:px-6">
             <div className="min-w-0">
               <div className="text-[13px] font-medium">Connected sign-in</div>
-              <div className="mt-0.5 font-mono text-xs text-muted-foreground">
+              <div className="mt-0.5 font-mono text-xs text-card-muted">
                 {(user?.identities ?? []).map((i) => i.provider).join(", ") || "email"}
               </div>
             </div>
@@ -452,12 +452,12 @@ function Dashboard() {
           <div className="flex flex-wrap items-center gap-3 px-5 py-5 sm:px-6">
             <div className="min-w-0">
               <div className="text-[13px] font-medium">Sign out</div>
-              <div className="mt-0.5 text-[13px] text-muted-foreground">End this session.</div>
+              <div className="mt-0.5 text-[13px] text-card-muted">End this session.</div>
             </div>
             <Button
               type="button"
               onClick={signOut}
-              className="ml-auto min-h-11 rounded-full border border-border px-4 text-[13px] transition-colors duration-200 hover:border-neon hover:bg-muted/60"
+              variant="cardSecondary" size="card" className="ml-auto"
             >
               Sign out
             </Button>
