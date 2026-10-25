@@ -30,12 +30,12 @@ import { moderationAccessQuery } from "@/lib/moderation";
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
-      { title: "Your dashboard — Leaderboard" },
+      { title: "Your dashboard — Learn2Earn Showcase" },
       {
         name: "description",
         content: "Manage your projects, track upvotes and feedback, and watch your race position.",
       },
-      { property: "og:title", content: "Your dashboard — Leaderboard" },
+      { property: "og:title", content: "Your dashboard — Learn2Earn Showcase" },
       {
         property: "og:description",
         content: "Manage your projects, track upvotes and feedback, and watch your race position.",

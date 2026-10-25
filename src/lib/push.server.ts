@@ -30,12 +30,12 @@ const TITLES: Record<PushEvent["kind"], (actor: string) => string> = {
 };
 
 const BODIES: Record<PushEvent["kind"], string> = {
-  new_follower: "Open Leaderboard to see their profile.",
+  new_follower: "Open Learn2Earn Showcase to see their profile.",
   project_upvoted: "Your project climbed the board.",
   // Never include message contents in a push payload.
-  message_received: "Open Leaderboard to read it.",
-  collaborator_invited: "Open Leaderboard to accept or decline.",
-  quest_invited: "Open Leaderboard to accept or decline.",
+  message_received: "Open Learn2Earn Showcase to read it.",
+  collaborator_invited: "Open Learn2Earn Showcase to accept or decline.",
+  quest_invited: "Open Learn2Earn Showcase to accept or decline.",
   quest_won: "Your project took the most upvotes this round.",
 };
 

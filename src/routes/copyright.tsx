@@ -3,13 +3,13 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 export const Route = createFileRoute("/copyright")({
   head: () => ({
     meta: [
-      { title: "Intellectual property & copyright policy — Leaderboard" },
+      { title: "Intellectual property & copyright policy — Learn2Earn Showcase" },
       {
         name: "description",
         content:
-          "How Leaderboard handles copied work, credit and copyright complaints, plus how to file a formal complaint.",
+          "How Learn2Earn Showcase handles copied work, credit and copyright complaints, plus how to file a formal complaint.",
       },
-      { property: "og:title", content: "Intellectual property & copyright policy — Leaderboard" },
+      { property: "og:title", content: "Intellectual property & copyright policy — Learn2Earn Showcase" },
       {
         property: "og:description",
         content: "Our rules on original work, credit and copyright complaints.",
@@ -52,7 +52,7 @@ function CopyrightPolicy() {
         Intellectual property &amp; copyright
       </h1>
       <p className="mt-4 text-[14px] leading-relaxed text-muted-foreground">
-        Leaderboard exists to celebrate what builders actually make. Passing off someone else's work
+        Learn2Earn Showcase exists to celebrate what builders actually make. Passing off someone else's work
         as your own undermines every honest builder on the board, so we treat it seriously.
       </p>
 

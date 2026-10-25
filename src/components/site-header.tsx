@@ -3,7 +3,6 @@ import { Link, useRouter, useRouterState } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "motion/react";
 import { Bell, ChevronDown, LogOut, Menu, MessageCircle, X } from "lucide-react";
-import logo from "@/assets/logo.png";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { myProfileQuery } from "@/lib/db";
@@ -13,22 +12,25 @@ import { conversationsQuery } from "@/lib/messaging";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 
-const NAV = [
+const EXPLORE = [
   { to: "/projects", label: "Projects" },
   { to: "/leaderboard", label: "Leaderboard" },
-  { to: "/quests", label: "Quests" },
+  { to: "/hall-of-fame", label: "Hall of Fame" },
 ] as const;
 
 const COMMUNITY = [
+  { to: "/quests", label: "Quests" },
   { to: "/community", label: "Community Feed" },
   { to: "/builders", label: "Builders" },
   { to: "/forum", label: "Forums" },
 ] as const;
 
-const NAV_TAIL = [
-  { to: "/hall-of-fame", label: "Hall of Fame" },
-  { to: "/how-it-works", label: "How it works" },
+const MENU_GROUPS = [
+  { key: "explore", label: "Explore", items: EXPLORE },
+  { key: "community", label: "Community", items: COMMUNITY },
 ] as const;
+
+type MenuKey = (typeof MENU_GROUPS)[number]["key"];
 
 const LINK =
   "relative whitespace-nowrap py-1 text-[13.5px] text-foreground/70 transition-colors duration-200 hover:text-foreground";
@@ -39,13 +41,36 @@ const LINK_ACTIVE = {
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
+function Wordmark({ compact = false }: { compact?: boolean }) {
+  return (
+    <span className="flex min-w-0 items-baseline gap-1.5" aria-hidden>
+      <span
+        className={cn(
+          "truncate font-mono font-bold tracking-tight text-foreground",
+          compact ? "text-[13px]" : "text-[15px] sm:text-base",
+        )}
+      >
+        Learn<span className="text-neon">2</span>Earn
+      </span>
+      <span
+        className={cn(
+          "hidden font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground sm:inline",
+          compact && "hidden sm:inline",
+        )}
+      >
+        Showcase
+      </span>
+    </span>
+  );
+}
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
-  const [community, setCommunity] = useState(false);
-  const communityRef = useRef<HTMLDivElement>(null);
-  const [logoError, setLogoError] = useState(false);
-
+  const [openMenu, setOpenMenu] = useState<MenuKey | null>(null);
+  const menuRefs = useRef<Record<MenuKey, HTMLDivElement | null>>({
+    explore: null,
+    community: null,
+  });
   const { userId, isAuthenticated } = useAuth();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -65,16 +90,20 @@ export function SiteHeader() {
 
   useEffect(() => {
     setOpen(false);
-    setCommunity(false);
+    setOpenMenu(null);
   }, [pathname]);
 
   useEffect(() => {
-    if (!community) return;
+    if (!openMenu) return;
     function onDown(e: MouseEvent) {
-      if (!communityRef.current?.contains(e.target as Node)) setCommunity(false);
+      const target = e.target as Node;
+      const inside = (Object.keys(menuRefs.current) as MenuKey[]).some((key) =>
+        menuRefs.current[key]?.contains(target),
+      );
+      if (!inside) setOpenMenu(null);
     }
     function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setCommunity(false);
+      if (e.key === "Escape") setOpenMenu(null);
     }
     document.addEventListener("mousedown", onDown);
     document.addEventListener("keydown", onKey);
@@ -82,8 +111,7 @@ export function SiteHeader() {
       document.removeEventListener("mousedown", onDown);
       document.removeEventListener("keydown", onKey);
     };
-  }, [community]);
-
+  }, [openMenu]);
 
   async function signOut() {
     setOpen(false);
@@ -106,28 +134,8 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-white/[0.05] bg-navbar/60 backdrop-blur-xl backdrop-saturate-150">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-1 px-2 md:hidden">
-        <Link
-          to="/"
-          className="group flex min-w-0 shrink items-center"
-          aria-label="Leaderboard home"
-        >
-          {logoError ? (
-            <div className="flex h-5 min-w-0 items-center gap-1.5" aria-hidden>
-              <span className="size-2 rounded-full bg-neon" />
-              <span className="truncate font-mono text-[13px] font-semibold text-foreground">
-                Leaderboard
-              </span>
-            </div>
-          ) : (
-            <img
-              src={logo}
-              alt="Leaderboard"
-              width={1266}
-              height={210}
-              onError={() => setLogoError(true)}
-              className="h-auto w-[120px] max-w-full transition-opacity duration-200 group-hover:opacity-80 dark:invert"
-            />
-          )}
+        <Link to="/" className="group flex min-w-0 shrink items-center" aria-label="Learn2Earn Showcase home">
+          <Wordmark compact />
         </Link>
 
         <div className="flex shrink-0 items-center gap-0.5">
@@ -140,7 +148,7 @@ export function SiteHeader() {
             >
               <MessageCircle className="size-4" />
               {unreadThreads > 0 ? (
-                <span className="absolute -right-0.5 -top-0.5 flex min-w-4 items-center justify-center rounded-full bg-neon px-1 font-mono text-[9px] font-semibold leading-4 text-ink">
+                <span className="absolute -right-0.5 -top-0.5 flex min-w-4 items-center justify-center rounded-full bg-neon px-1 font-mono text-[9px] font-semibold leading-4 text-neon-foreground">
                   {unreadThreads > 99 ? "99+" : unreadThreads}
                 </span>
               ) : null}
@@ -176,33 +184,33 @@ export function SiteHeader() {
       </div>
 
       <div className="mx-auto hidden h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 md:flex 2xl:max-w-[1400px]">
-        <Link to="/" className="group flex shrink-0 items-center pr-2 sm:pr-3" aria-label="Leaderboard home">
-          {logoError ? (
-            <div className="flex h-5 items-center gap-1.5 sm:h-6" aria-hidden>
-              <span className="size-2 rounded-full bg-neon" />
-              <span className="font-mono text-[15px] font-semibold text-foreground sm:text-base">Leaderboard</span>
-            </div>
-          ) : (
-            <img src={logo} alt="Leaderboard" width={1266} height={210} onError={() => setLogoError(true)} className="h-8 w-auto transition-opacity duration-200 group-hover:opacity-80 dark:invert" />
-          )}
+        <Link to="/" className="group flex shrink-0 items-center pr-2 sm:pr-3" aria-label="Learn2Earn Showcase home">
+          <Wordmark />
         </Link>
 
         <nav className="flex min-w-0 items-center gap-4">
-          {NAV.map((item) => <Link key={item.to} to={item.to} className={LINK} activeProps={LINK_ACTIVE}>{item.label}</Link>)}
-          <div ref={communityRef} className="relative">
-            <button type="button" onClick={() => setCommunity((c) => !c)} aria-expanded={community} aria-haspopup="menu" className={cn(LINK, "flex items-center gap-1", COMMUNITY.some((c) => pathname.startsWith(c.to)) && "text-foreground")}>
-              Community
-              <ChevronDown className={cn("size-3.5 transition-transform duration-200", community && "rotate-180")} />
-            </button>
-            <AnimatePresence initial={false}>
-              {community ? (
-                <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.18, ease: EASE }} role="menu" className="glass-panel absolute left-0 top-[calc(100%+14px)] z-50 w-48 overflow-hidden p-1.5">
-                  {COMMUNITY.map((item) => <Link key={item.to} to={item.to} role="menuitem" onClick={() => setCommunity(false)} className="block rounded-lg px-3 py-2 text-[13px] text-foreground/75 transition-colors duration-200 hover:bg-muted/60 hover:text-foreground" activeProps={{ className: "text-foreground bg-muted/50" }}>{item.label}</Link>)}
-                </motion.div>
-              ) : null}
-            </AnimatePresence>
-          </div>
-          {NAV_TAIL.map((item) => <Link key={item.to} to={item.to} className={LINK} activeProps={LINK_ACTIVE}>{item.label}</Link>)}
+          {MENU_GROUPS.map((group) => (
+            <div key={group.key} ref={(el) => { menuRefs.current[group.key] = el; }} className="relative">
+              <button
+                type="button"
+                onClick={() => setOpenMenu((m) => (m === group.key ? null : group.key))}
+                aria-expanded={openMenu === group.key}
+                aria-haspopup="menu"
+                className={cn(LINK, "flex items-center gap-1", group.items.some((c) => pathname.startsWith(c.to)) && "text-foreground")}
+              >
+                {group.label}
+                <ChevronDown className={cn("size-3.5 transition-transform duration-200", openMenu === group.key && "rotate-180")} />
+              </button>
+              <AnimatePresence initial={false}>
+                {openMenu === group.key ? (
+                  <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.18, ease: EASE }} role="menu" className="glass-panel absolute left-0 top-[calc(100%+14px)] z-50 w-48 overflow-hidden p-1.5">
+                    {group.items.map((item) => <Link key={item.to} to={item.to} role="menuitem" onClick={() => setOpenMenu(null)} className="block rounded-lg px-3 py-2 text-[13px] text-foreground/75 transition-colors duration-200 hover:bg-muted/60 hover:text-foreground" activeProps={{ className: "text-foreground bg-muted/50" }}>{item.label}</Link>)}
+                  </motion.div>
+                ) : null}
+              </AnimatePresence>
+            </div>
+          ))}
+          <Link to="/how-it-works" className={LINK} activeProps={LINK_ACTIVE}>How it works</Link>
         </nav>
 
         <div className="flex shrink-0 items-center gap-2">
@@ -210,7 +218,7 @@ export function SiteHeader() {
           {isAuthenticated ? (
             <Link to="/messages" aria-label={unreadThreads > 0 ? `Messages, ${unreadThreads} unread` : "Messages"} className="relative flex size-10 items-center justify-center rounded-full border border-transparent text-muted-foreground transition-colors duration-200 hover:border-border hover:text-foreground">
               <MessageCircle className="size-4" />
-              {unreadThreads > 0 ? <span className="absolute -right-0.5 -top-0.5 flex min-w-4 items-center justify-center rounded-full bg-neon px-1 font-mono text-[9px] font-semibold leading-4 text-ink">{unreadThreads > 99 ? "99+" : unreadThreads}</span> : null}
+              {unreadThreads > 0 ? <span className="absolute -right-0.5 -top-0.5 flex min-w-4 items-center justify-center rounded-full bg-neon px-1 font-mono text-[9px] font-semibold leading-4 text-neon-foreground">{unreadThreads > 99 ? "99+" : unreadThreads}</span> : null}
             </Link>
           ) : null}
           <NotificationBell />
@@ -236,62 +244,49 @@ export function SiteHeader() {
             className="overflow-hidden border-t border-border bg-navbar md:hidden"
           >
             <nav className="mx-auto flex max-w-6xl flex-col px-4 py-2 sm:px-6">
-              {NAV.map((item) => (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  className="flex min-h-12 items-center border-b border-border/70 text-[14px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
-                  activeProps={{ className: "text-foreground" }}
-                >
-                  {item.label}
-                </Link>
-              ))}
-              <div className="border-b border-border/70">
-                <button
-                  type="button"
-                  onClick={() => setCommunity((value) => !value)}
-                  aria-expanded={community}
-                  className="flex min-h-12 w-full items-center justify-between text-left text-[14px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
-                >
-                  Community
-                  <ChevronDown
-                    className={cn("size-4 transition-transform duration-200", community && "rotate-180")}
-                  />
-                </button>
-                <AnimatePresence initial={false}>
-                  {community ? (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.18, ease: EASE }}
-                      className="overflow-hidden pb-2 pl-3"
-                    >
-                      {COMMUNITY.map((item) => (
-                        <Link
-                          key={item.to}
-                          to={item.to}
-                          className="flex min-h-11 items-center text-[14px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
-                          activeProps={{ className: "text-foreground" }}
-                        >
-                          {item.label}
-                        </Link>
-                      ))}
-                    </motion.div>
-                  ) : null}
-                </AnimatePresence>
-              </div>
-              {NAV_TAIL.map((item) => (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  className="flex min-h-12 items-center border-b border-border/70 text-[14px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
-                  activeProps={{ className: "text-foreground" }}
-                >
-                  {item.label}
-                </Link>
+              {MENU_GROUPS.map((group) => (
+                <div key={group.key} className="border-b border-border/70">
+                  <button
+                    type="button"
+                    onClick={() => setOpenMenu((m) => (m === group.key ? null : group.key))}
+                    aria-expanded={openMenu === group.key}
+                    className="flex min-h-12 w-full items-center justify-between text-left text-[14px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
+                  >
+                    {group.label}
+                    <ChevronDown className={cn("size-4 transition-transform duration-200", openMenu === group.key && "rotate-180")} />
+                  </button>
+                  <AnimatePresence initial={false}>
+                    {openMenu === group.key ? (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.18, ease: EASE }}
+                        className="overflow-hidden pb-2 pl-3"
+                      >
+                        {group.items.map((item) => (
+                          <Link
+                            key={item.to}
+                            to={item.to}
+                            className="flex min-h-11 items-center text-[14px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
+                            activeProps={{ className: "text-foreground" }}
+                          >
+                            {item.label}
+                          </Link>
+                        ))}
+                      </motion.div>
+                    ) : null}
+                  </AnimatePresence>
+                </div>
               ))}
 
+              <Link
+                to="/how-it-works"
+                className="flex min-h-12 items-center border-b border-border/70 text-[14px] text-foreground/70 transition-colors duration-200 hover:text-foreground"
+                activeProps={{ className: "text-foreground" }}
+              >
+                How it works
+              </Link>
               <Link
                 to="/submit"
                 className="flex min-h-12 items-center border-b border-border/70 text-[14px] text-foreground/70 transition-colors duration-200 hover:text-foreground"

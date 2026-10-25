@@ -23,13 +23,13 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/community")({
   head: () => ({
     meta: [
-      { title: "Community — Leaderboard" },
+      { title: "Community — Learn2Earn Showcase" },
       {
         name: "description",
         content:
           "Active quests, upcoming deadlines and featured builders from the LearnToEarn community.",
       },
-      { property: "og:title", content: "Community — Leaderboard" },
+      { property: "og:title", content: "Community — Learn2Earn Showcase" },
       {
         property: "og:description",
         content:

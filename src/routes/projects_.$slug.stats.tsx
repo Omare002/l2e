@@ -7,7 +7,7 @@ import { LoadFailure, SkeletonLines } from "@/components/skeleton-block";
 export const Route = createFileRoute("/projects_/$slug/stats")({
   head: ({ params }) => ({
     meta: [
-      { title: `${params.slug} — project stats · Leaderboard` },
+      { title: `${params.slug} — project stats · Learn2Earn Showcase` },
       {
         name: "description",
         content: "Views, upvotes and feedback for this project, with a week-by-week history.",

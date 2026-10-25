@@ -22,12 +22,12 @@ export const Route = createFileRoute("/_authenticated/messages")({
   }),
   head: () => ({
     meta: [
-      { title: "Messages — Leaderboard" },
+      { title: "Messages — Learn2Earn Showcase" },
       {
         name: "description",
         content: "Private conversations with other LearnToEarn builders: ask questions, give feedback, form teams.",
       },
-      { property: "og:title", content: "Messages — Leaderboard" },
+      { property: "og:title", content: "Messages — Learn2Earn Showcase" },
       { property: "og:description", content: "Private conversations with other LearnToEarn builders." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -140,7 +140,7 @@ function MessagesPage() {
                 >
                   {key}
                   {counts[key] > 0 ? (
-                    <span className="rounded-full bg-neon px-1.5 font-mono text-[10px] text-ink">
+                    <span className="rounded-full bg-neon px-1.5 font-mono text-[10px] text-neon-foreground">
                       {counts[key]}
                     </span>
                   ) : null}

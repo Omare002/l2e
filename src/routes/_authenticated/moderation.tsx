@@ -24,9 +24,9 @@ import {
 export const Route = createFileRoute("/_authenticated/moderation")({
   head: () => ({
     meta: [
-      { title: "Moderation queue — Leaderboard" },
+      { title: "Moderation queue — Learn2Earn Showcase" },
       { name: "description", content: "Review reported projects, posts and accounts, and act on copyright complaints." },
-      { property: "og:title", content: "Moderation queue — Leaderboard" },
+      { property: "og:title", content: "Moderation queue — Learn2Earn Showcase" },
       { property: "og:description", content: "Review reported content and copyright complaints." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

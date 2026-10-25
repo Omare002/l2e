@@ -6,13 +6,13 @@ import { initialsOf } from "@/lib/display";
 export const Route = createFileRoute("/hall-of-fame")({
   head: () => ({
     meta: [
-      { title: "Hall of fame — Leaderboard" },
+      { title: "Hall of fame — Learn2Earn Showcase" },
       {
         name: "description",
         content:
           "The all-time top builders and most upvoted projects of the LearnToEarn community.",
       },
-      { property: "og:title", content: "Hall of fame — Leaderboard" },
+      { property: "og:title", content: "Hall of fame — Learn2Earn Showcase" },
       {
         property: "og:description",
         content: "All-time top builders and most upvoted projects of the LearnToEarn community.",
@@ -47,7 +47,7 @@ function HallOfFame() {
             </div>
             <div className="mt-4 flex items-center gap-3">
               <span
-                className="flex size-10 shrink-0 items-center justify-center rounded-full font-mono text-[13px] font-semibold text-ink"
+                className="flex size-10 shrink-0 items-center justify-center rounded-full font-mono text-[13px] font-semibold text-neon-foreground"
                 style={{ background: r.accent_color ?? "var(--neon)" }}
               >
                 {initialsOf(r.display_name)}

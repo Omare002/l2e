@@ -70,6 +70,7 @@
   --color-sidebar-ring: var(--sidebar-ring);
   --color-neon: var(--neon);
   --color-neon-dim: var(--neon-dim);
+  --color-neon-foreground: var(--neon-foreground);
   --color-ink: var(--ink);
   --color-surface-dark: var(--surface-dark);
   --color-surface-darker: var(--surface-darker);
@@ -107,11 +108,12 @@
   --muted: oklch(0.94 0.002 106.42);
   /* #A5A5A5 */
   --muted-foreground: oklch(0.47 0 0);
-  /* #9BE564 — soft premium green accent */
-  --accent: oklch(0.871 0.205 131.6);
+  /* #035FC4 — Learn2Earn brand Denim Blue accent */
+  --accent: #e3f1fc;
   --accent-foreground: oklch(0.178 0 0);
-  --neon: oklch(0.871 0.205 131.6);
-  --neon-dim: oklch(0.871 0.205 131.6 / 25%);
+  --neon: #035fc4;
+  --neon-dim: rgb(3 95 196 / 25%);
+  --neon-foreground: #ffffff;
   --ink: oklch(0.178 0 0);
   --surface-dark: oklch(0.205 0 0);
   --surface-darker: oklch(0.16 0 0);
@@ -134,7 +136,7 @@
   --destructive-foreground: oklch(0.984 0.003 247.858);
   --border: oklch(0.915 0.002 106.42);
   --input: oklch(0.915 0.002 106.42);
-  --ring: oklch(0.871 0.205 131.6);
+  --ring: #035fc4;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -180,6 +182,11 @@
   --muted: #191c19;
   /* #A9ACA6 — warm secondary text */
   --muted-foreground: #a9aca6;
+
+  /* #0FB6F5 — brand Picton Blue accent, readable on dark surfaces */
+  --neon: #0fb6f5;
+  --neon-dim: rgb(15 182 245 / 25%);
+  --neon-foreground: #ffffff;
 
   /* #262B26 — hover surfaces (menu items, list rows, nav hover) */
   --accent: #262b26;

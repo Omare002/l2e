@@ -6,7 +6,7 @@ export function SiteFooter() {
       <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-9 text-[13px] text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2.5">
           <span className="size-1.5 rounded-full bg-neon" />
-          <span className="text-foreground">Leaderboard © 2026</span>
+          <span className="text-foreground">Learn2Earn Showcase © 2026</span>
           <span className="hidden sm:inline">· LearnToEarn Fellowship</span>
         </div>
         <div className="flex flex-wrap gap-6">
@@ -23,6 +23,9 @@ export function SiteFooter() {
             How it works
           </Link>
         </div>
+      </div>
+      <div className="mx-auto max-w-6xl px-6 pb-9 text-[12px] text-muted-foreground">
+        Built and maintained by Learn2Earn Fellows (Oghenerume Omare-Ogah and Gbenga Ajibola).
       </div>
     </footer>
   );

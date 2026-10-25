@@ -16,7 +16,7 @@ export function UserAvatar({ name, path, accent, size = 32, className = "", eage
   const url = useStoredImage("avatars", path);
   return (
     <span
-      className={`flex shrink-0 items-center justify-center overflow-hidden rounded-full font-mono font-semibold leading-none text-ink ${className}`}
+      className={`flex shrink-0 items-center justify-center overflow-hidden rounded-full font-mono font-semibold leading-none text-neon-foreground ${className}`}
       style={{
         width: size,
         height: size,

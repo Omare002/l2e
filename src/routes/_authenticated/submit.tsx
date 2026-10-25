@@ -19,13 +19,13 @@ export const Route = createFileRoute("/_authenticated/submit")({
   }),
   head: () => ({
     meta: [
-      { title: "Submit a project — Leaderboard" },
+      { title: "Submit a project — Learn2Earn Showcase" },
       {
         name: "description",
         content:
           "Share what you're building with the LearnToEarn community and enter this week's race.",
       },
-      { property: "og:title", content: "Submit a project — Leaderboard" },
+      { property: "og:title", content: "Submit a project — Learn2Earn Showcase" },
       {
         property: "og:description",
         content: "Share what you're building and enter this week's race.",
