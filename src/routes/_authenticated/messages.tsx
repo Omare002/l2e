@@ -140,7 +140,7 @@ function MessagesPage() {
                 >
                   {key}
                   {counts[key] > 0 ? (
-                    <span className="rounded-full bg-neon px-1.5 font-mono text-[10px] text-ink">
+                    <span className="rounded-full bg-neon px-1.5 font-mono text-[10px] text-neon-foreground">
                       {counts[key]}
                     </span>
                   ) : null}

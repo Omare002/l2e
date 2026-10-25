@@ -47,7 +47,7 @@ function HallOfFame() {
             </div>
             <div className="mt-4 flex items-center gap-3">
               <span
-                className="flex size-10 shrink-0 items-center justify-center rounded-full font-mono text-[13px] font-semibold text-ink"
+                className="flex size-10 shrink-0 items-center justify-center rounded-full font-mono text-[13px] font-semibold text-neon-foreground"
                 style={{ background: r.accent_color ?? "var(--neon)" }}
               >
                 {initialsOf(r.display_name)}

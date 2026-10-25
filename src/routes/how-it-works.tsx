@@ -81,7 +81,7 @@ function HowItWorks() {
       </div>
 
       <div className="mt-12 flex flex-wrap gap-3">
-        <Link to="/submit" className="bg-neon px-6 py-3 font-mono text-[13px] font-bold text-ink">
+        <Link to="/submit" className="bg-neon px-6 py-3 font-mono text-[13px] font-bold text-neon-foreground">
           Submit Project
         </Link>
         <Link
