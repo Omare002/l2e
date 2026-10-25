@@ -34,7 +34,7 @@ export const Route = createFileRoute("/leaderboard")({
   component: LeaderboardPage,
 });
 
-function Learn2Earn ShowcasePage() {
+function LeaderboardPage() {
   const { all, isLoading, isError, refetch, season } = useRace(10, "week");
   const allTime = useRace(20, "all");
   const { userId, isAuthenticated } = useAuth();
