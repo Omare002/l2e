@@ -25,7 +25,7 @@ import { currentSeason } from "@/lib/season";
 export const Route = createFileRoute("/quests/")({
   head: () => ({
     meta: [
-      { title: "Quests — weekly build challenges on Leaderboard" },
+      { title: "Quests — weekly build challenges on Learn2Earn Showcase" },
       {
         name: "description",
         content:

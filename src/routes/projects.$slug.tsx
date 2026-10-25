@@ -22,9 +22,9 @@ import { ReportButton } from "@/components/report-dialog";
 export const Route = createFileRoute("/projects/$slug")({
   head: ({ params }) => ({
     meta: [
-      { title: `${params.slug} — Leaderboard` },
+      { title: `${params.slug} — Learn2Earn Showcase` },
       { name: "description", content: "A project shipped by a LearnToEarn builder. Vote and leave feedback." },
-      { property: "og:title", content: `${params.slug} — Leaderboard` },
+      { property: "og:title", content: `${params.slug} — Learn2Earn Showcase` },
       {
         property: "og:description",
         content: "A project shipped by a LearnToEarn builder. Vote and leave feedback.",

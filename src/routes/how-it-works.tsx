@@ -5,7 +5,7 @@ import { SeasonBanner } from "@/components/season-banner";
 export const Route = createFileRoute("/how-it-works")({
   head: () => ({
     meta: [
-      { title: "How the Race Works — Leaderboard" },
+      { title: "How the Race Works — Learn2Earn Showcase" },
       {
         name: "description",
         content:
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/how-it-works")({
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { property: "og:title", content: "How the Race Works — Leaderboard" },
+      { property: "og:title", content: "How the Race Works — Learn2Earn Showcase" },
       {
         property: "og:description",
         content: "Weekly seasons, vote-driven race positions, and the badges you can earn.",

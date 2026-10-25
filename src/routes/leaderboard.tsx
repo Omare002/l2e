@@ -16,13 +16,13 @@ import { myFollowingQuery } from "@/lib/discovery";
 export const Route = createFileRoute("/leaderboard")({
   head: () => ({
     meta: [
-      { title: "Live race leaderboard — Leaderboard" },
+      { title: "Live race leaderboard — Learn2Earn Showcase" },
       {
         name: "description",
         content:
           "Watch the weekly LearnToEarn race in real time. Every upvote moves a builder's car closer to the finish line.",
       },
-      { property: "og:title", content: "Live race leaderboard — Leaderboard" },
+      { property: "og:title", content: "Live race leaderboard — Learn2Earn Showcase" },
       {
         property: "og:description",
         content: "Every upvote moves a builder's car closer to the finish line.",
@@ -34,7 +34,7 @@ export const Route = createFileRoute("/leaderboard")({
   component: LeaderboardPage,
 });
 
-function LeaderboardPage() {
+function Learn2Earn ShowcasePage() {
   const { all, isLoading, isError, refetch, season } = useRace(10, "week");
   const allTime = useRace(20, "all");
   const { userId, isAuthenticated } = useAuth();

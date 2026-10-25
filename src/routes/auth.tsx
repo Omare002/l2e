@@ -11,13 +11,13 @@ import { friendlyAuthError } from "@/lib/auth-errors";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Sign in — Leaderboard" },
+      { title: "Sign in — Learn2Earn Showcase" },
       {
         name: "description",
         content:
           "Sign in to submit projects, upvote community builds and track your position in the weekly LearnToEarn race.",
       },
-      { property: "og:title", content: "Sign in — Leaderboard" },
+      { property: "og:title", content: "Sign in — Learn2Earn Showcase" },
       {
         property: "og:description",
         content: "Sign in to submit projects, upvote builds and climb the weekly race.",

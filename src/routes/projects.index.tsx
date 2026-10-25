@@ -10,13 +10,13 @@ import { PROJECT_SORTS, projectsQuery, type ProjectSort } from "@/lib/db";
 export const Route = createFileRoute("/projects/")({
   head: () => ({
     meta: [
-      { title: "Discover projects — Leaderboard" },
+      { title: "Discover projects — Learn2Earn Showcase" },
       {
         name: "description",
         content:
           "Browse every project shipped by LearnToEarn builders. Sort by trending, newest, most voted, most commented or recently updated.",
       },
-      { property: "og:title", content: "Discover projects — Leaderboard" },
+      { property: "og:title", content: "Discover projects — Learn2Earn Showcase" },
       {
         property: "og:description",
         content: "Browse every project shipped by LearnToEarn builders and leave feedback.",

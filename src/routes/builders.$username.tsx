@@ -14,9 +14,9 @@ import { ACTIVITY_LABELS, relativeTime } from "@/lib/display";
 export const Route = createFileRoute("/builders/$username")({
   head: ({ params }) => ({
     meta: [
-      { title: `@${params.username} — Leaderboard` },
+      { title: `@${params.username} — Learn2Earn Showcase` },
       { name: "description", content: `Projects, upvotes and race position for @${params.username}.` },
-      { property: "og:title", content: `@${params.username} — Leaderboard` },
+      { property: "og:title", content: `@${params.username} — Learn2Earn Showcase` },
       {
         property: "og:description",
         content: `Projects, upvotes and race position for @${params.username}.`,

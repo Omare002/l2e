@@ -15,12 +15,12 @@ import { MessageButton } from "@/components/messages/message-button";
 export const Route = createFileRoute("/forum/$id")({
   head: () => ({
     meta: [
-      { title: "Discussion — Leaderboard forums" },
+      { title: "Discussion — Learn2Earn Showcase forums" },
       {
         name: "description",
         content: "A community discussion among LearnToEarn builders. Read the thread and reply.",
       },
-      { property: "og:title", content: "Discussion — Leaderboard forums" },
+      { property: "og:title", content: "Discussion — Learn2Earn Showcase forums" },
       {
         property: "og:description",
         content: "A community discussion among LearnToEarn builders.",

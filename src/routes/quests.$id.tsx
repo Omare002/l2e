@@ -44,13 +44,13 @@ function toLocalInput(iso: string) {
 export const Route = createFileRoute("/quests/$id")({
   head: () => ({
     meta: [
-      { title: "Quest standings — Leaderboard" },
+      { title: "Quest standings — Learn2Earn Showcase" },
       {
         name: "description",
         content:
           "Follow a quest live: who joined, what they submitted, and who is ahead on upvotes before the deadline.",
       },
-      { property: "og:title", content: "Quest standings — Leaderboard" },
+      { property: "og:title", content: "Quest standings — Learn2Earn Showcase" },
       {
         property: "og:description",
         content: "Live quest standings decided by real upvotes during the quest window.",

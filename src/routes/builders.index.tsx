@@ -10,13 +10,13 @@ import { builderDirectoryQuery } from "@/lib/discovery";
 export const Route = createFileRoute("/builders/")({
   head: () => ({
     meta: [
-      { title: "Find builders — Leaderboard" },
+      { title: "Find builders — Learn2Earn Showcase" },
       {
         name: "description",
         content:
           "Search the LearnToEarn community by username, see each builder's rank and projects, and follow the makers you want to keep up with.",
       },
-      { property: "og:title", content: "Find builders — Leaderboard" },
+      { property: "og:title", content: "Find builders — Learn2Earn Showcase" },
       {
         property: "og:description",
         content: "Search builders by username, see their rank, and follow the ones you like.",

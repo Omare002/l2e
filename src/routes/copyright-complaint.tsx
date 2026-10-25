@@ -7,16 +7,16 @@ import { submitCopyrightComplaint } from "@/lib/moderation.functions";
 export const Route = createFileRoute("/copyright-complaint")({
   head: () => ({
     meta: [
-      { title: "File a copyright complaint — Leaderboard" },
+      { title: "File a copyright complaint — Learn2Earn Showcase" },
       {
         name: "description",
         content:
-          "Rights holders can formally report infringing content on Leaderboard with the work, infringing link, contact details and sworn statements.",
+          "Rights holders can formally report infringing content on Learn2Earn Showcase with the work, infringing link, contact details and sworn statements.",
       },
-      { property: "og:title", content: "File a copyright complaint — Leaderboard" },
+      { property: "og:title", content: "File a copyright complaint — Learn2Earn Showcase" },
       {
         property: "og:description",
-        content: "Formally report infringing content to the Leaderboard moderation team.",
+        content: "Formally report infringing content to the Learn2Earn Showcase moderation team.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -132,7 +132,7 @@ function ComplaintForm() {
         <Field label="Where your original work lives (optional)">
           <input {...field("originalUrl")} placeholder="https://" maxLength={300} className={inputClass} />
         </Field>
-        <Field label="Link to the infringing content on Leaderboard" required>
+        <Field label="Link to the infringing content on Learn2Earn Showcase" required>
           <input {...field("infringingUrl")} placeholder="https://" maxLength={300} className={inputClass} required />
         </Field>
         <Field label="What exactly is infringing? (optional)">

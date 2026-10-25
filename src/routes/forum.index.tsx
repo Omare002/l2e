@@ -16,13 +16,13 @@ import { UserAvatar } from "@/components/user-avatar";
 export const Route = createFileRoute("/forum/")({
   head: () => ({
     meta: [
-      { title: "Community forums — Leaderboard" },
+      { title: "Community forums — Learn2Earn Showcase" },
       {
         name: "description",
         content:
           "Ask questions, share what you learned, and help other LearnToEarn builders in the community forums.",
       },
-      { property: "og:title", content: "Community forums — Leaderboard" },
+      { property: "og:title", content: "Community forums — Learn2Earn Showcase" },
       {
         property: "og:description",
         content: "Ask questions, share progress, and help other LearnToEarn builders.",

@@ -6,13 +6,13 @@ import { initialsOf } from "@/lib/display";
 export const Route = createFileRoute("/hall-of-fame")({
   head: () => ({
     meta: [
-      { title: "Hall of fame — Leaderboard" },
+      { title: "Hall of fame — Learn2Earn Showcase" },
       {
         name: "description",
         content:
           "The all-time top builders and most upvoted projects of the LearnToEarn community.",
       },
-      { property: "og:title", content: "Hall of fame — Leaderboard" },
+      { property: "og:title", content: "Hall of fame — Learn2Earn Showcase" },
       {
         property: "og:description",
         content: "All-time top builders and most upvoted projects of the LearnToEarn community.",
