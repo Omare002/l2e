@@ -86,14 +86,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Leaderboard — LearnToEarn Project Showcase" },
+      { title: "Learn2Earn Showcase — Build. Share. Climb." },
       {
         name: "description",
         content:
           "Build. Share. Climb. The project showcase and live weekly race for the LearnToEarn community.",
       },
       { name: "author", content: "LearnToEarn" },
-      { property: "og:title", content: "Leaderboard — LearnToEarn Project Showcase" },
+      { property: "og:title", content: "Learn2Earn Showcase — Build. Share. Climb." },
       {
         property: "og:description",
         content: "Build. Share. Climb. The showcase and live weekly race for LearnToEarn builders.",
