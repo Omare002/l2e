@@ -13,13 +13,13 @@ import { projectsQuery } from "@/lib/db";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Leaderboard — LearnToEarn Project Showcase" },
+      { title: "Learn2Earn Showcase — Build. Share. Climb." },
       {
         name: "description",
         content:
           "Showcase what you're building, get real feedback, discover community projects, and race up the weekly LearnToEarn leaderboard.",
       },
-      { property: "og:title", content: "Leaderboard — LearnToEarn Project Showcase" },
+      { property: "og:title", content: "Learn2Earn Showcase — Build. Share. Climb." },
       {
         property: "og:description",
         content:
